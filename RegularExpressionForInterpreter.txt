@@ -1,0 +1,10 @@
+Regular Expressions for RSimpleLexer
+
+String      -       (?:".*")
+Value       -       (?:(?:\d+(?:\.\d+)?)|true|false)
+Data        -       (?:D(\d+))
+Operator    -       (?:[<>!=]?=|[<>]{1,2}|[&\|\^+\-]{1,2}|[!~*/%])
+Conditional -       \?: ToDO
+
+Combined            ((".*")|((\d+(\.\d+)?)|(true|false))|(D(\d+))|([<>!=]?=|[<>]{1,2}|[&\|\^\+\-]{1,2}|[!~\*\/%]))
+CombinedEscaped     ((\".*\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|([<>!=]?=|[<>]{1,2}|[&\\|\\^\\+\\-]{1,2}|[!~\\*\\/%]))
