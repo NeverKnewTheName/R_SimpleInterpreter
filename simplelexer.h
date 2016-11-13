@@ -15,8 +15,6 @@ public:
 
 private:
     void RemoveWhitespacesFromString(QString &string);
-
-    QVector<SimpleToken> tokens;
 };
 
 #endif // SIMPLELEXER_H

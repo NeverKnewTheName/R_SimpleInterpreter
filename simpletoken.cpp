@@ -2,6 +2,11 @@
 
 #include <QDebug>
 
+SimpleToken::SimpleToken() :
+    type(SimpleToken::EOFToken)
+{
+}
+
 SimpleToken::SimpleToken(const SimpleToken::TokenType type) :
     type(type)
 {
@@ -20,6 +25,13 @@ ValueToken::ValueToken() :
 }
 
 ValueToken::ValueToken(const ValueToken &valueTokenToCopy) :
+    SimpleToken(SimpleToken::Value),
+    valueType(valueTokenToCopy.getValueType()),
+    value(valueTokenToCopy.getValue())
+{
+}
+
+ValueToken::ValueToken(ValueToken &&valueTokenToCopy) :
     SimpleToken(SimpleToken::Value),
     valueType(valueTokenToCopy.getValueType()),
     value(valueTokenToCopy.getValue())
@@ -52,6 +64,13 @@ ValueToken::ValueToken(const QString &value) :
     valueType(String),
     value(QVariant::fromValue(value))
 {
+}
+
+ValueToken &ValueToken::operator=(const ValueToken &value)
+{
+    valueType = value.getValueType();
+    this->value = value.getValue();
+    return *this;
 }
 
 const QVariant ValueToken::getValue() const
@@ -118,45 +137,32 @@ QString DataToken::printToken() const
     return QString("{(%1):(%2)}").arg(tokenType).arg(value);
 }
 
-OperationToken::OperationToken(const OperationToken::ArityTypes arityType) :
-    SimpleToken(SimpleToken::Operation),
-    arityType(arityType)
+OperationToken::OperationToken() :
+    SimpleToken(SimpleToken::Operation)
 {
 }
 
-OperationToken::ArityTypes OperationToken::getArityType() const
-{
-    return arityType;
-}
-
-
-
-UnaryOperationToken::UnaryOperationToken(const UnaryOperationToken::OperationTypes opType) :
-    OperationToken(OperationToken::Unary),
-    opType(opType)
+UnaryOperationToken::UnaryOperationToken()
 {
 
 }
 
-UnaryOperationToken::OperationTypes UnaryOperationToken::getOpType() const
-{
-    return opType;
-}
-
-UnaryArithmeticOperationToken::UnaryArithmeticOperationToken(const UnaryArithmeticOperationToken::Operation op) :
-    UnaryOperationToken(UnaryOperationToken::Arithmetic),
-    op(op)
+UnaryArithmeticOperationToken::UnaryArithmeticOperationToken()
 {
 }
 
-UnaryArithmeticOperationToken::Operation UnaryArithmeticOperationToken::getOp() const
+OperationToken::OperationTypes UnaryArithmeticOperationToken::getOpType() const
 {
-    return op;
+    return OperationToken::Arithmetic;
 }
 
-IncrementToken::IncrementToken() :
-    UnaryArithmeticOperationToken(UnaryArithmeticOperationToken::Increment)
+IncrementToken::IncrementToken()
 {
+}
+
+OperationToken::Operation IncrementToken::getOp() const
+{
+    return OperationToken::Increment;
 }
 
 const ValueToken IncrementToken::DoOperation(const ValueToken &value) const
@@ -171,9 +177,26 @@ const ValueToken IncrementToken::DoOperation(const ValueToken &value) const
     }
 }
 
-DecrementToken::DecrementToken() :
-    UnaryArithmeticOperationToken(UnaryArithmeticOperationToken::Decrement)
+QString IncrementToken::printValue() const
 {
+    return QString("++");
+}
+
+QString IncrementToken::printToken() const
+{
+    QString tokenType = "IncrementToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+DecrementToken::DecrementToken()
+{
+}
+
+OperationToken::Operation DecrementToken::getOp() const
+{
+    return OperationToken::Decrement;
 }
 
 const ValueToken DecrementToken::DoOperation(const ValueToken &value) const
@@ -188,9 +211,26 @@ const ValueToken DecrementToken::DoOperation(const ValueToken &value) const
     }
 }
 
-PositiveToken::PositiveToken() :
-    UnaryArithmeticOperationToken(UnaryArithmeticOperationToken::Positive)
+QString DecrementToken::printValue() const
 {
+    return QString("--");
+}
+
+QString DecrementToken::printToken() const
+{
+    QString tokenType = "DecrementToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+PositiveToken::PositiveToken()
+{
+}
+
+OperationToken::Operation PositiveToken::getOp() const
+{
+    return OperationToken::Positive;
 }
 
 const ValueToken PositiveToken::DoOperation(const ValueToken &value) const
@@ -208,9 +248,26 @@ const ValueToken PositiveToken::DoOperation(const ValueToken &value) const
     }
 }
 
-NegativeToken::NegativeToken() :
-    UnaryArithmeticOperationToken(UnaryArithmeticOperationToken::Negative)
+QString PositiveToken::printValue() const
 {
+    return QString("+");
+}
+
+QString PositiveToken::printToken() const
+{
+    QString tokenType = "PositiveToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+NegativeToken::NegativeToken()
+{
+}
+
+OperationToken::Operation NegativeToken::getOp() const
+{
+    return OperationToken::Negative;
 }
 
 const ValueToken NegativeToken::DoOperation(const ValueToken &value) const
@@ -228,20 +285,35 @@ const ValueToken NegativeToken::DoOperation(const ValueToken &value) const
     }
 }
 
-UnaryLogicalOperationToken::UnaryLogicalOperationToken(const UnaryLogicalOperationToken::Operation op) :
-    UnaryOperationToken(UnaryOperationToken::Logical),
-    op(op)
+QString NegativeToken::printValue() const
+{
+    return QString("-");
+}
+
+QString NegativeToken::printToken() const
+{
+    QString tokenType = "NegativeToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+UnaryLogicalOperationToken::UnaryLogicalOperationToken()
 {
 }
 
-UnaryLogicalOperationToken::Operation UnaryLogicalOperationToken::getOp() const
+OperationToken::OperationTypes UnaryLogicalOperationToken::getOpType() const
 {
-    return op;
+    return OperationToken::Logical;
 }
 
-LogicalNegationToken::LogicalNegationToken() :
-    UnaryLogicalOperationToken(UnaryLogicalOperationToken::LogicalNegation)
+LogicalNegationToken::LogicalNegationToken()
 {
+}
+
+OperationToken::Operation LogicalNegationToken::getOp() const
+{
+    return OperationToken::LogicalNegation;
 }
 
 const ValueToken LogicalNegationToken::DoOperation(const ValueToken &value) const
@@ -261,20 +333,35 @@ const ValueToken LogicalNegationToken::DoOperation(const ValueToken &value) cons
     }
 }
 
-UnaryBitwiseOperationToken::UnaryBitwiseOperationToken(const UnaryBitwiseOperationToken::Operation op) :
-    UnaryOperationToken(UnaryOperationToken::Bitwise),
-    op(op)
+QString LogicalNegationToken::printValue() const
+{
+    return QString("!");
+}
+
+QString LogicalNegationToken::printToken() const
+{
+    QString tokenType = "LogicalNegationToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+UnaryBitwiseOperationToken::UnaryBitwiseOperationToken()
 {
 }
 
-UnaryBitwiseOperationToken::Operation UnaryBitwiseOperationToken::getOp() const
+OperationToken::OperationTypes UnaryBitwiseOperationToken::getOpType() const
 {
-    return op;
+    return OperationToken::Bitwise;
 }
 
-OnesComplementToken::OnesComplementToken() :
-    UnaryBitwiseOperationToken(UnaryBitwiseOperationToken::OnesComplement)
+OnesComplementToken::OnesComplementToken()
 {
+}
+
+OperationToken::Operation OnesComplementToken::getOp() const
+{
+    return OperationToken::OnesComplement;
 }
 
 const ValueToken OnesComplementToken::DoOperation(const ValueToken &value) const
@@ -289,31 +376,44 @@ const ValueToken OnesComplementToken::DoOperation(const ValueToken &value) const
     }
 }
 
-BinaryOperationToken::BinaryOperationToken(const BinaryOperationToken::OperationTypes opType) :
-    OperationToken(OperationToken::Binary),
-    opType(opType)
+QString OnesComplementToken::printValue() const
+{
+    return QString("~");
+}
+
+QString OnesComplementToken::printToken() const
+{
+    QString tokenType = "OnesComplementToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+BinaryOperationToken::BinaryOperationToken()
 {
 }
 
-BinaryOperationToken::OperationTypes BinaryOperationToken::getOpType() const
+OperationToken::ArityTypes BinaryOperationToken::getArityType() const
 {
-    return opType;
+    return OperationToken::Binary;
 }
 
-BinaryArithmeticOperationToken::BinaryArithmeticOperationToken(const BinaryArithmeticOperationToken::Operation op) :
-    BinaryOperationToken(BinaryOperationToken::Arithmetic),
-    op(op)
+BinaryArithmeticOperationToken::BinaryArithmeticOperationToken()
 {
 }
 
-BinaryArithmeticOperationToken::Operation BinaryArithmeticOperationToken::getOp() const
+OperationToken::OperationTypes BinaryArithmeticOperationToken::getOpType() const
 {
-    return op;
+    return OperationToken::Arithmetic;
 }
 
-AdditionToken::AdditionToken() :
-    BinaryArithmeticOperationToken(BinaryArithmeticOperationToken::Addition)
+AdditionToken::AdditionToken()
 {
+}
+
+OperationToken::Operation AdditionToken::getOp() const
+{
+    return OperationToken::Addition;
 }
 
 const ValueToken AdditionToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
@@ -335,9 +435,26 @@ const ValueToken AdditionToken::DoOperation(const ValueToken &value1, const Valu
     }
 }
 
-SubtractionToken::SubtractionToken() :
-    BinaryArithmeticOperationToken(BinaryArithmeticOperationToken::Subtraction)
+QString AdditionToken::printValue() const
 {
+    return QString("+");
+}
+
+QString AdditionToken::printToken() const
+{
+    QString tokenType = "AdditionToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+SubtractionToken::SubtractionToken()
+{
+}
+
+OperationToken::Operation SubtractionToken::getOp() const
+{
+    return OperationToken::Subtraction;
 }
 
 const ValueToken SubtractionToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
@@ -359,9 +476,26 @@ const ValueToken SubtractionToken::DoOperation(const ValueToken &value1, const V
     }
 }
 
-MultiplicationToken::MultiplicationToken() :
-    BinaryArithmeticOperationToken(BinaryArithmeticOperationToken::Multiplication)
+QString SubtractionToken::printValue() const
 {
+    return QString("-");
+}
+
+QString SubtractionToken::printToken() const
+{
+    QString tokenType = "SubtractionToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+MultiplicationToken::MultiplicationToken()
+{
+}
+
+OperationToken::Operation MultiplicationToken::getOp() const
+{
+    return OperationToken::Multiplication;
 }
 
 const ValueToken MultiplicationToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
@@ -383,9 +517,26 @@ const ValueToken MultiplicationToken::DoOperation(const ValueToken &value1, cons
     }
 }
 
-DivisionToken::DivisionToken() :
-    BinaryArithmeticOperationToken(BinaryArithmeticOperationToken::Division)
+QString MultiplicationToken::printValue() const
 {
+    return QString("*");
+}
+
+QString MultiplicationToken::printToken() const
+{
+    QString tokenType = "MultiplicationToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+DivisionToken::DivisionToken()
+{
+}
+
+OperationToken::Operation DivisionToken::getOp() const
+{
+    return OperationToken::Division;
 }
 
 const ValueToken DivisionToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
@@ -407,9 +558,26 @@ const ValueToken DivisionToken::DoOperation(const ValueToken &value1, const Valu
     }
 }
 
-ModuloToken::ModuloToken() :
-    BinaryArithmeticOperationToken(BinaryArithmeticOperationToken::Modulo)
+QString DivisionToken::printValue() const
 {
+    return QString("/");
+}
+
+QString DivisionToken::printToken() const
+{
+    QString tokenType = "DivisionToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+ModuloToken::ModuloToken()
+{
+}
+
+OperationToken::Operation ModuloToken::getOp() const
+{
+    return OperationToken::Modulo;
 }
 
 const ValueToken ModuloToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
@@ -417,20 +585,35 @@ const ValueToken ModuloToken::DoOperation(const ValueToken &value1, const ValueT
     return ValueToken(value1.getValue().value<int>() % value2.getValue().value<int>());
 }
 
-BinaryLogicalOperationToken::BinaryLogicalOperationToken(const BinaryLogicalOperationToken::Operation op) :
-    BinaryOperationToken(BinaryOperationToken::Logical),
-    op(op)
+QString ModuloToken::printValue() const
+{
+    return QString("%");
+}
+
+QString ModuloToken::printToken() const
+{
+    QString tokenType = "ModuloToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+BinaryLogicalOperationToken::BinaryLogicalOperationToken()
 {
 }
 
-BinaryLogicalOperationToken::Operation BinaryLogicalOperationToken::getOpType() const
+OperationToken::OperationTypes BinaryLogicalOperationToken::getOpType() const
 {
-    return op;
+    return OperationToken::Logical;
 }
 
-LogicalANDToken::LogicalANDToken() :
-    BinaryLogicalOperationToken(BinaryLogicalOperationToken::AND)
+LogicalANDToken::LogicalANDToken()
 {
+}
+
+OperationToken::Operation LogicalANDToken::getOp() const
+{
+    return OperationToken::LogicalAND;
 }
 
 const ValueToken LogicalANDToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
@@ -438,19 +621,53 @@ const ValueToken LogicalANDToken::DoOperation(const ValueToken &value1, const Va
     return ValueToken(value1.getValue().value<bool>() && value2.getValue().value<bool>());
 }
 
-LogicalORToken::LogicalORToken() :
-    BinaryLogicalOperationToken(BinaryLogicalOperationToken::OR)
+QString LogicalANDToken::printValue() const
 {
+    return QString("&&");
+}
+
+QString LogicalANDToken::printToken() const
+{
+    QString tokenType = "LogicalANDToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+LogicalORToken::LogicalORToken()
+{
+}
+
+OperationToken::Operation LogicalORToken::getOp() const
+{
+    return OperationToken::LogicalOR;
 }
 
 const ValueToken LogicalORToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
 {
-    return ValueToken(value1.getValue().value<bool>() && value2.getValue().value<bool>());
+    return ValueToken(value1.getValue().value<bool>() || value2.getValue().value<bool>());
 }
 
-LogicalXORToken::LogicalXORToken() :
-    BinaryLogicalOperationToken(BinaryLogicalOperationToken::XOR)
+QString LogicalORToken::printValue() const
 {
+    return QString("||");
+}
+
+QString LogicalORToken::printToken() const
+{
+    QString tokenType = "LogicalORToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+LogicalXORToken::LogicalXORToken()
+{
+}
+
+OperationToken::Operation LogicalXORToken::getOp() const
+{
+    return OperationToken::LogicalXOR;
 }
 
 const ValueToken LogicalXORToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
@@ -458,9 +675,26 @@ const ValueToken LogicalXORToken::DoOperation(const ValueToken &value1, const Va
     return ValueToken(value1.getValue().value<bool>() != value2.getValue().value<bool>());
 }
 
-GreaterToken::GreaterToken() :
-    BinaryLogicalOperationToken(BinaryLogicalOperationToken::Greater)
+QString LogicalXORToken::printValue() const
 {
+    return QString("^^");
+}
+
+QString LogicalXORToken::printToken() const
+{
+    QString tokenType = "LogicalXORToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+GreaterToken::GreaterToken()
+{
+}
+
+OperationToken::Operation GreaterToken::getOp() const
+{
+    return OperationToken::Greater;
 }
 
 const ValueToken GreaterToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
@@ -468,9 +702,26 @@ const ValueToken GreaterToken::DoOperation(const ValueToken &value1, const Value
     return (value1.getValue().value<double>() > value2.getValue().value<double>()) ?  ValueToken(true) : ValueToken(false);
 }
 
-LowerToken::LowerToken() :
-    BinaryLogicalOperationToken(BinaryLogicalOperationToken::Lower)
+QString GreaterToken::printValue() const
 {
+    return QString(">");
+}
+
+QString GreaterToken::printToken() const
+{
+    QString tokenType = "GreaterToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+LowerToken::LowerToken()
+{
+}
+
+OperationToken::Operation LowerToken::getOp() const
+{
+    return OperationToken::Lower;
 }
 
 const ValueToken LowerToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
@@ -478,9 +729,26 @@ const ValueToken LowerToken::DoOperation(const ValueToken &value1, const ValueTo
     return (value1.getValue().value<double>() < value2.getValue().value<double>()) ?  ValueToken(true) : ValueToken(false);
 }
 
-EqualToken::EqualToken() :
-    BinaryLogicalOperationToken(BinaryLogicalOperationToken::Equal)
+QString LowerToken::printValue() const
 {
+    return QString("<");
+}
+
+QString LowerToken::printToken() const
+{
+    QString tokenType = "LowerToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+EqualToken::EqualToken()
+{
+}
+
+OperationToken::Operation EqualToken::getOp() const
+{
+    return OperationToken::Equal;
 }
 
 const ValueToken EqualToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
@@ -502,9 +770,26 @@ const ValueToken EqualToken::DoOperation(const ValueToken &value1, const ValueTo
     }
 }
 
-EqualOrGreaterToken::EqualOrGreaterToken() :
-    BinaryLogicalOperationToken(BinaryLogicalOperationToken::EqualOrGreater)
+QString EqualToken::printValue() const
 {
+    return QString("==");
+}
+
+QString EqualToken::printToken() const
+{
+    QString tokenType = "EqualToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+EqualOrGreaterToken::EqualOrGreaterToken()
+{
+}
+
+OperationToken::Operation EqualOrGreaterToken::getOp() const
+{
+    return OperationToken::EqualOrGreater;
 }
 
 const ValueToken EqualOrGreaterToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
@@ -526,9 +811,26 @@ const ValueToken EqualOrGreaterToken::DoOperation(const ValueToken &value1, cons
     }
 }
 
-EqualOrLowerToken::EqualOrLowerToken() :
-    BinaryLogicalOperationToken(BinaryLogicalOperationToken::EqualOrLower)
+QString EqualOrGreaterToken::printValue() const
 {
+    return QString(">=");
+}
+
+QString EqualOrGreaterToken::printToken() const
+{
+    QString tokenType = "EqualOrGreaterToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+EqualOrLowerToken::EqualOrLowerToken()
+{
+}
+
+OperationToken::Operation EqualOrLowerToken::getOp() const
+{
+    return OperationToken::EqualOrLower;
 }
 
 const ValueToken EqualOrLowerToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
@@ -550,12 +852,29 @@ const ValueToken EqualOrLowerToken::DoOperation(const ValueToken &value1, const 
     }
 }
 
-UneqalToken::UneqalToken() :
-    BinaryLogicalOperationToken(BinaryLogicalOperationToken::Unequal)
+QString EqualOrLowerToken::printValue() const
+{
+    return QString("<=");
+}
+
+QString EqualOrLowerToken::printToken() const
+{
+    QString tokenType = "EqualOrLowerToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+UnequalToken::UnequalToken()
 {
 }
 
-const ValueToken UneqalToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
+OperationToken::Operation UnequalToken::getOp() const
+{
+    return OperationToken::Unequal;
+}
+
+const ValueToken UnequalToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
 {
     ValueToken::ValueTypes resultType = ValueToken::Integer;
     if( ( value1.getValueType() == ValueToken::Double ) || ( value2.getValueType() == ValueToken::Double ) )
@@ -574,20 +893,35 @@ const ValueToken UneqalToken::DoOperation(const ValueToken &value1, const ValueT
     }
 }
 
-BinaryBitwiseOperationToken::BinaryBitwiseOperationToken(const BinaryBitwiseOperationToken::Operation op) :
-    BinaryOperationToken(BinaryOperationToken::Bitwise),
-    op(op)
+QString UnequalToken::printValue() const
+{
+    return QString("!=");
+}
+
+QString UnequalToken::printToken() const
+{
+    QString tokenType = "UneqalToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+BinaryBitwiseOperationToken::BinaryBitwiseOperationToken()
 {
 }
 
-BinaryBitwiseOperationToken::Operation BinaryBitwiseOperationToken::getOp() const
+OperationToken::OperationTypes BinaryBitwiseOperationToken::getOpType() const
 {
-    return op;
+    return OperationToken::Bitwise;
 }
 
-ANDToken::ANDToken() :
-    BinaryBitwiseOperationToken(BinaryBitwiseOperationToken::AND)
+ANDToken::ANDToken()
 {
+}
+
+OperationToken::Operation ANDToken::getOp() const
+{
+    return OperationToken::AND;
 }
 
 const ValueToken ANDToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
@@ -599,9 +933,26 @@ const ValueToken ANDToken::DoOperation(const ValueToken &value1, const ValueToke
     return ValueToken(value1.getValue().value<int>() & value2.getValue().value<int>());
 }
 
-ORToken::ORToken() :
-    BinaryBitwiseOperationToken(BinaryBitwiseOperationToken::OR)
+QString ANDToken::printValue() const
 {
+    return QString("&");
+}
+
+QString ANDToken::printToken() const
+{
+    QString tokenType = "ANDToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+ORToken::ORToken()
+{
+}
+
+OperationToken::Operation ORToken::getOp() const
+{
+    return OperationToken::OR;
 }
 
 const ValueToken ORToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
@@ -613,9 +964,26 @@ const ValueToken ORToken::DoOperation(const ValueToken &value1, const ValueToken
     return ValueToken(value1.getValue().value<int>() | value2.getValue().value<int>());
 }
 
-XORToken::XORToken() :
-    BinaryBitwiseOperationToken(BinaryBitwiseOperationToken::XOR)
+QString ORToken::printValue() const
 {
+    return QString("|");
+}
+
+QString ORToken::printToken() const
+{
+    QString tokenType = "ORToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+XORToken::XORToken()
+{
+}
+
+OperationToken::Operation XORToken::getOp() const
+{
+    return OperationToken::XOR;
 }
 
 const ValueToken XORToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
@@ -627,9 +995,26 @@ const ValueToken XORToken::DoOperation(const ValueToken &value1, const ValueToke
     return ValueToken(value1.getValue().value<int>() ^ value2.getValue().value<int>());
 }
 
-LeftShiftToken::LeftShiftToken() :
-    BinaryBitwiseOperationToken(BinaryBitwiseOperationToken::LeftShift)
+QString XORToken::printValue() const
 {
+    return QString("^");
+}
+
+QString XORToken::printToken() const
+{
+    QString tokenType = "XORToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+LeftShiftToken::LeftShiftToken()
+{
+}
+
+OperationToken::Operation LeftShiftToken::getOp() const
+{
+    return OperationToken::LeftShift;
 }
 
 const ValueToken LeftShiftToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
@@ -641,9 +1026,26 @@ const ValueToken LeftShiftToken::DoOperation(const ValueToken &value1, const Val
     return ValueToken(value1.getValue().value<int>() << value2.getValue().value<int>());
 }
 
-RightShiftToken::RightShiftToken() :
-    BinaryBitwiseOperationToken(BinaryBitwiseOperationToken::RightShift)
+QString LeftShiftToken::printValue() const
 {
+    return QString("<<");
+}
+
+QString LeftShiftToken::printToken() const
+{
+    QString tokenType = "LeftShiftToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+RightShiftToken::RightShiftToken()
+{
+}
+
+OperationToken::Operation RightShiftToken::getOp() const
+{
+    return OperationToken::RightShift;
 }
 
 const ValueToken RightShiftToken::DoOperation(const ValueToken &value1, const ValueToken &value2) const
@@ -655,20 +1057,35 @@ const ValueToken RightShiftToken::DoOperation(const ValueToken &value1, const Va
     return ValueToken(value1.getValue().value<int>() >> value2.getValue().value<int>());
 }
 
-TernaryOperationToken::TernaryOperationToken(const TernaryOperationToken::OperationTypes opType) :
-    OperationToken(OperationToken::Ternary),
-    opType(opType)
+QString RightShiftToken::printValue() const
+{
+    return QString(">>");
+}
+
+QString RightShiftToken::printToken() const
+{
+    QString tokenType = "RightShiftToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+TernaryOperationToken::TernaryOperationToken()
 {
 }
 
-TernaryOperationToken::OperationTypes TernaryOperationToken::getOpType() const
+ConditionalToken::ConditionalToken()
 {
-    return opType;
 }
 
-ConditionalToken::ConditionalToken() :
-    TernaryOperationToken(TernaryOperationToken::Conditional)
+OperationToken::OperationTypes ConditionalToken::getOpType() const
 {
+    return OperationToken::Logical;
+}
+
+OperationToken::Operation ConditionalToken::getOp() const
+{
+    return OperationToken::Conditional;
 }
 
 const ValueToken ConditionalToken::DoOperation(const ValueToken &value1, const ValueToken &value2, const ValueToken &value3) const
@@ -678,4 +1095,27 @@ const ValueToken ConditionalToken::DoOperation(const ValueToken &value1, const V
         return ValueToken();
 
     return (value1.getValue().value<bool>()) ? ValueToken(value2) : ValueToken(value3);
+}
+
+QString ConditionalToken::printValue() const
+{
+    return QString("?:");
+}
+
+QString ConditionalToken::printToken() const
+{
+    QString tokenType = "ConditionalToken";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(tokenType).arg(value);
+}
+
+OperationToken::ArityTypes UnaryOperationToken::getArityType() const
+{
+    return OperationToken::Unary;
+}
+
+OperationToken::ArityTypes TernaryOperationToken::getArityType() const
+{
+    return OperationToken::Ternary;
 }

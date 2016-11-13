@@ -1,10 +1,38 @@
 Regular Expressions for RSimpleLexer
 
-String      -       (?:".*")
-Value       -       (?:(?:\d+(?:\.\d+)?)|true|false)
-Data        -       (?:D(\d+))
-Operator    -       (?:[<>!=]?=|[<>]{1,2}|[&\|\^+\-]{1,2}|[!~*/%])
+String      -       (".*")
+Value       -       ((\d+(\.\d+)?)|(true|false))
+Data        -       (D(\d+))
+Operator    -       ([<>!=]?=|[<>]{1,2}|[&\|\^\+\-]{1,2}|[!~\*\/%])
 Conditional -       \?: ToDO
 
 Combined            ((".*")|((\d+(\.\d+)?)|(true|false))|(D(\d+))|([<>!=]?=|[<>]{1,2}|[&\|\^\+\-]{1,2}|[!~\*\/%]))
 CombinedEscaped     ((\".*\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|([<>!=]?=|[<>]{1,2}|[&\\|\\^\\+\\-]{1,2}|[!~\\*\\/%]))
+
+Operators:
+++  increment
+--  decrement
++   positive
+-   negative
+!   logicalNegation
+~   OnesComplement
++   addition
+-   subtraction
+*   multiplication
+/   division
+%   modulo
+&&  LogicalAND
+||  LogicalOR
+^^  LogicalXOR
+>   greater
+<   lower
+==  equal  
+>=  equalOrGreater
+<=  equalOrLower
+!=  unequal
+&   AND
+|   OR
+^   XOR
+<<  leftShift
+>>  rightShift
+?:  Conditional

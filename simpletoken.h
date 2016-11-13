@@ -14,9 +14,12 @@ public:
         Operation,
         EOFToken
     }TokenType;
+    SimpleToken();
     SimpleToken(const TokenType type);
 
     TokenType getTokenType() const;
+    virtual QString printValue() const = 0;
+    virtual QString printToken() const = 0;
 
 private:
     const TokenType type;
@@ -35,22 +38,25 @@ public:
     }ValueTypes;
 
     ValueToken();
-    ValueToken(ValueToken const &valueTokenToCopy);
+    ValueToken(const ValueToken &valueTokenToCopy);
+    ValueToken(ValueToken &&valueTokenToCopy);
     ValueToken(const int value);
     ValueToken(const double value);
     ValueToken(const bool value);
     ValueToken(QString const &value);
 
+    ValueToken &operator=(ValueToken const&value);
+
     const QVariant getValue() const;
 
     ValueTypes getValueType() const;
 
-    QString printValue() const;
-    QString printToken() const;
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 
 private:
-    const ValueTypes valueType;
-    const QVariant value;
+    ValueTypes valueType;
+    QVariant value;
 };
 
 class DataToken : public SimpleToken
@@ -59,8 +65,10 @@ public:
     DataToken(const unsigned int dataIndex);
 
     const ValueToken getData(QVector<quint8> const &dataVector) const;
-    QString printValue() const;
-    QString printToken() const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
+
 private:
     const unsigned int dataIndex;
 };
@@ -74,54 +82,83 @@ public:
         Binary,
         Ternary
     }ArityTypes;
-
-    OperationToken(const ArityTypes arityType);
-    ArityTypes getArityType() const;
-
-private:
-    const ArityTypes arityType;
-};
-
-class UnaryOperationToken : public OperationToken
-{
-public:
     typedef enum _OperationTypes
     {
         Arithmetic,
         Logical,
         Bitwise
     }OperationTypes;
-
-    UnaryOperationToken(const OperationTypes opType);
-
-    virtual const ValueToken DoOperation(ValueToken const &value) const = 0;
-    OperationTypes getOpType() const;
-private:
-    const OperationTypes opType;
-};
-
-class UnaryArithmeticOperationToken : public UnaryOperationToken
-{
-public:
     typedef enum _Operation
     {
         Increment,
         Decrement,
         Positive,
-        Negative
+        Negative,
+        LogicalNegation,
+        OnesComplement,
+        Addition,
+        Subtraction,
+        Multiplication,
+        Division,
+        Modulo,
+        LogicalAND,
+        LogicalOR,
+        LogicalXOR,
+        Greater,
+        Lower,
+        Equal,
+        EqualOrGreater,
+        EqualOrLower,
+        Unequal,
+        AND,
+        OR,
+        XOR,
+        LeftShift,
+        RightShift,
+        Conditional
     }Operation;
-    UnaryArithmeticOperationToken(const Operation op);
+
+    OperationToken();
+    virtual ArityTypes getArityType() const = 0;
+    virtual OperationTypes getOpType() const = 0;
+    virtual Operation getOp() const = 0;
+
+    virtual QString printValue() const = 0;
+    virtual QString printToken() const = 0;
+};
+
+class UnaryOperationToken : public OperationToken
+{
+public:
+    UnaryOperationToken();
+    virtual ArityTypes getArityType() const;
+    virtual OperationTypes getOpType() const = 0;
+    virtual Operation getOp() const = 0;
 
     virtual const ValueToken DoOperation(ValueToken const &value) const = 0;
-    Operation getOp() const;
-private:
-    const Operation op;
+
+    virtual QString printValue() const = 0;
+    virtual QString printToken() const = 0;
+};
+
+class UnaryArithmeticOperationToken : public UnaryOperationToken
+{
+public:
+    UnaryArithmeticOperationToken();
+    virtual OperationTypes getOpType() const;
+    virtual Operation getOp() const = 0;
+
+    virtual const ValueToken DoOperation(ValueToken const &value) const = 0;
+
+    virtual QString printValue() const = 0;
+    virtual QString printToken() const = 0;
 };
 
 class IncrementToken : public UnaryArithmeticOperationToken
 {
 public:
     IncrementToken();
+    virtual Operation getOp() const;
 
     /**
      * \brief Increments Integer Values by one and returns the result as a new ValueToken
@@ -135,12 +172,16 @@ public:
      * \warning Only use this operation on Integer ValueTokens
      */
     virtual const ValueToken DoOperation(ValueToken const &value) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class DecrementToken : public UnaryArithmeticOperationToken
 {
 public:
     DecrementToken();
+    virtual Operation getOp() const;
 
     /**
      * \brief Decrements Integer Values by one and returns the result as a new ValueToken
@@ -154,12 +195,16 @@ public:
      * \warning Only use this operation on Integer ValueTokens
      */
     virtual const ValueToken DoOperation(ValueToken const &value) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class PositiveToken : public UnaryArithmeticOperationToken
 {
 public:
     PositiveToken();
+    virtual Operation getOp() const;
 
     /**
      * \brief Returns a new ValueToken with the value of the passed ValueToken
@@ -173,12 +218,16 @@ public:
      * \warning Only use this operation on Integer or Double ValueTokens
      */
     virtual const ValueToken DoOperation(ValueToken const &value) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class NegativeToken : public UnaryArithmeticOperationToken
 {
 public:
     NegativeToken();
+    virtual Operation getOp() const;
 
     /**
      * \brief Returns a new ValueToken with the value of the passed ValueToken
@@ -192,29 +241,29 @@ public:
      * \warning Only use this operation on Integer or Double ValueTokens
      */
     virtual const ValueToken DoOperation(ValueToken const &value) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class UnaryLogicalOperationToken : public UnaryOperationToken
 {
 public:
-    typedef enum _Operation
-    {
-        LogicalNegation
-    }Operation;
+    UnaryLogicalOperationToken();
+    virtual OperationTypes getOpType() const;
+    virtual Operation getOp() const = 0;
 
-    UnaryLogicalOperationToken(const Operation op);
+    virtual const ValueToken DoOperation(ValueToken const &value) const = 0;
 
-    virtual const ValueToken DoOperation(ValueToken value) const = 0;
-    Operation getOp() const;
-
-private:
-    const Operation op;
+    virtual QString printValue() const = 0;
+    virtual QString printToken() const = 0;
 };
 
 class LogicalNegationToken : public UnaryLogicalOperationToken
 {
 public:
     LogicalNegationToken();
+    virtual Operation getOp() const;
 
     /**
      * \brief Returns a new ValueToken with the logically negated value of the passed ValueToken
@@ -229,29 +278,29 @@ public:
      * \note If the passed ValueToken equals 0 (or 0.0) it is treated as Bool false, otherwise Bool true
      */
     virtual const ValueToken DoOperation(ValueToken const &value) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class UnaryBitwiseOperationToken : public UnaryOperationToken
 {
 public:
-    typedef enum _Operation
-    {
-        OnesComplement
-    }Operation;
-    UnaryBitwiseOperationToken(const Operation op);
+    UnaryBitwiseOperationToken();
+    virtual OperationTypes getOpType() const;
+    virtual Operation getOp() const = 0;
 
     virtual const ValueToken DoOperation(ValueToken const &value) const = 0;
 
-    Operation getOp() const;
-
-private:
-    const Operation op;
+    virtual QString printValue() const = 0;
+    virtual QString printToken() const = 0;
 };
 
 class OnesComplementToken : public UnaryBitwiseOperationToken
 {
 public:
     OnesComplementToken();
+    virtual Operation getOp() const;
 
     /**
      * \brief Returns a new ValueToken with the bitwise one's complement of the passed ValueToken
@@ -265,117 +314,116 @@ public:
      * \warning Only use this operation on Integer ValueTokens
      */
     virtual const ValueToken DoOperation(ValueToken const &value) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class BinaryOperationToken : public OperationToken
 {
 public:
-    typedef enum _OperationTypes
-    {
-        Arithmetic,
-        Logical,
-        Bitwise
-    }OperationTypes;
-
-    BinaryOperationToken(const OperationTypes opType);
+    BinaryOperationToken();
+    virtual ArityTypes getArityType() const;
+    virtual OperationTypes getOpType() const = 0;
+    virtual Operation getOp() const = 0;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const = 0;
-    OperationTypes getOpType() const;
 
-private:
-    const OperationTypes opType;
+    virtual QString printValue() const = 0;
+    virtual QString printToken() const = 0;
 };
 
 class BinaryArithmeticOperationToken : public BinaryOperationToken
 {
 public:
-    typedef enum _Operation
-    {
-        Addition,
-        Subtraction,
-        Multiplication,
-        Division,
-        Modulo
-    }Operation;
-
-    BinaryArithmeticOperationToken(const Operation op);
+    BinaryArithmeticOperationToken();
+    virtual OperationTypes getOpType() const;
+    virtual Operation getOp() const = 0;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const = 0;
-    Operation getOp() const;
 
-private:
-    const Operation op;
+    virtual QString printValue() const = 0;
+    virtual QString printToken() const = 0;
 };
 
 class AdditionToken : public BinaryArithmeticOperationToken
 {
 public:
     AdditionToken();
+    virtual Operation getOp() const;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class SubtractionToken : public BinaryArithmeticOperationToken
 {
 public:
     SubtractionToken();
+    virtual Operation getOp() const;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class MultiplicationToken : public BinaryArithmeticOperationToken
 {
 public:
     MultiplicationToken();
+    virtual Operation getOp() const;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class DivisionToken : public BinaryArithmeticOperationToken
 {
 public:
     DivisionToken();
+    virtual Operation getOp() const;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class ModuloToken : public BinaryArithmeticOperationToken
 {
 public:
     ModuloToken();
+    virtual Operation getOp() const;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class BinaryLogicalOperationToken : public BinaryOperationToken
 {
 public:
-    typedef enum _Operation
-    {
-        AND,
-        OR,
-        XOR,
-        Greater,
-        Lower,
-        Equal,
-        EqualOrGreater,
-        EqualOrLower,
-        Unequal
-    }Operation;
-
-    BinaryLogicalOperationToken(const Operation op);
+    BinaryLogicalOperationToken();
+    virtual OperationTypes getOpType() const;
+    virtual Operation getOp() const = 0;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const = 0;
-    Operation getOpType() const;
 
-private:
-    const Operation op;
+    virtual QString printValue() const = 0;
+    virtual QString printToken() const = 0;
 };
 
 class LogicalANDToken : public BinaryLogicalOperationToken
 {
 public:
     LogicalANDToken();
+    virtual Operation getOp() const;
 
     /**
      * \brief Returns a new ValueToken of type Bool with the result of the AND operation
@@ -390,12 +438,16 @@ public:
      * \note Integer and Double ValueTokens are converted to bool before the operation takes place (0 or 0.0 is false whereas everything else  is true)
      */
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class LogicalORToken : public BinaryLogicalOperationToken
 {
 public:
     LogicalORToken();
+    virtual Operation getOp() const;
 
     /**
      * \brief Returns a new ValueToken of type Bool with the result of the OR operation
@@ -410,147 +462,195 @@ public:
      * \note Integer and Double ValueTokens are converted to bool before the operation takes place (0 or 0.0 is false whereas everything else  is true)
      */
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class LogicalXORToken : public BinaryLogicalOperationToken
 {
 public:
     LogicalXORToken();
+    virtual Operation getOp() const;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class GreaterToken : public BinaryLogicalOperationToken
 {
 public:
     GreaterToken();
+    virtual Operation getOp() const;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class LowerToken : public BinaryLogicalOperationToken
 {
 public:
     LowerToken();
+    virtual Operation getOp() const;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class EqualToken : public BinaryLogicalOperationToken
 {
 public:
     EqualToken();
+    virtual Operation getOp() const;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class EqualOrGreaterToken : public BinaryLogicalOperationToken
 {
 public:
     EqualOrGreaterToken();
+    virtual Operation getOp() const;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class EqualOrLowerToken : public BinaryLogicalOperationToken
 {
 public:
     EqualOrLowerToken();
+    virtual Operation getOp() const;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
-class UneqalToken : public BinaryLogicalOperationToken
+class UnequalToken : public BinaryLogicalOperationToken
 {
 public:
-    UneqalToken();
+    UnequalToken();
+    virtual Operation getOp() const;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class BinaryBitwiseOperationToken : public BinaryOperationToken
 {
 public:
-    typedef enum _Operation
-    {
-        AND,
-        OR,
-        XOR,
-        LeftShift,
-        RightShift
-    }Operation;
 
-    BinaryBitwiseOperationToken(const Operation op);
+    BinaryBitwiseOperationToken();
+    virtual OperationTypes getOpType() const;
+    virtual Operation getOp() const = 0;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const = 0;
-    Operation getOp() const;
 
-private:
-    const Operation op;
+    virtual QString printValue() const = 0;
+    virtual QString printToken() const = 0;
 };
 
 class ANDToken : public BinaryBitwiseOperationToken
 {
 public:
     ANDToken();
+    virtual Operation getOp() const;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class ORToken : public BinaryBitwiseOperationToken
 {
 public:
     ORToken();
+    virtual Operation getOp() const;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class XORToken : public BinaryBitwiseOperationToken
 {
 public:
     XORToken();
+    virtual Operation getOp() const;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class LeftShiftToken : public BinaryBitwiseOperationToken
 {
 public:
     LeftShiftToken();
+    virtual Operation getOp() const;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class RightShiftToken : public BinaryBitwiseOperationToken
 {
 public:
     RightShiftToken();
+    virtual Operation getOp() const;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class TernaryOperationToken : public OperationToken
 {
 public:
-    typedef enum _OperationTypes
-    {
-        Conditional
-    }OperationTypes;
 
-    TernaryOperationToken(const OperationTypes opType);
+    TernaryOperationToken();
+    virtual OperationTypes getOpType() const = 0;
+    virtual Operation getOp() const = 0;
 
     virtual const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2, ValueToken const &value3) const = 0;
-    OperationTypes getOpType() const;
+    virtual ArityTypes getArityType() const;
 
-private:
-    const OperationTypes opType;
+    virtual QString printValue() const = 0;
+    virtual QString printToken() const = 0;
 };
 
 class ConditionalToken : public TernaryOperationToken
 {
+public:
     ConditionalToken();
+    virtual OperationTypes getOpType() const;
+    virtual Operation getOp() const;
 
     const ValueToken DoOperation(ValueToken const &value1, ValueToken const &value2, ValueToken const &value3) const;
+
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 #endif // SIMPLETOKEN_H
