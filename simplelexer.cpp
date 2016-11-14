@@ -4,14 +4,16 @@
 
 #include <QDebug>
 
-SimpleLexer::SimpleLexer()
+SimpleLexer::SimpleLexer(const QString &InputString) :
+    regEx(QString("((\".*\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|([<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|[\\+\\-!~\\*\\/%]))")),
+    InputString(InputString),
+    LexerString(InputString)
 {
-
 }
 
-QVector<SimpleToken*> SimpleLexer::parseString(QString stringToParse)
+SimpleLexer::TokenList SimpleLexer::parseString()
 {
-    QVector<SimpleToken*> Tokens;
+    TokenList Tokens;
     /*
      * Capture Groups:
      * 1 - Whole Result
@@ -233,10 +235,190 @@ QVector<SimpleToken*> SimpleLexer::parseString(QString stringToParse)
     return Tokens;
 }
 
-/**
- * \brief Removes whitespace characters from the string which are not contained in a SubString
- * \param string
- */
+SimpleToken SimpleLexer::getNextToken()
+{
+    SimpleToken token = EOFNode();
+    QRegularExpressionMatch regExMatch = regEx.match(LexerString);
+
+    if(regExMatch.hasMatch())
+    {
+        if(!regExMatch.captured(2).isNull())
+        {
+            //IsString
+            token = StringToken(regExMatch.captured(2));
+        }
+        else if(!regExMatch.captured(3).isNull())
+        {
+            //IsValue
+            if(!regExMatch.captured(4).isNull()) //Number
+            {
+                //IsNumber
+                if(!regExMatch.captured(5).isNull())
+                {
+                    //IsDouble
+                    token = DoubleToken(regExMatch.captured(3).toDouble());
+                }
+                else
+                {
+                    //IsInteger
+                    token = IntegerToken(regExMatch.captured(3).toInt());
+                }
+            }
+            else if(!regExMatch.captured(6).isNull())
+            {
+                //Boolean
+                token = BoolToken(regExMatch.captured(3).compare(QString("true")) ? false : true);
+            }
+        }
+        else if(!regExMatch.captured(7).isNull())
+        {
+            //IsData
+            int dataIndex = regExMatch.captured(8).toInt(); //DataIndex
+            token = DataToken(dataIndex);
+        }
+        else if(!regExMatch.captured(9).isNull())
+        {
+            //IsOperator
+            QString operatorString = regExMatch.captured(9);
+            //Currently Increment and Decrement unsupported... Does it even make sense without variables??
+//            if(!operatorString.compare(QString("++")))
+//            {
+//                token = OperationToken(SimpleToken::Increment);
+//            }
+//            else if(!operatorString.compare(QString("--")))
+//            {
+//                token = OperationToken(SimpleToken::Decrement);
+//            }
+//            else
+            if(!operatorString.compare(QString("+")))
+            {
+                //Plus
+                token = OperationToken(SimpleToken::Plus);
+            }
+            else if(!operatorString.compare(QString("-")))
+            {
+                //Minus
+                token = OperationToken(SimpleToken::Minus);
+            }
+            else if(!operatorString.compare(QString("!")))
+            {
+                //LogicalNegation
+                token = OperationToken(SimpleToken::LogicalNegation);
+            }
+            else if(!operatorString.compare(QString("~")))
+            {
+                //OnesComplement
+                token = OperationToken(SimpleToken::OnesComplement);
+            }
+            else if(!operatorString.compare(QString("*")))
+            {
+                //Multiplication
+                token = OperationToken(SimpleToken::Multiplication);
+            }
+            else if(!operatorString.compare(QString("/")))
+            {
+                //Division
+                token = OperationToken(SimpleToken::Division);
+            }
+            else if(!operatorString.compare(QString("%")))
+            {
+                //Modulo
+                token = OperationToken(SimpleToken::Modulo);
+            }
+            else if(!operatorString.compare(QString("&&")))
+            {
+                //LogicalAND
+                token = OperationToken(SimpleToken::LogicalAND);
+            }
+            else if(!operatorString.compare(QString("||")))
+            {
+                //LogicalOR
+                token = OperationToken(SimpleToken::LogicalOR);
+            }
+            else if(!operatorString.compare(QString("^^")))
+            {
+                //LogicalXOR
+                token = OperationToken(SimpleToken::LogicalXOR);
+            }
+            else if(!operatorString.compare(QString(">")))
+            {
+                //Greater
+                token = OperationToken(SimpleToken::Greater);
+            }
+            else if(!operatorString.compare(QString("<")))
+            {
+                //Lower
+                token = OperationToken(SimpleToken::Lower);
+            }
+            else if(!operatorString.compare(QString("==")))
+            {
+                //Equal
+                token = OperationToken(SimpleToken::Equal);
+            }
+            else if(!operatorString.compare(QString(">=")))
+            {
+                //EqualOrGreater
+                token = OperationToken(SimpleToken::EqualOrGreater);
+            }
+            else if(!operatorString.compare(QString("<=")))
+            {
+                //EqualOrLower
+                token = OperationToken(SimpleToken::EqualOrLower);
+            }
+            else if(!operatorString.compare(QString("!=")))
+            {
+                //Unequal
+                token = OperationToken(SimpleToken::Unequal);
+            }
+            else if(!operatorString.compare(QString("&")))
+            {
+                //AND
+                token = OperationToken(SimpleToken::BitwiseAND);
+            }
+            else if(!operatorString.compare(QString("|")))
+            {
+                //OR
+                token = OperationToken(SimpleToken::BitwiseOR);
+            }
+            else if(!operatorString.compare(QString("^")))
+            {
+                //XOR
+                token = OperationToken(SimpleToken::BitwiseXOR);
+            }
+            else if(!operatorString.compare(QString("<<")))
+            {
+                //LeftShift
+                token = OperationToken(SimpleToken::LeftShift);
+            }
+            else if(!operatorString.compare(QString(">>")))
+            {
+                //RightShift
+                token = OperationToken(SimpleToken::RightShift);
+            }
+            else if(!operatorString.compare(QString("?:")))
+            {
+                //Conditional
+                token = OperationToken(SimpleToken::Conditional);
+            }
+//            else if(!operatorString.compare(QString("(")))
+//            {
+//                //Opening Paranthesis
+//                token = OperationToken(OperationToken::LParan);
+//            }
+//            else if(!operatorString.compare(QString(")")))
+//            {
+//                //Closing Paranthesis
+//                token = OperationToken(OperationToken::RParan);
+//            }
+        }
+        LexerString.replace(regExMatch.capturedStart(),regExMatch.capturedLength(),QString(""));
+        regExMatch = regEx.match(LexerString);
+    }
+
+    qDebug() << __PRETTY_FUNCTION__ << ": " << token.printToken();
+    return token;
+}
+
 void SimpleLexer::RemoveWhitespacesFromString(QString &string)
 {
     QRegularExpression regEx(
