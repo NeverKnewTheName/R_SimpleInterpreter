@@ -12,6 +12,11 @@ SimpleToken::SimpleToken(const SimpleToken::TokenType type) :
 {
 }
 
+SimpleToken::~SimpleToken()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
 SimpleToken::TokenType SimpleToken::getTokenType() const
 {
     return type;
@@ -21,6 +26,11 @@ IntegerToken::IntegerToken(int value) :
     SimpleToken(SimpleToken::Integer),
     value(value)
 {
+}
+
+IntegerToken::~IntegerToken()
+{
+    qDebug() << __PRETTY_FUNCTION__;
 }
 
 int IntegerToken::getValue() const
@@ -44,6 +54,11 @@ DoubleToken::DoubleToken(double value) :
 {
 }
 
+DoubleToken::~DoubleToken()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
 double DoubleToken::getValue() const
 {
     return value;
@@ -63,6 +78,11 @@ BoolToken::BoolToken(bool value) :
     SimpleToken(SimpleToken::Bool),
     value(value)
 {
+}
+
+BoolToken::~BoolToken()
+{
+    qDebug() << __PRETTY_FUNCTION__;
 }
 
 bool BoolToken::getValue() const
@@ -86,6 +106,11 @@ StringToken::StringToken(QString &value) :
 {
 }
 
+StringToken::~StringToken()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
 const QString &StringToken::getValue() const
 {
     return value;
@@ -105,6 +130,11 @@ DataToken::DataToken(const unsigned int dataIndex) :
     SimpleToken(SimpleToken::Data),
     dataIndex(dataIndex)
 {
+}
+
+DataToken::~DataToken()
+{
+    qDebug() << __PRETTY_FUNCTION__;
 }
 
 QString DataToken::printValue() const
@@ -128,6 +158,11 @@ OperationToken::OperationToken(const SimpleToken::TokenType op) :
 
 }
 
+OperationToken::~OperationToken()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
 QString OperationToken::printValue() const
 {
     return QString(type);
@@ -142,6 +177,11 @@ EOFToken::EOFToken() :
     SimpleToken(SimpleToken::EOFToken)
 {
 
+}
+
+EOFToken::~EOFToken()
+{
+    qDebug() << __PRETTY_FUNCTION__;
 }
 
 QString EOFToken::printValue() const
@@ -160,6 +200,11 @@ LParanToken::LParanToken() :
 
 }
 
+LParanToken::~LParanToken()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
 QString LParanToken::printValue() const
 {
     return QString("(");
@@ -174,6 +219,11 @@ RParanToken::RParanToken() :
     OperationToken(SimpleToken::RParan)
 {
 
+}
+
+RParanToken::~RParanToken()
+{
+    qDebug() << __PRETTY_FUNCTION__;
 }
 
 QString RParanToken::printValue() const

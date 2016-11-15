@@ -110,25 +110,25 @@ public:
 
 private:
     void eat(SimpleToken::TokenType tokenType);
-    SimpleNode * const Expression();
-    SimpleNode * const ConditionalExpression();
-    SimpleNode * const LogicalORExpression();
-    SimpleNode * const LogicalXORExpression();
-    SimpleNode * const LogicalANDExpression();
-    SimpleNode * const BitwiseORExpression();
-    SimpleNode * const BitwiseXORExpression();
-    SimpleNode * const BitwiseANDExpression();
-    SimpleNode * const EqualityExpression();
-    SimpleNode * const RelationalExpression();
-    SimpleNode * const ShiftExpression();
-    SimpleNode * const AdditiveExpression();
-    SimpleNode * const MultiplicativeExpression();
-    SimpleNode * const UnaryExpression();
-    SimpleNode * const PostFixExpression();
-    SimpleNode * const PrimaryExpression();
+    SimpleNode *Expression();
+    SimpleNode *ConditionalExpression();
+    SimpleNode *LogicalORExpression();
+    SimpleNode *LogicalXORExpression();
+    SimpleNode *LogicalANDExpression();
+    SimpleNode *BitwiseORExpression();
+    SimpleNode *BitwiseXORExpression();
+    SimpleNode *BitwiseANDExpression();
+    SimpleNode *EqualityExpression();
+    SimpleNode *RelationalExpression();
+    SimpleNode *ShiftExpression();
+    SimpleNode *AdditiveExpression();
+    SimpleNode *MultiplicativeExpression();
+    SimpleNode *UnaryExpression();
+    SimpleNode *PostFixExpression();
+    SimpleNode *PrimaryExpression();
 
     SimpleLexer *lexer;
-    SimpleToken *CurrentToken;
+    SharedSimpleTokenPtr CurrentToken;
     SymbolTable SymblTbl;
 };
 

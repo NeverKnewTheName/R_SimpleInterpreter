@@ -2,10 +2,11 @@
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
 
+#include <QErrorMessage>
 #include <QDebug>
 
 SimpleLexer::SimpleLexer(const QString &InputString) :
-    regEx(QString("((\".*\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\)|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|[\\+\\-!~\\*\\/%]))")),
+    regEx(QString("((?:\"(.*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\)|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|[\\+\\-!~\\*\\/%]))")),
     InputString(InputString),
     LexerString(InputString),
     CurrentToken(new EOFToken())
@@ -236,7 +237,7 @@ SimpleLexer::SimpleLexer(const QString &InputString) :
 //    return Tokens;
 //}
 
-SimpleToken *SimpleLexer::getNextToken()
+SharedSimpleTokenPtr SimpleLexer::getNextToken()
 {
     QRegularExpressionMatch regExMatch = regEx.match(LexerString);
 
@@ -246,7 +247,7 @@ SimpleToken *SimpleLexer::getNextToken()
         {
             //IsString
             QString string = regExMatch.captured(2);
-            CurrentToken = new StringToken(string);
+            CurrentToken = SharedSimpleTokenPtr(new StringToken(string));
         }
         else if(!regExMatch.captured(3).isNull())
         {
@@ -257,25 +258,25 @@ SimpleToken *SimpleLexer::getNextToken()
                 if(!regExMatch.captured(5).isNull())
                 {
                     //IsDouble
-                    CurrentToken = new DoubleToken(regExMatch.captured(3).toDouble());
+                    CurrentToken = SharedSimpleTokenPtr(new DoubleToken(regExMatch.captured(3).toDouble()));
                 }
                 else
                 {
                     //IsInteger
-                    CurrentToken = new IntegerToken(regExMatch.captured(3).toInt());
+                    CurrentToken = SharedSimpleTokenPtr(new IntegerToken(regExMatch.captured(3).toInt()));
                 }
             }
             else if(!regExMatch.captured(6).isNull())
             {
                 //Boolean
-                CurrentToken = new BoolToken(regExMatch.captured(3).compare(QString("true")) ? false : true);
+                CurrentToken = SharedSimpleTokenPtr(new BoolToken(regExMatch.captured(3).compare(QString("true")) ? false : true));
             }
         }
         else if(!regExMatch.captured(7).isNull())
         {
             //IsData
             int dataIndex = regExMatch.captured(8).toInt(); //DataIndex
-            CurrentToken = new DataToken(dataIndex);
+            CurrentToken = SharedSimpleTokenPtr(new DataToken(dataIndex));
         }
         else if(!regExMatch.captured(9).isNull())
         {
@@ -284,143 +285,143 @@ SimpleToken *SimpleLexer::getNextToken()
             if(!operatorString.compare(QString("(")))
             {
                 //Plus
-                CurrentToken = new LParanToken();
+                CurrentToken = SharedSimpleTokenPtr(new LParanToken());
             }
             else if(!operatorString.compare(QString(")")))
             {
                 //Minus
-                CurrentToken = new RParanToken();
+                CurrentToken = SharedSimpleTokenPtr(new RParanToken());
             }
             else
             //Currently Increment and Decrement unsupported... Does it even make sense without variables??
 //            if(!operatorString.compare(QString("++")))
 //            {
-//                CurrentToken = OperationToken(SimpleToken::Increment);
+//                CurrentToken = SharedSimpleTokenPtr(OperationToken(SimpleToken::Increment));
 //            }
 //            else if(!operatorString.compare(QString("--")))
 //            {
-//                CurrentToken = OperationToken(SimpleToken::Decrement);
+//                CurrentToken = SharedSimpleTokenPtr(OperationToken(SimpleToken::Decrement));
 //            }
 //            else
             if(!operatorString.compare(QString("+")))
             {
                 //Plus
-                CurrentToken = new OperationToken(SimpleToken::Plus);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Plus));
             }
             else if(!operatorString.compare(QString("-")))
             {
                 //Minus
-                CurrentToken = new OperationToken(SimpleToken::Minus);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Minus));
             }
             else if(!operatorString.compare(QString("!")))
             {
                 //LogicalNegation
-                CurrentToken = new OperationToken(SimpleToken::LogicalNegation);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::LogicalNegation));
             }
             else if(!operatorString.compare(QString("~")))
             {
                 //OnesComplement
-                CurrentToken = new OperationToken(SimpleToken::OnesComplement);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::OnesComplement));
             }
             else if(!operatorString.compare(QString("*")))
             {
                 //Multiplication
-                CurrentToken = new OperationToken(SimpleToken::Multiplication);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Multiplication));
             }
             else if(!operatorString.compare(QString("/")))
             {
                 //Division
-                CurrentToken = new OperationToken(SimpleToken::Division);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Division));
             }
             else if(!operatorString.compare(QString("%")))
             {
                 //Modulo
-                CurrentToken = new OperationToken(SimpleToken::Modulo);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Modulo));
             }
             else if(!operatorString.compare(QString("&&")))
             {
                 //LogicalAND
-                CurrentToken = new OperationToken(SimpleToken::LogicalAND);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::LogicalAND));
             }
             else if(!operatorString.compare(QString("||")))
             {
                 //LogicalOR
-                CurrentToken = new OperationToken(SimpleToken::LogicalOR);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::LogicalOR));
             }
             else if(!operatorString.compare(QString("^^")))
             {
                 //LogicalXOR
-                CurrentToken = new OperationToken(SimpleToken::LogicalXOR);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::LogicalXOR));
             }
             else if(!operatorString.compare(QString(">")))
             {
                 //Greater
-                CurrentToken = new OperationToken(SimpleToken::Greater);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Greater));
             }
             else if(!operatorString.compare(QString("<")))
             {
                 //Lower
-                CurrentToken = new OperationToken(SimpleToken::Lower);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Lower));
             }
             else if(!operatorString.compare(QString("==")))
             {
                 //Equal
-                CurrentToken = new OperationToken(SimpleToken::Equal);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Equal));
             }
             else if(!operatorString.compare(QString(">=")))
             {
                 //EqualOrGreater
-                CurrentToken = new OperationToken(SimpleToken::EqualOrGreater);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::EqualOrGreater));
             }
             else if(!operatorString.compare(QString("<=")))
             {
                 //EqualOrLower
-                CurrentToken = new OperationToken(SimpleToken::EqualOrLower);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::EqualOrLower));
             }
             else if(!operatorString.compare(QString("!=")))
             {
                 //Unequal
-                CurrentToken = new OperationToken(SimpleToken::Unequal);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Unequal));
             }
             else if(!operatorString.compare(QString("&")))
             {
                 //AND
-                CurrentToken = new OperationToken(SimpleToken::BitwiseAND);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::BitwiseAND));
             }
             else if(!operatorString.compare(QString("|")))
             {
                 //OR
-                CurrentToken = new OperationToken(SimpleToken::BitwiseOR);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::BitwiseOR));
             }
             else if(!operatorString.compare(QString("^")))
             {
                 //XOR
-                CurrentToken = new OperationToken(SimpleToken::BitwiseXOR);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::BitwiseXOR));
             }
             else if(!operatorString.compare(QString("<<")))
             {
                 //LeftShift
-                CurrentToken = new OperationToken(SimpleToken::LeftShift);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::LeftShift));
             }
             else if(!operatorString.compare(QString(">>")))
             {
                 //RightShift
-                CurrentToken = new OperationToken(SimpleToken::RightShift);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::RightShift));
             }
             else if(!operatorString.compare(QString("?:")))
             {
                 //Conditional
-                CurrentToken = new OperationToken(SimpleToken::Conditional);
+                CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Conditional));
             }
 //            else if(!operatorString.compare(QString("(")))
 //            {
 //                //Opening Paranthesis
-//                CurrentToken = OperationToken(OperationToken::LParan);
+//                CurrentToken = SharedSimpleTokenPtr(OperationToken(OperationToken::LParan));
 //            }
 //            else if(!operatorString.compare(QString(")")))
 //            {
 //                //Closing Paranthesis
-//                CurrentToken = OperationToken(OperationToken::RParan);
+//                CurrentToken = SharedSimpleTokenPtr(OperationToken(OperationToken::RParan));
 //            }
         }
         LexerString.replace(regExMatch.capturedStart(),regExMatch.capturedLength(),QString(""));
@@ -428,11 +429,27 @@ SimpleToken *SimpleLexer::getNextToken()
     }
     else
     {
-        CurrentToken = new EOFToken();
+        CurrentToken = SharedSimpleTokenPtr(new EOFToken());
     }
 
     qDebug() << __PRETTY_FUNCTION__ << " new Token: " << CurrentToken->printToken();
     return CurrentToken;
+}
+
+void SimpleLexer::LexErrorAtToken(SharedSimpleTokenPtr ErrorAtToken, int type)
+{
+    QErrorMessage *error = new QErrorMessage();
+    QString ErrorType = QString("Undefined");
+    if(type == 0)
+    {
+        ErrorType = QString("SyntacticError");
+    }
+    else if (type == 1)
+    {
+        ErrorType = QString("TypeMismatch");
+    }
+
+    error->showMessage(QString("ErrorParsing Token: %1 -> %2").arg(ErrorAtToken->printToken()).arg(ErrorType));
 }
 
 void SimpleLexer::RemoveWhitespacesFromString(QString &string)

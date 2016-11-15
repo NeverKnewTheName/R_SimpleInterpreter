@@ -11,6 +11,10 @@ SimpleParser::SimpleParser(SimpleLexer *lexer) :
 SimpleNode *SimpleParser::parse()
 {
     SimpleNode *node = Expression();
+    if(CurrentToken->getTokenType() != SimpleToken::EOFToken)
+        qDebug() << __PRETTY_FUNCTION__ << ": NOT EOF";
+    else
+        qDebug() << __PRETTY_FUNCTION__ << ": EOF";
     return node;
 }
 
@@ -24,7 +28,7 @@ void SimpleParser::eat(SimpleToken::TokenType tokenType)
     if(CurrentToken->getTokenType() != tokenType)
     {
         qDebug() << __PRETTY_FUNCTION__ << ": ERROR";
-//        CurrentToken = new EOFToken();
+        lexer->LexErrorAtToken(CurrentToken,0);
     }
     else
     {
@@ -33,18 +37,19 @@ void SimpleParser::eat(SimpleToken::TokenType tokenType)
     }
 }
 
-SimpleNode * const SimpleParser::Expression()
+SimpleNode *SimpleParser::Expression()
 {
     SimpleNode *node = ConditionalExpression();
+    SharedSimpleTokenPtr token = CurrentToken;
 
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
     return node;
 }
 
-SimpleNode * const SimpleParser::ConditionalExpression()
+SimpleNode *SimpleParser::ConditionalExpression()
 {
-    SimpleToken *token = CurrentToken;
     SimpleNode *node = LogicalORExpression();
+    SharedSimpleTokenPtr token = CurrentToken;
     //    bool ContinueLoop = true;
 
     //    do
@@ -64,19 +69,23 @@ SimpleNode * const SimpleParser::ConditionalExpression()
     return node;
 }
 
-SimpleNode * const SimpleParser::LogicalORExpression()
+SimpleNode *SimpleParser::LogicalORExpression()
 {
-    SimpleToken *token = CurrentToken;
     SimpleNode *node = LogicalXORExpression();
     bool ContinueLoop = true;
 
     do
     {
+        SharedSimpleTokenPtr token = CurrentToken;
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::LogicalOR:
             eat(SimpleToken::LogicalOR);
             node = new LogicalORNode(node, LogicalXORExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         default:
             ContinueLoop = false;
@@ -87,19 +96,23 @@ SimpleNode * const SimpleParser::LogicalORExpression()
     return node;
 }
 
-SimpleNode * const SimpleParser::LogicalXORExpression()
+SimpleNode *SimpleParser::LogicalXORExpression()
 {
-    SimpleToken *token = CurrentToken;
     SimpleNode *node = LogicalANDExpression();
     bool ContinueLoop = true;
 
     do
     {
+        SharedSimpleTokenPtr token = CurrentToken;
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::LogicalXOR:
             eat(SimpleToken::LogicalXOR);
             node = new LogicalXORNode(node, LogicalANDExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         default:
             ContinueLoop = false;
@@ -110,19 +123,23 @@ SimpleNode * const SimpleParser::LogicalXORExpression()
     return node;
 }
 
-SimpleNode * const SimpleParser::LogicalANDExpression()
+SimpleNode *SimpleParser::LogicalANDExpression()
 {
-    SimpleToken *token = CurrentToken;
     SimpleNode *node = BitwiseORExpression();
     bool ContinueLoop = true;
 
     do
     {
+        SharedSimpleTokenPtr token = CurrentToken;
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::LogicalAND:
             eat(SimpleToken::LogicalAND);
             node = new LogicalANDNode(node, BitwiseORExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         default:
             ContinueLoop = false;
@@ -133,19 +150,23 @@ SimpleNode * const SimpleParser::LogicalANDExpression()
     return node;
 }
 
-SimpleNode * const SimpleParser::BitwiseORExpression()
+SimpleNode *SimpleParser::BitwiseORExpression()
 {
-    SimpleToken *token = CurrentToken;
     SimpleNode *node = BitwiseXORExpression();
     bool ContinueLoop = true;
 
     do
     {
+        SharedSimpleTokenPtr token = CurrentToken;
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::BitwiseOR:
             eat(SimpleToken::BitwiseOR);
             node = new ORNode(node, BitwiseXORExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         default:
             ContinueLoop = false;
@@ -156,19 +177,23 @@ SimpleNode * const SimpleParser::BitwiseORExpression()
     return node;
 }
 
-SimpleNode * const SimpleParser::BitwiseXORExpression()
+SimpleNode *SimpleParser::BitwiseXORExpression()
 {
-    SimpleToken *token = CurrentToken;
     SimpleNode *node = BitwiseANDExpression();
     bool ContinueLoop = true;
 
     do
     {
+        SharedSimpleTokenPtr token = CurrentToken;
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::BitwiseXOR:
             eat(SimpleToken::BitwiseXOR);
             node = new XORNode(node, BitwiseANDExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         default:
             ContinueLoop = false;
@@ -179,19 +204,23 @@ SimpleNode * const SimpleParser::BitwiseXORExpression()
     return node;
 }
 
-SimpleNode * const SimpleParser::BitwiseANDExpression()
+SimpleNode *SimpleParser::BitwiseANDExpression()
 {
-    SimpleToken *token = CurrentToken;
     SimpleNode *node = EqualityExpression();
     bool ContinueLoop = true;
 
     do
     {
+        SharedSimpleTokenPtr token = CurrentToken;
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::BitwiseAND:
             eat(SimpleToken::BitwiseAND);
             node = new ANDNode(node, EqualityExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         default:
             ContinueLoop = false;
@@ -202,23 +231,31 @@ SimpleNode * const SimpleParser::BitwiseANDExpression()
     return node;
 }
 
-SimpleNode * const SimpleParser::EqualityExpression()
+SimpleNode *SimpleParser::EqualityExpression()
 {
-    SimpleToken *token = CurrentToken;
     SimpleNode *node = RelationalExpression();
     bool ContinueLoop = true;
 
     do
     {
+        SharedSimpleTokenPtr token = CurrentToken;
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::Equal:
             eat(SimpleToken::Equal);
             node = new EqualNode(node, RelationalExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         case SimpleToken::Unequal:
             eat(SimpleToken::Unequal);
             node = new UnequalNode(node, RelationalExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         default:
             ContinueLoop = false;
@@ -229,31 +266,47 @@ SimpleNode * const SimpleParser::EqualityExpression()
     return node;
 }
 
-SimpleNode * const SimpleParser::RelationalExpression()
+SimpleNode *SimpleParser::RelationalExpression()
 {
-    SimpleToken *token = CurrentToken;
     SimpleNode *node = ShiftExpression();
     bool ContinueLoop = true;
 
     do
     {
+        SharedSimpleTokenPtr token = CurrentToken;
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::Greater:
             eat(SimpleToken::Greater);
             node = new GreaterNode(node, ShiftExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         case SimpleToken::Lower:
             eat(SimpleToken::Lower);
             node = new LowerNode(node, ShiftExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         case SimpleToken::EqualOrGreater:
             eat(SimpleToken::EqualOrGreater);
             node = new EqualOrGreaterNode(node, ShiftExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         case SimpleToken::EqualOrLower:
             eat(SimpleToken::EqualOrLower);
             node = new EqualOrLowerNode(node, ShiftExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         default:
             ContinueLoop = false;
@@ -264,23 +317,31 @@ SimpleNode * const SimpleParser::RelationalExpression()
     return node;
 }
 
-SimpleNode * const SimpleParser::ShiftExpression()
+SimpleNode *SimpleParser::ShiftExpression()
 {
-    SimpleToken *token = CurrentToken;
     SimpleNode *node = AdditiveExpression();
     bool ContinueLoop = true;
 
     do
     {
+        SharedSimpleTokenPtr token = CurrentToken;
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::LeftShift:
             eat(SimpleToken::LeftShift);
             node = new LeftShiftNode(node, AdditiveExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         case SimpleToken::RightShift:
             eat(SimpleToken::RightShift);
             node = new RightShiftNode(node, AdditiveExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         default:
             ContinueLoop = false;
@@ -291,23 +352,31 @@ SimpleNode * const SimpleParser::ShiftExpression()
     return node;
 }
 
-SimpleNode * const SimpleParser::AdditiveExpression()
+SimpleNode *SimpleParser::AdditiveExpression()
 {
-    SimpleToken *token = CurrentToken;
     SimpleNode *node = MultiplicativeExpression();
     bool ContinueLoop = true;
 
     do
     {
+        SharedSimpleTokenPtr token = CurrentToken;
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::Plus:
             eat(SimpleToken::Plus);
             node = new AdditionNode(node, MultiplicativeExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         case SimpleToken::Minus:
             eat(SimpleToken::Minus);
             node = new SubtractionNode(node, MultiplicativeExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         default:
             ContinueLoop = false;
@@ -318,27 +387,39 @@ SimpleNode * const SimpleParser::AdditiveExpression()
     return node;
 }
 
-SimpleNode * const SimpleParser::MultiplicativeExpression()
+SimpleNode *SimpleParser::MultiplicativeExpression()
 {
-    SimpleToken *token = CurrentToken;
     SimpleNode *node = UnaryExpression();
     bool ContinueLoop = true;
 
     do
     {
+        SharedSimpleTokenPtr token = CurrentToken;
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::Multiplication:
             eat(SimpleToken::Multiplication);
             node = new MultiplicationNode(node, UnaryExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         case SimpleToken::Division:
             eat(SimpleToken::Division);
             node = new DivisionNode(node, UnaryExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         case SimpleToken::Modulo:
             eat(SimpleToken::Modulo);
             node = new ModuloNode(node, UnaryExpression());
+            if(node->getReturnType() == ValueNode::ErrorType)
+            {
+                lexer->LexErrorAtToken(token,1);
+            }
             break;
         default:
             ContinueLoop = false;
@@ -349,77 +430,88 @@ SimpleNode * const SimpleParser::MultiplicativeExpression()
     return node;
 }
 
-SimpleNode * const SimpleParser::UnaryExpression()
+SimpleNode *SimpleParser::UnaryExpression()
 {
-    SimpleToken *token = CurrentToken;
     SimpleNode *node = NULL;
-    bool ContinueLoop = true;
+    SharedSimpleTokenPtr token = CurrentToken;
 
-    do
+    switch(CurrentToken->getTokenType())
     {
-        switch(CurrentToken->getTokenType())
+    case SimpleToken::Plus:
+        eat(SimpleToken::Plus);
+        node = new PositiveNode(UnaryExpression());
+        if(node->getReturnType() == ValueNode::ErrorType)
         {
-        case SimpleToken::Plus:
-            eat(SimpleToken::Plus);
-            node = new PositiveNode(UnaryExpression());
-            break;
-        case SimpleToken::Minus:
-            eat(SimpleToken::Minus);
-            node = new NegativeNode(UnaryExpression());
-            break;
-        case SimpleToken::LogicalNegation:
-            eat(SimpleToken::LogicalNegation);
-            node = new LogicalNegationNode(UnaryExpression());
-            break;
-        case SimpleToken::OnesComplement:
-            eat(SimpleToken::OnesComplement);
-            node = new OnesComplementNode(UnaryExpression());
-            break;
-        default:
-            if(node == NULL)
-                node = PostFixExpression();
-            ContinueLoop = false;
+            lexer->LexErrorAtToken(token,1);
         }
-    }while(ContinueLoop);
+        break;
+    case SimpleToken::Minus:
+        eat(SimpleToken::Minus);
+        node = new NegativeNode(UnaryExpression());
+        if(node->getReturnType() == ValueNode::ErrorType)
+        {
+            lexer->LexErrorAtToken(token,1);
+        }
+        break;
+    case SimpleToken::LogicalNegation:
+        eat(SimpleToken::LogicalNegation);
+        node = new LogicalNegationNode(UnaryExpression());
+        if(node->getReturnType() == ValueNode::ErrorType)
+        {
+            lexer->LexErrorAtToken(token,1);
+        }
+        break;
+    case SimpleToken::OnesComplement:
+        eat(SimpleToken::OnesComplement);
+        node = new OnesComplementNode(UnaryExpression());
+        if(node->getReturnType() == ValueNode::ErrorType)
+        {
+            lexer->LexErrorAtToken(token,1);
+        }
+        break;
+    default:
+        node = PostFixExpression();
+    }
 
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
     return node;
 }
 
-SimpleNode * const SimpleParser::PostFixExpression()
+SimpleNode *SimpleParser::PostFixExpression()
 {
     SimpleNode *node = PrimaryExpression();
+    SharedSimpleTokenPtr token = CurrentToken;
 
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
     return node;
 }
 
-SimpleNode * const SimpleParser::PrimaryExpression()
+SimpleNode *SimpleParser::PrimaryExpression()
 {
     SimpleNode *node;
-    SimpleToken *token = CurrentToken;
+    SharedSimpleTokenPtr token = CurrentToken;
 
     switch(CurrentToken->getTokenType())
     {
     case SimpleToken::Integer:
         eat(SimpleToken::Integer);
-        node = new ValueNode(dynamic_cast<IntegerToken*>(token)->getValue());
+        node = new ValueNode(qSharedPointerDynamicCast<IntegerToken>(token)->getValue());
         break;
     case SimpleToken::Double:
         eat(SimpleToken::Double);
-        node = new ValueNode(dynamic_cast<DoubleToken*>(token)->getValue());
+        node = new ValueNode(qSharedPointerDynamicCast<DoubleToken>(token)->getValue());
         break;
     case SimpleToken::Bool:
         eat(SimpleToken::Bool);
-        node = new ValueNode(dynamic_cast<BoolToken*>(token)->getValue());
+        node = new ValueNode(qSharedPointerDynamicCast<BoolToken>(token)->getValue());
         break;
     case SimpleToken::String:
         eat(SimpleToken::String);
-        node = new ValueNode(dynamic_cast<StringToken*>(token)->getValue());
+        node = new ValueNode(qSharedPointerDynamicCast<StringToken>(token)->getValue());
         break;
     case SimpleToken::Data:
         eat(SimpleToken::Data);
-        node = new DataNode(dynamic_cast<DataToken*>(token)->getDataIndex(), &SymblTbl);
+        node = new DataNode(qSharedPointerDynamicCast<DataToken>(token)->getDataIndex(), &SymblTbl);
         break;
     case SimpleToken::LParan:
         eat(SimpleToken::LParan);
@@ -434,5 +526,3 @@ SimpleNode * const SimpleParser::PrimaryExpression()
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
     return node;
 }
-
-

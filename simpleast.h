@@ -1,68 +1,6 @@
 #ifndef SIMPLEAST_H
 #define SIMPLEAST_H
 
-//class ASTNode
-//{
-//public:
-//    typedef enum _NodeType
-//    {
-//        ValueNode,
-//        DataNode,
-//        OperationNode,
-//        ERRORNode
-//    }NodeType;
-
-//    ASTNode();
-//    virtual NodeType getType() const = 0;
-//    virtual const ValueToken * const visit(const Msg * const msg) const = 0;
-//};
-
-//class OperationNode : public ASTNode
-//{
-//public:
-//    OperationNode();
-//    virtual NodeType getType() const;
-//    virtual const ValueToken * const visit(const Msg * const msg) const = 0;
-//};
-
-//class UnaryOperationNode : public ASTNode
-//{
-//public:
-//    UnaryOperationNode(const UnaryOperationToken *const unOp, const ASTNode * const right);
-//    virtual const ValueToken * const visit(const Msg * const msg) const;
-
-//private:
-//    const UnaryOperationToken *unOp;
-//    const ASTNode * const right;
-//};
-
-//class BinaryOperationNode : public ASTNode
-//{
-//public:
-//    BinaryOperationNode(const ASTNode * const left, const BinaryOperationToken *const binOp, const ASTNode * const right);
-//    virtual const ValueToken * const visit(const Msg * const msg) const;
-
-//private:
-//    const BinaryOperationToken *binOp;
-//    const ASTNode * const left;
-//    const ASTNode * const right;
-//};
-
-//class TernaryOperationNode : public ASTNode
-//{
-//public:
-//    TernaryOperationNode(const ASTNode * const left, const TernaryOperationToken *const binOp, const ASTNode * const mid, const ASTNode * const right);
-//    virtual const ValueToken * const visit(const Msg * const msg) const;
-
-//private:
-//    const TernaryOperationToken *binOp;
-//    const ASTNode * const left;
-//    const ASTNode * const mid;
-//    const ASTNode * const right;
-//};
-
-// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
-
 #include <QVariant>
 #include <simplesymboltable.h>
 
@@ -78,10 +16,20 @@ public:
         Operation,
         EOFNode
     }NodeType;
+    typedef enum _ValueTypes
+    {
+        Integer,
+        Double,
+        Bool,
+        String,
+        ErrorType
+    }ValueTypes;
     SimpleNode();
     virtual ~SimpleNode();
 
     virtual NodeType getNodeType() const = 0;
+    virtual ValueTypes getReturnType() const = 0;
+
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
 
@@ -92,14 +40,6 @@ public:
 class ValueNode : public SimpleNode
 {
 public:
-    typedef enum _ValueTypes
-    {
-        Integer,
-        Double,
-        Bool,
-        String,
-        ErrorType
-    }ValueTypes;
 
     ValueNode();
     ValueNode(const ValueNode &valueNodeToCopy);
@@ -108,9 +48,10 @@ public:
     ValueNode(const double value);
     ValueNode(const bool value);
     ValueNode(QString const &value);
-    virtual ~ValueNode();
+    ~ValueNode();
 
-    virtual NodeType getNodeType() const;
+    NodeType getNodeType() const;
+    ValueTypes getReturnType() const;
 
     ValueNode &operator=(ValueNode const&value);
 
@@ -118,9 +59,9 @@ public:
 
     ValueTypes getValueType() const;
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
-    virtual ValueNode &visit();
+    QString printValue() const;
+    QString printNode() const;
+    ValueNode &visit();
 
 private:
     ValueTypes valueType;
@@ -131,13 +72,14 @@ class DataNode : public SimpleNode
 {
 public:
     DataNode(const unsigned int dataIndex, const SymbolTable * const SymblTbl);
-    virtual ~DataNode();
-    virtual NodeType getNodeType() const;
+    ~DataNode();
+    NodeType getNodeType() const;
+    SimpleNode::ValueTypes getReturnType() const;
 
-    virtual ValueNode &visit();
+    ValueNode &visit();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 
 private:
     ValueNode Result;
@@ -216,6 +158,7 @@ public:
     OperationNode();
     virtual ~OperationNode();
     virtual NodeType getNodeType() const;
+    SimpleNode::ValueTypes getReturnType() const;
     virtual ArityTypes getArityType() const = 0;
     virtual OperationTypes getOpType() const = 0;
     virtual Operation getOp() const = 0;
@@ -230,14 +173,15 @@ public:
     virtual ValueNode &visit();
 protected:
     ValueNode Result;
+    SimpleNode::ValueTypes returnType;
 };
 
 class UnaryOperationNode : public OperationNode
 {
 public:
     UnaryOperationNode(SimpleNode *rightChild);
-    virtual ~UnaryOperationNode();
-    virtual ArityTypes getArityType() const;
+    ~UnaryOperationNode();
+    ArityTypes getArityType() const;
     virtual OperationTypes getOpType() const = 0;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
@@ -249,13 +193,14 @@ public:
     virtual QString printNode() const = 0;
 protected:
     SimpleNode *rightChild;
+    SimpleNode::ValueTypes implicitCastRightChild;
 };
 
 class UnaryArithmeticOperationNode : public UnaryOperationNode
 {
 public:
     UnaryArithmeticOperationNode(SimpleNode *rightChild);
-    virtual OperationTypes getOpType() const;
+    OperationTypes getOpType() const;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
@@ -270,9 +215,9 @@ class IncrementNode : public UnaryArithmeticOperationNode
 {
 public:
     IncrementNode(SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
     /**
      * \brief Increments Integer Values by one and returns the result as a new ValueNode
@@ -285,19 +230,19 @@ public:
      *
      * \warning Only use this operation on Integer ValueNodes
      */
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class DecrementNode : public UnaryArithmeticOperationNode
 {
 public:
     DecrementNode(SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
     /**
      * \brief Decrements Integer Values by one and returns the result as a new ValueNode
@@ -310,19 +255,19 @@ public:
      *
      * \warning Only use this operation on Integer ValueNodes
      */
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class PositiveNode : public UnaryArithmeticOperationNode
 {
 public:
     PositiveNode(SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
     /**
      * \brief Returns a new ValueNode with the value of the passed ValueNode
@@ -335,19 +280,19 @@ public:
      *
      * \warning Only use this operation on Integer or Double ValueNodes
      */
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class NegativeNode : public UnaryArithmeticOperationNode
 {
 public:
     NegativeNode(SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
     /**
      * \brief Returns a new ValueNode with the value of the passed ValueNode
@@ -360,17 +305,17 @@ public:
      *
      * \warning Only use this operation on Integer or Double ValueNodes
      */
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class UnaryLogicalOperationNode : public UnaryOperationNode
 {
 public:
     UnaryLogicalOperationNode(SimpleNode *rightChild);
-    virtual OperationTypes getOpType() const;
+    OperationTypes getOpType() const;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
@@ -385,9 +330,9 @@ class LogicalNegationNode : public UnaryLogicalOperationNode
 {
 public:
     LogicalNegationNode(SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
     /**
      * \brief Returns a new ValueNode with the logically negated value of the passed ValueNode
@@ -401,17 +346,17 @@ public:
      * \warning Only use this operation on Integer, Double or Bool ValueNodes
      * \note If the passed ValueNode equals 0 (or 0.0) it is treated as Bool false, otherwise Bool true
      */
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class UnaryBitwiseOperationNode : public UnaryOperationNode
 {
 public:
     UnaryBitwiseOperationNode(SimpleNode *rightChild);
-    virtual OperationTypes getOpType() const;
+    OperationTypes getOpType() const;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
@@ -451,8 +396,8 @@ class BinaryOperationNode : public OperationNode
 {
 public:
     BinaryOperationNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual ~BinaryOperationNode();
-    virtual ArityTypes getArityType() const;
+    ~BinaryOperationNode();
+    ArityTypes getArityType() const;
     virtual OperationTypes getOpType() const = 0;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
@@ -465,13 +410,15 @@ public:
 protected:
     SimpleNode *leftChild;
     SimpleNode *rightChild;
+    SimpleNode::ValueTypes implicitCastLeftChild;
+    SimpleNode::ValueTypes implicitCastRightChild;
 };
 
 class BinaryArithmeticOperationNode : public BinaryOperationNode
 {
 public:
     BinaryArithmeticOperationNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual OperationTypes getOpType() const;
+    OperationTypes getOpType() const;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
@@ -486,77 +433,77 @@ class AdditionNode : public BinaryArithmeticOperationNode
 {
 public:
     AdditionNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class SubtractionNode : public BinaryArithmeticOperationNode
 {
 public:
     SubtractionNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class MultiplicationNode : public BinaryArithmeticOperationNode
 {
 public:
     MultiplicationNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class DivisionNode : public BinaryArithmeticOperationNode
 {
 public:
     DivisionNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class ModuloNode : public BinaryArithmeticOperationNode
 {
 public:
     ModuloNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class BinaryLogicalOperationNode : public BinaryOperationNode
 {
 public:
     BinaryLogicalOperationNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual OperationTypes getOpType() const;
+    OperationTypes getOpType() const;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
@@ -571,9 +518,9 @@ class LogicalANDNode : public BinaryLogicalOperationNode
 {
 public:
     LogicalANDNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
     /**
      * \brief Returns a new ValueNode of type Bool with the result of the AND operation
@@ -587,19 +534,19 @@ public:
      * \warning Do not use on type String
      * \note Integer and Double ValueNodes are converted to bool before the operation takes place (0 or 0.0 is false whereas everything else  is true)
      */
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class LogicalORNode : public BinaryLogicalOperationNode
 {
 public:
     LogicalORNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
     /**
      * \brief Returns a new ValueNode of type Bool with the result of the OR operation
@@ -613,108 +560,108 @@ public:
      * \warning Do not use on type String
      * \note Integer and Double ValueNodes are converted to bool before the operation takes place (0 or 0.0 is false whereas everything else  is true)
      */
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class LogicalXORNode : public BinaryLogicalOperationNode
 {
 public:
     LogicalXORNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class GreaterNode : public BinaryLogicalOperationNode
 {
 public:
     GreaterNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class LowerNode : public BinaryLogicalOperationNode
 {
 public:
     LowerNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class EqualNode : public BinaryLogicalOperationNode
 {
 public:
     EqualNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class EqualOrGreaterNode : public BinaryLogicalOperationNode
 {
 public:
     EqualOrGreaterNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class EqualOrLowerNode : public BinaryLogicalOperationNode
 {
 public:
     EqualOrLowerNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class UnequalNode : public BinaryLogicalOperationNode
 {
 public:
     UnequalNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class BinaryBitwiseOperationNode : public BinaryOperationNode
@@ -722,7 +669,7 @@ class BinaryBitwiseOperationNode : public BinaryOperationNode
 public:
 
     BinaryBitwiseOperationNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual OperationTypes getOpType() const;
+    OperationTypes getOpType() const;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
@@ -737,84 +684,84 @@ class ANDNode : public BinaryBitwiseOperationNode
 {
 public:
     ANDNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class ORNode : public BinaryBitwiseOperationNode
 {
 public:
     ORNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class XORNode : public BinaryBitwiseOperationNode
 {
 public:
     XORNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class LeftShiftNode : public BinaryBitwiseOperationNode
 {
 public:
     LeftShiftNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class RightShiftNode : public BinaryBitwiseOperationNode
 {
 public:
     RightShiftNode(SimpleNode *leftChild, SimpleNode *rightChild);
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 class TernaryOperationNode : public OperationNode
 {
 public:
     TernaryOperationNode(SimpleNode *leftChild, SimpleNode *midChild ,SimpleNode *rightChild);
-    virtual ~TernaryOperationNode();
+    ~TernaryOperationNode();
+    ArityTypes getArityType() const;
     virtual OperationTypes getOpType() const = 0;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
     virtual ValueNode &DoOperation() = 0;
-    virtual ArityTypes getArityType() const;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -822,21 +769,24 @@ protected:
     SimpleNode *leftChild;
     SimpleNode *midChild;
     SimpleNode *rightChild;
+    SimpleNode::ValueTypes implicitCastLeftChild;
+    SimpleNode::ValueTypes implicitCastMidChild;
+    SimpleNode::ValueTypes implicitCastRightChild;
 };
 
 class ConditionalNode : public TernaryOperationNode
 {
 public:
     ConditionalNode(SimpleNode *leftChild, SimpleNode *midChild ,SimpleNode *rightChild);
-    virtual OperationTypes getOpType() const;
-    virtual Operation getOp() const;
-    virtual Associativity getAssociativity() const;
-    virtual Precedence getPrecedence() const;
+    OperationTypes getOpType() const;
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
 
-    virtual ValueNode &DoOperation();
+    ValueNode &DoOperation();
 
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    QString printValue() const;
+    QString printNode() const;
 };
 
 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
@@ -845,13 +795,14 @@ class EOFNode : public SimpleNode
 {
 public:
     EOFNode();
-    virtual ~EOFNode();
+    ~EOFNode();
 
-    virtual NodeType getNodeType() const;
-    virtual QString printValue() const;
-    virtual QString printNode() const;
+    NodeType getNodeType() const;
+    SimpleNode::ValueTypes getReturnType() const;
+    QString printValue() const;
+    QString printNode() const;
 
-    virtual ValueNode &visit();
+    ValueNode &visit();
 private:
     ValueNode InvalidValue;
 };

@@ -1,0 +1,187 @@
+Values:
+ValueNode 			-> 		Integer | Double | Bool | String
+DataNode  			-> 		Integer
+
+Operators:
+
+++  increment		
+            Integer -> Integer
+
+--  decrement		
+            Integer -> Integer
+
++   positive		
+            Integer -> Integer | 
+			Double  -> Double
+
+-   negative		
+            Integer -> Integer | 
+			Double  -> Double
+
+!   logicalNegation	
+            Integer -> Integer | 
+			Double  -> Double  | 
+			Bool 	-> Bool
+
+~   OnesComplement	
+            Integer -> Integer
+
++   addition		
+            Integer -> Integer -> Integer 	| 
+			Integer -> Double  -> Double	| 
+			Double  -> Double  -> Double	| 
+			Double  -> Integer -> Double	| 
+			String	-> String  -> String	| 
+			String	-> Integer -> String	| 
+			String	-> Double  -> String	| 
+			String	-> Bool    -> String	
+
+-   subtraction		
+            Integer -> Integer -> Integer 	| 
+			Integer -> Double  -> Double	| 
+			Double  -> Double  -> Double	| 
+			Double  -> Integer -> Double	|
+
+*   multiplication	
+            Integer -> Integer -> Integer 	| 
+			Integer -> Double  -> Double	| 
+			Double  -> Double  -> Double	| 
+			Double  -> Integer -> Double	|
+            String  -> Integer -> String
+
+/   division		
+            Integer -> Integer -> Integer 	| 
+			Integer -> Double  -> Double	| 
+			Double  -> Double  -> Double	| 
+			Double  -> Integer -> Double	
+
+%   modulo		
+            Integer -> Integer -> Integer 	
+
+&&  LogicalAND		
+            Integer -> Integer -> Bool	| 
+			Integer -> Double  -> Bool	| 
+			Integer -> Bool	   -> Bool	| 
+			Double  -> Double  -> Bool	| 
+			Double  -> Integer -> Bool	|
+			Double  -> Bool	   -> Bool	| 
+			Bool	-> Bool	   -> Bool	| 
+			Bool	-> Integer -> Bool	| 
+			Bool	-> Double  -> Bool	
+ 
+||  LogicalOR		
+            Integer -> Integer -> Bool	| 
+			Integer -> Double  -> Bool	| 
+			Integer -> Bool	   -> Bool	| 
+			Double  -> Double  -> Bool	| 
+			Double  -> Integer -> Bool	|
+			Double  -> Bool	   -> Bool	| 
+			Bool	-> Bool	   -> Bool	| 
+			Bool	-> Integer -> Bool	| 
+			Bool	-> Double  -> Bool	
+
+^^  LogicalXOR		
+            Integer -> Integer -> Bool	| 
+			Integer -> Double  -> Bool	| 
+			Integer -> Bool	   -> Bool	| 
+			Double  -> Double  -> Bool	| 
+			Double  -> Integer -> Bool	|
+			Double  -> Bool	   -> Bool	| 
+			Bool	-> Bool	   -> Bool	| 
+			Bool	-> Integer -> Bool	| 
+			Bool	-> Double  -> Bool	
+
+>   greater		
+            Integer -> Integer -> Bool	| 
+			Integer -> Double  -> Bool	| 
+			Double  -> Double  -> Bool	| 
+			Double  -> Integer -> Bool	
+
+<   lower		
+            Integer -> Integer -> Bool	| 
+			Integer -> Double  -> Bool	| 
+			Double  -> Double  -> Bool	| 
+			Double  -> Integer -> Bool	
+
+==  equal  		
+            Integer -> Integer -> Bool	| 
+			Integer -> Double  -> Bool	| 
+			Integer -> Bool	   -> Bool	| 
+			Double  -> Double  -> Bool	| 
+			Double  -> Integer -> Bool	|
+			Double  -> Bool	   -> Bool	| 
+			Bool	-> Bool	   -> Bool	| 
+			Bool	-> Integer -> Bool	| 
+			Bool	-> Double  -> Bool	|
+			String  -> String  -> Bool	
+
+>=  equalOrGreater	
+            Integer -> Integer -> Bool	| 
+			Integer -> Double  -> Bool	| 
+			Double  -> Double  -> Bool	| 
+			Double  -> Integer -> Bool	
+
+<=  equalOrLower	
+            Integer -> Integer -> Bool	| 
+			Integer -> Double  -> Bool	| 
+			Double  -> Double  -> Bool	| 
+			Double  -> Integer -> Bool	
+
+!=  unequal		
+            Integer -> Integer -> Bool	| 
+			Integer -> Double  -> Bool	| 
+			Integer -> Bool	   -> Bool	| 
+			Double  -> Double  -> Bool	| 
+			Double  -> Integer -> Bool	|
+			Double  -> Bool	   -> Bool	| 
+			Bool	-> Bool	   -> Bool	| 
+			Bool	-> Integer -> Bool	| 
+			Bool	-> Double  -> Bool	|
+			String  -> String  -> Bool
+
+&   AND			
+            Integer -> Integer -> Integer 
+
+|   OR			
+            Integer -> Integer -> Integer 
+
+^   XOR			
+            Integer -> Integer -> Integer 
+
+<<  leftShift		
+            Integer -> Integer -> Integer 
+
+>>  rightShift		
+            Integer -> Integer -> Integer 
+
+?:  Conditional		
+            Bool 	-> Integer -> Integer -> Integer |
+			Bool 	-> Integer -> Double  -> Double  |
+			Bool 	-> Integer -> Bool    -> Bool    |
+			Bool 	-> Double  -> Double  -> Double  |
+			Bool 	-> Double  -> Integer -> Double  |
+			Bool 	-> Double  -> Bool    -> Bool    |
+			Bool 	-> Bool	   -> Bool    -> Bool    |
+			Bool 	-> Bool	   -> Integer -> Bool    |
+			Bool 	-> Bool	   -> Double  -> Bool    |
+			Bool 	-> String  -> String  -> String  |
+			Integer -> Integer -> Integer -> Integer |
+			Integer -> Integer -> Double  -> Double  |
+			Integer -> Integer -> Bool    -> Bool    |
+			Integer -> Double  -> Double  -> Double  |
+			Integer -> Double  -> Integer -> Double  |
+			Integer -> Double  -> Bool    -> Bool    |
+			Integer -> Bool	   -> Bool    -> Bool    |
+			Integer -> Bool	   -> Integer -> Bool    |
+			Integer -> Bool	   -> Double  -> Bool    |
+			Integer -> String  -> String  -> String  |
+			Double  -> Integer -> Integer -> Integer |
+			Double  -> Integer -> Double  -> Double  |
+			Double  -> Integer -> Bool    -> Bool    |
+			Double  -> Double  -> Double  -> Double  |
+			Double  -> Double  -> Integer -> Double  |
+			Double  -> Double  -> Bool    -> Bool    |
+			Double  -> Bool	   -> Bool    -> Bool    |
+			Double  -> Bool	   -> Integer -> Bool    |
+			Double  -> Bool	   -> Double  -> Bool    |
+			Double  -> String  -> String  -> String

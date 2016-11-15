@@ -30,8 +30,8 @@ public:
     SimpleLexer(const QString &InputString);
 
 //    TokenList parseString(QString stringToParse);
-    SimpleToken *getNextToken();
-
+    SharedSimpleTokenPtr getNextToken();
+    void LexErrorAtToken(SharedSimpleTokenPtr ErrorAtToken, int type);
 private:
     /**
      * \brief Removes whitespace characters from the string which are not contained in a SubString
@@ -41,7 +41,7 @@ private:
     QRegularExpression regEx;
     const QString InputString;
     QString LexerString;
-    SimpleToken *CurrentToken;
+    SharedSimpleTokenPtr CurrentToken;
 };
 
 #endif // SIMPLELEXER_H
