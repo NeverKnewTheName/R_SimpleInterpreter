@@ -5,6 +5,7 @@
 #include "simplelexer.h"
 #include "simpleparser.h"
 #include "simplesymboltable.h"
+#include "simpleinterpreter.h"
 #include <QDebug>
 
 R_SimpleInterpreter::R_SimpleInterpreter(QWidget *parent) :
@@ -36,6 +37,11 @@ void R_SimpleInterpreter::on_pushButton_clicked()
     symblTbl.addEntry(QString("D6"), 16);
     symblTbl.addEntry(QString("D7"), 17);
 
-    SimpleNode *tree = parser.parse();
-//    ui->lineEdit_2->setText(Result.printValue());
+//    SimpleNode *tree = parser.parse();
+    SimpleInterpreter interpreter(&parser);
+    ValueNode *result = interpreter.interpret();
+    qDebug() << result->printNode();
+    qDebug() << result->getValue();
+
+    ui->lineEdit_2->setText(result->getValue().value<QString>());
 }

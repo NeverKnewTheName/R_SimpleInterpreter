@@ -19,6 +19,7 @@
 
 #include <QVector>
 #include <QString>
+#include <QRegularExpression>
 
 #include "simpletoken.h"
 
@@ -28,8 +29,8 @@ public:
     typedef QVector<SimpleToken*> TokenList;
     SimpleLexer(const QString &InputString);
 
-    TokenList parseString(QString stringToParse);
-    SimpleToken getNextToken();
+//    TokenList parseString(QString stringToParse);
+    SimpleToken *getNextToken();
 
 private:
     /**
@@ -40,6 +41,7 @@ private:
     QRegularExpression regEx;
     const QString InputString;
     QString LexerString;
+    SimpleToken *CurrentToken;
 };
 
 #endif // SIMPLELEXER_H

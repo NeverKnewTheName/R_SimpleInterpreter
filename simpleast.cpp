@@ -1,63 +1,62 @@
 #include "simpleast.h"
 
+#include <QVariant>
 #include <QDebug>
 
 SimpleNode::SimpleNode()
 {
 }
 
-SimpleNode::NodeType SimpleNode::getNodeType() const
+SimpleNode::~SimpleNode()
 {
-    SimpleNode::EOFNode;
+    qDebug() << __PRETTY_FUNCTION__;
 }
 
 ValueNode::ValueNode() :
-    SimpleNode(SimpleNode::Value),
     valueType(ErrorType),
     value(QVariant())
 {
 }
 
-ValueNode::ValueNode(NodeToCopy) :
-    SimpleNode(SimpleNode::Value),
+ValueNode::ValueNode(const ValueNode &valueNodeToCopy) :
     valueType(valueNodeToCopy.getValueType()),
     value(valueNodeToCopy.getValue())
 {
 }
 
 ValueNode::ValueNode(ValueNode &&valueNodeToMove) :
-    SimpleNode(SimpleNode::Value),
     valueType(valueNodeToMove.getValueType()),
     value(valueNodeToMove.getValue())
 {
 }
 
 ValueNode::ValueNode(const int value) :
-    SimpleNode(SimpleNode::Value),
     valueType(Integer),
     value(QVariant::fromValue(value))
 {
 }
 
 ValueNode::ValueNode(const double value) :
-    SimpleNode(SimpleNode::Value),
     valueType(Double),
     value(QVariant::fromValue(value))
 {
 }
 
 ValueNode::ValueNode(const bool value) :
-    SimpleNode(SimpleNode::Value),
     valueType(Bool),
     value(QVariant::fromValue(value))
 {
 }
 
 ValueNode::ValueNode(const QString &value) :
-    SimpleNode(SimpleNode::Value),
     valueType(String),
     value(QVariant::fromValue(value))
 {
+}
+
+ValueNode::~ValueNode()
+{
+    qDebug() << __PRETTY_FUNCTION__;
 }
 
 SimpleNode::NodeType ValueNode::getNodeType() const
@@ -118,10 +117,14 @@ ValueNode &ValueNode::visit()
 }
 
 DataNode::DataNode(const unsigned int dataIndex, const SymbolTable * const SymblTbl) :
-    SimpleNode(SimpleNode::Data),
     dataIndex(dataIndex),
-    SymblTable(SymblTbl)
+    SymblTbl(SymblTbl)
 {
+}
+
+DataNode::~DataNode()
+{
+    qDebug() << __PRETTY_FUNCTION__;
 }
 
 SimpleNode::NodeType DataNode::getNodeType() const
@@ -131,7 +134,7 @@ SimpleNode::NodeType DataNode::getNodeType() const
 
 ValueNode &DataNode::visit()
 {
-    Result = ValueNode(SymblTbl->lookup(QString("D%1").arg(dataIndex)));
+    Result = ValueNode(const_cast<SymbolTable*>(SymblTbl)->lookup(QString("D%1").arg(dataIndex)).getSymbolTableEntryValue().value<int>());
     return Result;
 }
 
@@ -148,9 +151,13 @@ QString DataNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
-OperationNode::OperationNode() :
-    SimpleNode(SimpleNode::Operation)
+OperationNode::OperationNode()
 {
+}
+
+OperationNode::~OperationNode()
+{
+    qDebug() << __PRETTY_FUNCTION__;
 }
 
 SimpleNode::NodeType OperationNode::getNodeType() const
@@ -168,6 +175,12 @@ UnaryOperationNode::UnaryOperationNode(SimpleNode *rightChild) :
 {
 }
 
+UnaryOperationNode::~UnaryOperationNode()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+    delete rightChild;
+}
+
 OperationNode::ArityTypes UnaryOperationNode::getArityType() const
 {
     return OperationNode::Unary;
@@ -176,7 +189,6 @@ OperationNode::ArityTypes UnaryOperationNode::getArityType() const
 UnaryArithmeticOperationNode::UnaryArithmeticOperationNode(SimpleNode *rightChild) :
     UnaryOperationNode(rightChild)
 {
-
 }
 
 OperationNode::OperationTypes UnaryArithmeticOperationNode::getOpType() const
@@ -187,7 +199,6 @@ OperationNode::OperationTypes UnaryArithmeticOperationNode::getOpType() const
 IncrementNode::IncrementNode(SimpleNode *rightChild) :
     UnaryArithmeticOperationNode(rightChild)
 {
-
 }
 
 OperationNode::Operation IncrementNode::getOp() const
@@ -205,7 +216,7 @@ OperationNode::Precedence IncrementNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-const ValueNode &IncrementNode::DoOperation() const
+ValueNode &IncrementNode::DoOperation()
 {
     ValueNode &value = rightChild->visit();
     switch(value.getValueType())
@@ -252,7 +263,7 @@ OperationNode::Precedence DecrementNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-const ValueNode &DecrementNode::DoOperation() const
+ValueNode &DecrementNode::DoOperation()
 {
     ValueNode &value = rightChild->visit();
     switch(value.getValueType())
@@ -299,14 +310,16 @@ OperationNode::Precedence PositiveNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-const ValueNode &PositiveNode::DoOperation() const
+ValueNode &PositiveNode::DoOperation()
 {
     ValueNode &value = rightChild->visit();
     switch(value.getValueType())
     {
     case ValueNode::Integer:
+        Result = ValueNode(value.getValue().value<int>());
+        break;
     case ValueNode::Double:
-        Result = ValueNode(value.getValue());
+        Result = ValueNode(value.getValue().value<double>());
         break;
     default:
         Result =  ValueNode();
@@ -347,7 +360,7 @@ OperationNode::Precedence NegativeNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-const ValueNode &NegativeNode::DoOperation() const
+ValueNode &NegativeNode::DoOperation()
 {
     ValueNode &value = rightChild->visit();
     switch(value.getValueType())
@@ -388,7 +401,7 @@ OperationNode::OperationTypes UnaryLogicalOperationNode::getOpType() const
 }
 
 LogicalNegationNode::LogicalNegationNode(SimpleNode *rightChild) :
-    UnaryArithmeticOperationNode(rightChild)
+    UnaryLogicalOperationNode(rightChild)
 {
 }
 
@@ -407,7 +420,7 @@ OperationNode::Precedence LogicalNegationNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-const ValueNode &LogicalNegationNode::DoOperation() const
+ValueNode &LogicalNegationNode::DoOperation()
 {
     ValueNode &value = rightChild->visit();
     switch(value.getValueType())
@@ -450,7 +463,7 @@ OperationNode::OperationTypes UnaryBitwiseOperationNode::getOpType() const
 }
 
 OnesComplementNode::OnesComplementNode(SimpleNode *rightChild) :
-    UnaryArithmeticOperationNode(rightChild)
+    UnaryBitwiseOperationNode(rightChild)
 {
 }
 
@@ -469,7 +482,7 @@ OperationNode::Precedence OnesComplementNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-const ValueNode &OnesComplementNode::DoOperation() const
+ValueNode &OnesComplementNode::DoOperation()
 {
     ValueNode &value = rightChild->visit();
     switch(value.getValueType())
@@ -502,6 +515,13 @@ BinaryOperationNode::BinaryOperationNode(SimpleNode *leftChild, SimpleNode *righ
 {
 }
 
+BinaryOperationNode::~BinaryOperationNode()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+    delete leftChild;
+    delete rightChild;
+}
+
 OperationNode::ArityTypes BinaryOperationNode::getArityType() const
 {
     return OperationNode::Binary;
@@ -510,7 +530,6 @@ OperationNode::ArityTypes BinaryOperationNode::getArityType() const
 BinaryArithmeticOperationNode::BinaryArithmeticOperationNode(SimpleNode *leftChild, SimpleNode *rightChild) :
     BinaryOperationNode(leftChild, rightChild)
 {
-
 }
 
 OperationNode::OperationTypes BinaryArithmeticOperationNode::getOpType() const
@@ -538,10 +557,10 @@ OperationNode::Precedence AdditionNode::getPrecedence() const
     return OperationNode::AdditivePrec;
 }
 
-const ValueNode &AdditionNode::DoOperation() const
+ValueNode &AdditionNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
 
     ValueNode::ValueTypes resultType = ValueNode::Integer;
     if( ( value1.getValueType() == ValueNode::Double ) || ( value2.getValueType() == ValueNode::Double ) )
@@ -594,10 +613,10 @@ OperationNode::Precedence SubtractionNode::getPrecedence() const
     return OperationNode::AdditivePrec;
 }
 
-const ValueNode &SubtractionNode::DoOperation() const
+ValueNode &SubtractionNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
     ValueNode::ValueTypes resultType = ValueNode::Integer;
     if( ( value1.getValueType() == ValueNode::Double ) || ( value2.getValueType() == ValueNode::Double ) )
         resultType = ValueNode::Double;
@@ -649,10 +668,10 @@ OperationNode::Precedence MultiplicationNode::getPrecedence() const
     return OperationNode::MultiplicativePrec;
 }
 
-const ValueNode &MultiplicationNode::DoOperation() const
+ValueNode &MultiplicationNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
     ValueNode::ValueTypes resultType = ValueNode::Integer;
     if( ( value1.getValueType() == ValueNode::Double ) || ( value2.getValueType() == ValueNode::Double ) )
         resultType = ValueNode::Double;
@@ -704,10 +723,10 @@ OperationNode::Precedence DivisionNode::getPrecedence() const
     return OperationNode::MultiplicativePrec;
 }
 
-const ValueNode &DivisionNode::DoOperation() const
+ValueNode &DivisionNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
     ValueNode::ValueTypes resultType = ValueNode::Integer;
     if( ( value1.getValueType() == ValueNode::Double ) || ( value2.getValueType() == ValueNode::Double ) )
         resultType = ValueNode::Double;
@@ -759,10 +778,10 @@ OperationNode::Precedence ModuloNode::getPrecedence() const
     return OperationNode::MultiplicativePrec;
 }
 
-const ValueNode &ModuloNode::DoOperation() const
+ValueNode &ModuloNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
     Result =  ValueNode(value1.getValue().value<int>() % value2.getValue().value<int>());
     return Result;
 }
@@ -783,7 +802,6 @@ QString ModuloNode::printNode() const
 BinaryLogicalOperationNode::BinaryLogicalOperationNode(SimpleNode *leftChild, SimpleNode *rightChild) :
     BinaryOperationNode(leftChild, rightChild)
 {
-
 }
 
 OperationNode::OperationTypes BinaryLogicalOperationNode::getOpType() const
@@ -811,10 +829,10 @@ OperationNode::Precedence LogicalANDNode::getPrecedence() const
     return OperationNode::LogicalANDPrec;
 }
 
-const ValueNode &LogicalANDNode::DoOperation() const
+ValueNode &LogicalANDNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
     Result =  ValueNode(value1.getValue().value<bool>() && value2.getValue().value<bool>());
     return Result;
 }
@@ -852,10 +870,10 @@ OperationNode::Precedence LogicalORNode::getPrecedence() const
     return OperationNode::LogicalORPrec;
 }
 
-const ValueNode &LogicalORNode::DoOperation() const
+ValueNode &LogicalORNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
     Result =  ValueNode(value1.getValue().value<bool>() || value2.getValue().value<bool>());
     return Result;
 }
@@ -893,10 +911,10 @@ OperationNode::Precedence LogicalXORNode::getPrecedence() const
     return OperationNode::LogicalORPrec;
 }
 
-const ValueNode &LogicalXORNode::DoOperation() const
+ValueNode &LogicalXORNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
     Result = ValueNode(value1.getValue().value<bool>() != value2.getValue().value<bool>());
     return Result;
 }
@@ -934,10 +952,10 @@ OperationNode::Precedence GreaterNode::getPrecedence() const
     return OperationNode::RelationalPrec;
 }
 
-const ValueNode &GreaterNode::DoOperation() const
+ValueNode &GreaterNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
     Result = (value1.getValue().value<double>() > value2.getValue().value<double>()) ?  ValueNode(true) : ValueNode(false);
     return Result;
 }
@@ -975,10 +993,10 @@ OperationNode::Precedence LowerNode::getPrecedence() const
     return OperationNode::RelationalPrec;
 }
 
-const ValueNode &LowerNode::DoOperation() const
+ValueNode &LowerNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
     Result = (value1.getValue().value<double>() < value2.getValue().value<double>()) ?  ValueNode(true) : ValueNode(false);
     return Result;
 }
@@ -1016,10 +1034,10 @@ OperationNode::Precedence EqualNode::getPrecedence() const
     return OperationNode::EqualityPrec;
 }
 
-const ValueNode &EqualNode::DoOperation() const
+ValueNode &EqualNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
     ValueNode::ValueTypes resultType = ValueNode::Integer;
     if( ( value1.getValueType() == ValueNode::Double ) || ( value2.getValueType() == ValueNode::Double ) )
         resultType = ValueNode::Double;
@@ -1071,10 +1089,10 @@ OperationNode::Precedence EqualOrGreaterNode::getPrecedence() const
     return OperationNode::RelationalPrec;
 }
 
-const ValueNode &EqualOrGreaterNode::DoOperation() const
+ValueNode &EqualOrGreaterNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
     ValueNode::ValueTypes resultType = ValueNode::Integer;
     if( ( value1.getValueType() == ValueNode::Double ) || ( value2.getValueType() == ValueNode::Double ) )
         resultType = ValueNode::Double;
@@ -1126,10 +1144,10 @@ OperationNode::Precedence EqualOrLowerNode::getPrecedence() const
     return OperationNode::RelationalPrec;
 }
 
-const ValueNode &EqualOrLowerNode::DoOperation() const
+ValueNode &EqualOrLowerNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
     ValueNode::ValueTypes resultType = ValueNode::Integer;
     if( ( value1.getValueType() == ValueNode::Double ) || ( value2.getValueType() == ValueNode::Double ) )
         resultType = ValueNode::Double;
@@ -1181,10 +1199,10 @@ OperationNode::Precedence UnequalNode::getPrecedence() const
     return OperationNode::EqualityPrec;
 }
 
-const ValueNode &UnequalNode::DoOperation() const
+ValueNode &UnequalNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
     ValueNode::ValueTypes resultType = ValueNode::Integer;
     if( ( value1.getValueType() == ValueNode::Double ) || ( value2.getValueType() == ValueNode::Double ) )
         resultType = ValueNode::Double;
@@ -1246,10 +1264,10 @@ OperationNode::Precedence ANDNode::getPrecedence() const
     return OperationNode::BitwiseANDPrec;
 }
 
-const ValueNode &ANDNode::DoOperation() const
+ValueNode &ANDNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
     //ToThink is this really needed??
     if((value1.getValueType() != ValueNode::Integer) || (value2.getValueType() != ValueNode::Integer))
         Result = ValueNode();
@@ -1292,10 +1310,10 @@ OperationNode::Precedence ORNode::getPrecedence() const
     return OperationNode::BitwiseORPrec;
 }
 
-const ValueNode &ORNode::DoOperation() const
+ValueNode &ORNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
     //ToThink is this really needed??
     if((value1.getValueType() != ValueNode::Integer) || (value2.getValueType() != ValueNode::Integer))
         Result = ValueNode();
@@ -1338,10 +1356,10 @@ OperationNode::Precedence XORNode::getPrecedence() const
     return OperationNode::BitwiseXORPrec;
 }
 
-const ValueNode &XORNode::DoOperation() const
+ValueNode &XORNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
     //ToThink is this really needed??
     if((value1.getValueType() != ValueNode::Integer) || (value2.getValueType() != ValueNode::Integer))
         Result = ValueNode();
@@ -1384,10 +1402,10 @@ OperationNode::Precedence LeftShiftNode::getPrecedence() const
     return OperationNode::ShiftPrec;
 }
 
-const ValueNode &LeftShiftNode::DoOperation() const
+ValueNode &LeftShiftNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
     //ToThink is this really needed??
     if((value1.getValueType() != ValueNode::Integer) || (value2.getValueType() != ValueNode::Integer))
         Result = ValueNode();
@@ -1430,10 +1448,10 @@ OperationNode::Precedence RightShiftNode::getPrecedence() const
     return OperationNode::ShiftPrec;
 }
 
-const ValueNode &RightShiftNode::DoOperation() const
+ValueNode &RightShiftNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
-    ValueNode &value2 = leftChild->visit();
+    ValueNode &value1 = leftChild->visit();
+    ValueNode &value2 = rightChild->visit();
     //ToThink is this really needed??
     if((value1.getValueType() != ValueNode::Integer) || (value2.getValueType() != ValueNode::Integer))
         Result = ValueNode();
@@ -1461,6 +1479,14 @@ TernaryOperationNode::TernaryOperationNode(SimpleNode *leftChild, SimpleNode *mi
     midChild(midChild),
     rightChild(rightChild)
 {
+}
+
+TernaryOperationNode::~TernaryOperationNode()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+    delete leftChild;
+    delete midChild;
+    delete rightChild;
 }
 
 OperationNode::ArityTypes TernaryOperationNode::getArityType() const
@@ -1493,7 +1519,7 @@ OperationNode::Precedence ConditionalNode::getPrecedence() const
     return OperationNode::ConditionalPrec;
 }
 
-const ValueNode &ConditionalNode::DoOperation() const
+ValueNode &ConditionalNode::DoOperation()
 {
     ValueNode &value1 = rightChild->visit();
     ValueNode value2 = midChild->visit();
@@ -1520,6 +1546,11 @@ QString ConditionalNode::printNode() const
 
 EOFNode::EOFNode()
 {
+}
+
+EOFNode::~EOFNode()
+{
+    qDebug() << __PRETTY_FUNCTION__;
 }
 
 SimpleNode::NodeType EOFNode::getNodeType() const

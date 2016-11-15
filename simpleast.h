@@ -1,21 +1,21 @@
 #ifndef SIMPLEAST_H
 #define SIMPLEAST_H
 
-class ASTNode
-{
-public:
-    typedef enum _NodeType
-    {
-        ValueNode,
-        DataNode,
-        OperationNode,
-        ERRORNode
-    }NodeType;
+//class ASTNode
+//{
+//public:
+//    typedef enum _NodeType
+//    {
+//        ValueNode,
+//        DataNode,
+//        OperationNode,
+//        ERRORNode
+//    }NodeType;
 
-    ASTNode();
-    virtual NodeType getType() const = 0;
-    virtual const ValueToken * const visit(const Msg * const msg) const = 0;
-};
+//    ASTNode();
+//    virtual NodeType getType() const = 0;
+//    virtual const ValueToken * const visit(const Msg * const msg) const = 0;
+//};
 
 //class OperationNode : public ASTNode
 //{
@@ -66,6 +66,8 @@ public:
 #include <QVariant>
 #include <simplesymboltable.h>
 
+class ValueNode;
+
 class SimpleNode
 {
 public:
@@ -77,6 +79,7 @@ public:
         EOFNode
     }NodeType;
     SimpleNode();
+    virtual ~SimpleNode();
 
     virtual NodeType getNodeType() const = 0;
     virtual QString printValue() const = 0;
@@ -85,19 +88,6 @@ public:
     virtual ValueNode &visit() = 0;
 };
 
-class EOFNode : public SimpleNode
-{
-public:
-    EOFNode();
-
-    virtual NodeType getNodeType() const;
-    virtual QString printValue() const;
-    virtual QString printNode() const;
-
-    virtual ValueNode &visit();
-private:
-    ValueNode InvalidValue;
-};
 
 class ValueNode : public SimpleNode
 {
@@ -118,6 +108,8 @@ public:
     ValueNode(const double value);
     ValueNode(const bool value);
     ValueNode(QString const &value);
+    virtual ~ValueNode();
+
     virtual NodeType getNodeType() const;
 
     ValueNode &operator=(ValueNode const&value);
@@ -139,6 +131,7 @@ class DataNode : public SimpleNode
 {
 public:
     DataNode(const unsigned int dataIndex, const SymbolTable * const SymblTbl);
+    virtual ~DataNode();
     virtual NodeType getNodeType() const;
 
     virtual ValueNode &visit();
@@ -221,6 +214,7 @@ public:
     }Precedence;
 
     OperationNode();
+    virtual ~OperationNode();
     virtual NodeType getNodeType() const;
     virtual ArityTypes getArityType() const = 0;
     virtual OperationTypes getOpType() const = 0;
@@ -228,7 +222,7 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual const ValueNode &DoOperation() const = 0;
+    virtual ValueNode &DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -242,13 +236,14 @@ class UnaryOperationNode : public OperationNode
 {
 public:
     UnaryOperationNode(SimpleNode *rightChild);
+    virtual ~UnaryOperationNode();
     virtual ArityTypes getArityType() const;
     virtual OperationTypes getOpType() const = 0;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual const ValueNode &DoOperation() const = 0;
+    virtual ValueNode &DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -265,7 +260,7 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual const ValueNode &DoOperation() const = 0;
+    virtual ValueNode &DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -290,7 +285,7 @@ public:
      *
      * \warning Only use this operation on Integer ValueNodes
      */
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -315,7 +310,7 @@ public:
      *
      * \warning Only use this operation on Integer ValueNodes
      */
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -340,7 +335,7 @@ public:
      *
      * \warning Only use this operation on Integer or Double ValueNodes
      */
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -365,7 +360,7 @@ public:
      *
      * \warning Only use this operation on Integer or Double ValueNodes
      */
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -380,7 +375,7 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual const ValueNode &DoOperation() const = 0;
+    virtual ValueNode &DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -406,7 +401,7 @@ public:
      * \warning Only use this operation on Integer, Double or Bool ValueNodes
      * \note If the passed ValueNode equals 0 (or 0.0) it is treated as Bool false, otherwise Bool true
      */
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -421,7 +416,7 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual const ValueNode &DoOperation() const = 0;
+    virtual ValueNode &DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -446,7 +441,7 @@ public:
      *
      * \warning Only use this operation on Integer ValueNodes
      */
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -456,13 +451,14 @@ class BinaryOperationNode : public OperationNode
 {
 public:
     BinaryOperationNode(SimpleNode *leftChild, SimpleNode *rightChild);
+    virtual ~BinaryOperationNode();
     virtual ArityTypes getArityType() const;
     virtual OperationTypes getOpType() const = 0;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual const ValueNode &DoOperation() const = 0;
+    virtual ValueNode &DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -480,7 +476,7 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual const ValueNode &DoOperation() const = 0;
+    virtual ValueNode &DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -494,7 +490,7 @@ public:
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
 
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -508,7 +504,7 @@ public:
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
 
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -522,7 +518,7 @@ public:
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
 
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -536,7 +532,7 @@ public:
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
 
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -550,7 +546,7 @@ public:
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
 
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -565,7 +561,7 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual const ValueNode &DoOperation() const = 0;
+    virtual ValueNode &DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -591,7 +587,7 @@ public:
      * \warning Do not use on type String
      * \note Integer and Double ValueNodes are converted to bool before the operation takes place (0 or 0.0 is false whereas everything else  is true)
      */
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -617,7 +613,7 @@ public:
      * \warning Do not use on type String
      * \note Integer and Double ValueNodes are converted to bool before the operation takes place (0 or 0.0 is false whereas everything else  is true)
      */
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -631,7 +627,7 @@ public:
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
 
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -645,7 +641,7 @@ public:
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
 
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -659,7 +655,7 @@ public:
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
 
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -673,7 +669,7 @@ public:
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
 
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -687,7 +683,7 @@ public:
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
 
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -701,7 +697,7 @@ public:
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
 
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -715,7 +711,7 @@ public:
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
 
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -731,7 +727,7 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual const ValueNode &DoOperation() const = 0;
+    virtual ValueNode &DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -745,7 +741,7 @@ public:
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
 
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -759,7 +755,7 @@ public:
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
 
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -773,7 +769,7 @@ public:
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
 
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -787,7 +783,7 @@ public:
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
 
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -801,7 +797,7 @@ public:
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
 
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -811,12 +807,13 @@ class TernaryOperationNode : public OperationNode
 {
 public:
     TernaryOperationNode(SimpleNode *leftChild, SimpleNode *midChild ,SimpleNode *rightChild);
+    virtual ~TernaryOperationNode();
     virtual OperationTypes getOpType() const = 0;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual const ValueNode &DoOperation() const = 0;
+    virtual ValueNode &DoOperation() = 0;
     virtual ArityTypes getArityType() const;
 
     virtual QString printValue() const = 0;
@@ -836,7 +833,7 @@ public:
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
 
-    virtual const ValueNode &DoOperation() const;
+    virtual ValueNode &DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;
@@ -844,4 +841,18 @@ public:
 
 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
+class EOFNode : public SimpleNode
+{
+public:
+    EOFNode();
+    virtual ~EOFNode();
+
+    virtual NodeType getNodeType() const;
+    virtual QString printValue() const;
+    virtual QString printNode() const;
+
+    virtual ValueNode &visit();
+private:
+    ValueNode InvalidValue;
+};
 #endif // SIMPLEAST_H

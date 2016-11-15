@@ -40,27 +40,21 @@ SymbolTableEntry::SymbolTableEntry(QString StringValue) :
 
 SymbolTableEntry::SymbolTableEntry(const SymbolTableEntry &SymblTblEntry) :
     SymblEntryType(SymblTblEntry.getSymbolTableEntryType()),
-    SymblEntryValue(QVariant(SymblTblValue.getSymbolTableEntryValue()))
+    SymblEntryValue(QVariant(SymblTblEntry.getSymbolTableEntryValue()))
 {
 }
 
-SymbolTableEntry::SymbolTableEntry(SymbolTable * const symblTbl) :
-    SymblEntryType(SymbolTableEntry::SubSymbolTable),
-    SymblEntryValue(QVariant::fromValue(static_cast<void*>(symblTbl)))
-{
-}
-
-SymbolTableEntry::SymbolTableEntryType SymbolTableEntry::getSymbolTableType() const
+SymbolTableEntry::SymbolTableEntryType SymbolTableEntry::getSymbolTableEntryType() const
 {
     return SymblEntryType;
 }
 
-const QVariant &SymbolTableEntry::getSymbolTableValue() const
+const QVariant &SymbolTableEntry::getSymbolTableEntryValue() const
 {
     return SymblEntryValue;
 }
 
-void SymbolTableEntry::SetSymbolTableEntry(int IntegerValue)
+void SymbolTableEntry::SetSymbolTableEntryValue(int IntegerValue)
 {
     if(SymblEntryType != SymbolTableEntry::Integer)
     {
@@ -70,7 +64,7 @@ void SymbolTableEntry::SetSymbolTableEntry(int IntegerValue)
     SymblEntryValue = QVariant::fromValue(IntegerValue);
 }
 
-void SymbolTableEntry::SetSymbolTableEntry(double DoubleValue)
+void SymbolTableEntry::SetSymbolTableEntryValue(double DoubleValue)
 {
     if(SymblEntryType != SymbolTableEntry::Double)
     {
@@ -80,7 +74,7 @@ void SymbolTableEntry::SetSymbolTableEntry(double DoubleValue)
     SymblEntryValue = QVariant::fromValue(DoubleValue);
 }
 
-void SymbolTableEntry::SetSymbolTableEntry(bool BoolValue)
+void SymbolTableEntry::SetSymbolTableEntryValue(bool BoolValue)
 {
     if(SymblEntryType != SymbolTableEntry::Bool)
     {
@@ -90,7 +84,7 @@ void SymbolTableEntry::SetSymbolTableEntry(bool BoolValue)
     SymblEntryValue = QVariant::fromValue(BoolValue);
 }
 
-void SymbolTableEntry::SetSymbolTableEntry(QString StringValue)
+void SymbolTableEntry::SetSymbolTableEntryValue(QString StringValue)
 {
     if(SymblEntryType != SymbolTableEntry::String)
     {
@@ -102,4 +96,18 @@ void SymbolTableEntry::SetSymbolTableEntry(QString StringValue)
 
 SymbolTable::SymbolTable()
 {
+}
+
+SymbolTableEntry &SymbolTable::lookup(const QString &identifier)
+{
+    return symblTbl[identifier];
+}
+
+bool SymbolTable::addEntry(const QString &identifier, SymbolTableEntry entry)
+{
+    if(symblTbl.contains(identifier))
+        return false;
+
+    symblTbl[identifier] = entry;
+    return true;
 }

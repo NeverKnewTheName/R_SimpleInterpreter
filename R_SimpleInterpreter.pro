@@ -18,13 +18,15 @@ SOURCES += main.cpp\
     simpletoken.cpp \
     simpleparser.cpp \
     simpleast.cpp \
-    simplesymboltable.cpp
+    simplesymboltable.cpp \
+    simpleinterpreter.cpp
 
 HEADERS  += r_simpleinterpreter.h \
     simplelexer.h \
     simpletoken.h \
     simpleparser.h \
     simpleast.h \
-    simplesymboltable.h
+    simplesymboltable.h \
+    simpleinterpreter.h
 
 FORMS    += r_simpleinterpreter.ui

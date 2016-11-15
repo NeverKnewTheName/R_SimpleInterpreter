@@ -30,7 +30,10 @@ public:
 
     SymbolTableEntryType getSymbolTableEntryType() const;
     QVariant const &getSymbolTableEntryValue() const;
-    bool setSymbolTableEntryValue(QVariant &valueToSet);
+    void SetSymbolTableEntryValue(int IntegerValue);
+    void SetSymbolTableEntryValue(double IntegerValue);
+    void SetSymbolTableEntryValue(bool IntegerValue);
+    void SetSymbolTableEntryValue(QString IntegerValue);
 
 private:
     SymbolTableEntryType SymblEntryType;

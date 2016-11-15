@@ -74,22 +74,22 @@
  *         * ConditionalExpresion
  *
  * ## Rules:
- *     Expresion:                   ConditionalExpresion
- *     ConditionalExpression:       LogicalORExpression         ( ? Expression : LogicalORExpression )*
- *     LogicalORExpression:         LogicalXORExpression        ( || LogicalXORExpression )*
- *     LogicalXORExpression:        LogicalANDExpression        ( ^^ LogicalANDExpression )*
- *     LogicalANDExpression:        BitwiseORExpression         ( && BitwiseORExpression )*
- *     BitwiseORExpression:         BitwiseXORExpression        ( | BitwiseXORExpression )*
- *     BitwiseXORExpression:        BitwiseANDExpression        ( ^ BitwiseANDExpression )*
- *     BitwiseANDExpression:        EqualityExpression          ( & EqualityExpression )*
- *     EqualityExpression:          RelationalExpression        ( ( == | != ) RelationalExpression )*
- *     RelationalExpression:        ShiftExpression             ( ( < | > | <= | >= ) ShiftExpression )*
- *     ShiftExpression:             AdditiveExpression          ( ( << | >> ) AdditiveExpression )*
- *     AdditiveExpression:          MultiplicativeExpression    ( ( + | - ) MultiplicativeExpression )*
- *     MultiplicativeExpression:    UnaryExpression             ( ( * | / | % ) UnaryExpression )*
- *     UnaryExpression:             ( ++ | -- | + | - | ~ | ! | (TypeName) )* PostFixExpression
- *     PostFixExpression:           PrimaryExpression
- *     PrimaryExpression:           Value | Data | ( Expression )
+ *     Expresion                :   ConditionalExpresion
+ *     ConditionalExpression    :   LogicalORExpression         ( ? Expression : LogicalORExpression )*
+ *     LogicalORExpression      :   LogicalXORExpression        ( || LogicalXORExpression )*
+ *     LogicalXORExpression     :   LogicalANDExpression        ( ^^ LogicalANDExpression )*
+ *     LogicalANDExpression     :   BitwiseORExpression         ( && BitwiseORExpression )*
+ *     BitwiseORExpression      :   BitwiseXORExpression        ( | BitwiseXORExpression )*
+ *     BitwiseXORExpression     :   BitwiseANDExpression        ( ^ BitwiseANDExpression )*
+ *     BitwiseANDExpression     :   EqualityExpression          ( & EqualityExpression )*
+ *     EqualityExpression       :   RelationalExpression        ( ( == | != ) RelationalExpression )*
+ *     RelationalExpression     :   ShiftExpression             ( ( < | > | <= | >= ) ShiftExpression )*
+ *     ShiftExpression          :   AdditiveExpression          ( ( << | >> ) AdditiveExpression )*
+ *     AdditiveExpression       :   MultiplicativeExpression    ( ( + | - ) MultiplicativeExpression )*
+ *     MultiplicativeExpression :   UnaryExpression             ( ( * | / | % ) UnaryExpression )*
+ *     UnaryExpression          :   ( ++ | -- | + | - | ~ | ! | (TypeName) )* PostFixExpression
+ *     PostFixExpression        :   PrimaryExpression
+ *     PrimaryExpression        :   Value | Data | ( Expression )
  */
 #ifndef SIMPLEPARSER_H
 #define SIMPLEPARSER_H
@@ -104,31 +104,31 @@ class SimpleParser
 {
 public:
     SimpleParser(SimpleLexer *lexer);
-    ValueNode *parse();
+    SimpleNode *parse();
 
     SymbolTable &getSymblTbl();
 
 private:
-    void eat(const SimpleToken &token, SimpleToken::TokenType tokenType);
-    const ASTNode * const Expression();
-    const ASTNode * const ConditionalExpression();
-    const ASTNode * const LogicalORExpression();
-    const ASTNode * const LogicalXORExpression();
-    const ASTNode * const LogicalANDExpression();
-    const ASTNode * const BitwiseORExpression();
-    const ASTNode * const BitwiseXORExpression();
-    const ASTNode * const BitwiseANDExpression();
-    const ASTNode * const EqualityExpression();
-    const ASTNode * const RelationalExpression();
-    const ASTNode * const ShiftExpression();
-    const ASTNode * const AdditiveExpression();
-    const ASTNode * const MultiplicativeExpression();
-    const ASTNode * const UnaryExpression();
-    const ASTNode * const PostFixExpression();
-    const ASTNode * const PrimaryExpression();
+    void eat(SimpleToken::TokenType tokenType);
+    SimpleNode * const Expression();
+    SimpleNode * const ConditionalExpression();
+    SimpleNode * const LogicalORExpression();
+    SimpleNode * const LogicalXORExpression();
+    SimpleNode * const LogicalANDExpression();
+    SimpleNode * const BitwiseORExpression();
+    SimpleNode * const BitwiseXORExpression();
+    SimpleNode * const BitwiseANDExpression();
+    SimpleNode * const EqualityExpression();
+    SimpleNode * const RelationalExpression();
+    SimpleNode * const ShiftExpression();
+    SimpleNode * const AdditiveExpression();
+    SimpleNode * const MultiplicativeExpression();
+    SimpleNode * const UnaryExpression();
+    SimpleNode * const PostFixExpression();
+    SimpleNode * const PrimaryExpression();
 
     SimpleLexer *lexer;
-    SimpleToken CurrentToken;
+    SimpleToken *CurrentToken;
     SymbolTable SymblTbl;
 };
 

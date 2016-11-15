@@ -12,12 +12,14 @@ public:
         Double,
         Bool,
         String,
+        LParan,
+        RParan,
         Data,
         Symbol,
         Increment,
         Decrement,
         Plus,
-        Ninus,
+        Minus,
         LogicalNegation,
         OnesComplement,
         Multiplication,
@@ -50,6 +52,17 @@ public:
 
 protected:
     const TokenType type;
+};
+
+class EOFToken : public SimpleToken
+{
+public:
+    EOFToken();
+
+    // SimpleToken interface
+public:
+    virtual QString printValue() const;
+    virtual QString printToken() const;
 };
 
 class IntegerToken : public SimpleToken
@@ -133,6 +146,28 @@ public:
 
     virtual QString printValue() const;
     virtual QString printToken() const;
+};
+
+class LParanToken : public OperationToken
+{
+public:
+    LParanToken();
+
+    // SimpleToken interface
+public:
+    QString printValue() const;
+    QString printToken() const;
+};
+
+class RParanToken : public OperationToken
+{
+public:
+    RParanToken();
+
+    // SimpleToken interface
+public:
+    QString printValue() const;
+    QString printToken() const;
 };
 
 #endif // SIMPLETOKEN_H
