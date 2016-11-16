@@ -4,17 +4,31 @@
 
 SimpleParser::SimpleParser(SimpleLexer *lexer) :
     lexer(lexer),
-    CurrentToken(lexer->getNextToken())
+    CurrentToken(lexer->getNextToken()),
+    ErrorOccured(false)
 {
 }
 
 SimpleNode *SimpleParser::parse()
 {
-    SimpleNode *node = Expression();
+    SimpleNode *node = NULL;
     if(CurrentToken->getTokenType() != SimpleToken::EOFToken)
-        qDebug() << __PRETTY_FUNCTION__ << ": NOT EOF";
-    else
-        qDebug() << __PRETTY_FUNCTION__ << ": EOF";
+    {
+        node = Expression();
+
+        if(CurrentToken->getTokenType() != SimpleToken::EOFToken)
+        {
+            qDebug() << __PRETTY_FUNCTION__ << ": NOT EOF";
+            if(node != NULL)
+            {
+                delete node;
+                EOFExpectedError(CurrentToken);
+                return NULL;
+            }
+        }
+
+    }
+    qDebug() << __PRETTY_FUNCTION__ << ": EOF";
     return node;
 }
 
@@ -28,7 +42,7 @@ void SimpleParser::eat(SimpleToken::TokenType tokenType)
     if(CurrentToken->getTokenType() != tokenType)
     {
         qDebug() << __PRETTY_FUNCTION__ << ": ERROR";
-        lexer->LexErrorAtToken(CurrentToken,0);
+        SyntacticError(CurrentToken);
     }
     else
     {
@@ -40,6 +54,10 @@ void SimpleParser::eat(SimpleToken::TokenType tokenType)
 SimpleNode *SimpleParser::Expression()
 {
     SimpleNode *node = ConditionalExpression();
+    if(node == NULL)
+    {
+        return NULL;
+    }
     SharedSimpleTokenPtr token = CurrentToken;
 
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
@@ -49,6 +67,10 @@ SimpleNode *SimpleParser::Expression()
 SimpleNode *SimpleParser::ConditionalExpression()
 {
     SimpleNode *node = LogicalORExpression();
+    if(node == NULL)
+    {
+        return NULL;
+    }
     SharedSimpleTokenPtr token = CurrentToken;
     //    bool ContinueLoop = true;
 
@@ -72,6 +94,11 @@ SimpleNode *SimpleParser::ConditionalExpression()
 SimpleNode *SimpleParser::LogicalORExpression()
 {
     SimpleNode *node = LogicalXORExpression();
+    if(node == NULL)
+    {
+        return NULL;
+    }
+    SimpleNode *nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -81,10 +108,24 @@ SimpleNode *SimpleParser::LogicalORExpression()
         {
         case SimpleToken::LogicalOR:
             eat(SimpleToken::LogicalOR);
-            node = new LogicalORNode(node, LogicalXORExpression());
+            nodeTwo = LogicalXORExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new LogicalORNode(node, nodeTwo);
+            if(node == NULL)
+            {
+                delete nodeTwo;
+                return NULL;
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         default:
@@ -99,6 +140,11 @@ SimpleNode *SimpleParser::LogicalORExpression()
 SimpleNode *SimpleParser::LogicalXORExpression()
 {
     SimpleNode *node = LogicalANDExpression();
+    if(node == NULL)
+    {
+        return NULL;
+    }
+    SimpleNode *nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -108,10 +154,24 @@ SimpleNode *SimpleParser::LogicalXORExpression()
         {
         case SimpleToken::LogicalXOR:
             eat(SimpleToken::LogicalXOR);
-            node = new LogicalXORNode(node, LogicalANDExpression());
+            nodeTwo = LogicalANDExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new LogicalXORNode(node, nodeTwo);
+            if(node == NULL)
+            {
+                delete nodeTwo;
+                return NULL;
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         default:
@@ -126,6 +186,11 @@ SimpleNode *SimpleParser::LogicalXORExpression()
 SimpleNode *SimpleParser::LogicalANDExpression()
 {
     SimpleNode *node = BitwiseORExpression();
+    if(node == NULL)
+    {
+        return NULL;
+    }
+    SimpleNode *nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -135,10 +200,24 @@ SimpleNode *SimpleParser::LogicalANDExpression()
         {
         case SimpleToken::LogicalAND:
             eat(SimpleToken::LogicalAND);
-            node = new LogicalANDNode(node, BitwiseORExpression());
+            nodeTwo = BitwiseORExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new LogicalANDNode(node, nodeTwo);
+            if(node == NULL)
+            {
+                delete nodeTwo;
+                return NULL;
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         default:
@@ -153,6 +232,11 @@ SimpleNode *SimpleParser::LogicalANDExpression()
 SimpleNode *SimpleParser::BitwiseORExpression()
 {
     SimpleNode *node = BitwiseXORExpression();
+    if(node == NULL)
+    {
+        return NULL;
+    }
+    SimpleNode *nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -162,10 +246,24 @@ SimpleNode *SimpleParser::BitwiseORExpression()
         {
         case SimpleToken::BitwiseOR:
             eat(SimpleToken::BitwiseOR);
-            node = new ORNode(node, BitwiseXORExpression());
+            nodeTwo = BitwiseXORExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new ORNode(node, nodeTwo);
+            if(node == NULL)
+            {
+                delete nodeTwo;
+                return NULL;
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         default:
@@ -180,6 +278,11 @@ SimpleNode *SimpleParser::BitwiseORExpression()
 SimpleNode *SimpleParser::BitwiseXORExpression()
 {
     SimpleNode *node = BitwiseANDExpression();
+    if(node == NULL)
+    {
+        return NULL;
+    }
+    SimpleNode *nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -189,10 +292,24 @@ SimpleNode *SimpleParser::BitwiseXORExpression()
         {
         case SimpleToken::BitwiseXOR:
             eat(SimpleToken::BitwiseXOR);
-            node = new XORNode(node, BitwiseANDExpression());
+            nodeTwo = BitwiseANDExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new XORNode(node, nodeTwo);
+            if(node == NULL)
+            {
+                delete nodeTwo;
+                return NULL;
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         default:
@@ -207,6 +324,11 @@ SimpleNode *SimpleParser::BitwiseXORExpression()
 SimpleNode *SimpleParser::BitwiseANDExpression()
 {
     SimpleNode *node = EqualityExpression();
+    if(node == NULL)
+    {
+        return NULL;
+    }
+    SimpleNode *nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -216,10 +338,24 @@ SimpleNode *SimpleParser::BitwiseANDExpression()
         {
         case SimpleToken::BitwiseAND:
             eat(SimpleToken::BitwiseAND);
-            node = new ANDNode(node, EqualityExpression());
+            nodeTwo = EqualityExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new ANDNode(node, nodeTwo);
+            if(node == NULL)
+            {
+                delete nodeTwo;
+                return NULL;
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         default:
@@ -234,6 +370,11 @@ SimpleNode *SimpleParser::BitwiseANDExpression()
 SimpleNode *SimpleParser::EqualityExpression()
 {
     SimpleNode *node = RelationalExpression();
+    if(node == NULL)
+    {
+        return NULL;
+    }
+    SimpleNode *nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -243,18 +384,46 @@ SimpleNode *SimpleParser::EqualityExpression()
         {
         case SimpleToken::Equal:
             eat(SimpleToken::Equal);
-            node = new EqualNode(node, RelationalExpression());
+            nodeTwo = RelationalExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new EqualNode(node, nodeTwo);
+            if(node == NULL)
+            {
+                delete nodeTwo;
+                return NULL;
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         case SimpleToken::Unequal:
             eat(SimpleToken::Unequal);
-            node = new UnequalNode(node, RelationalExpression());
+            nodeTwo = RelationalExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new UnequalNode(node, nodeTwo);
+            if(node == NULL)
+            {
+                delete nodeTwo;
+                return NULL;
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         default:
@@ -269,6 +438,11 @@ SimpleNode *SimpleParser::EqualityExpression()
 SimpleNode *SimpleParser::RelationalExpression()
 {
     SimpleNode *node = ShiftExpression();
+    if(node == NULL)
+    {
+        return NULL;
+    }
+    SimpleNode *nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -278,34 +452,90 @@ SimpleNode *SimpleParser::RelationalExpression()
         {
         case SimpleToken::Greater:
             eat(SimpleToken::Greater);
-            node = new GreaterNode(node, ShiftExpression());
+            nodeTwo = ShiftExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new GreaterNode(node, nodeTwo);
+            if(node == NULL)
+            {
+                delete nodeTwo;
+                return NULL;
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         case SimpleToken::Lower:
             eat(SimpleToken::Lower);
-            node = new LowerNode(node, ShiftExpression());
+            nodeTwo = ShiftExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new LowerNode(node, nodeTwo);
+            if(node == NULL)
+            {
+                delete nodeTwo;
+                return NULL;
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         case SimpleToken::EqualOrGreater:
             eat(SimpleToken::EqualOrGreater);
-            node = new EqualOrGreaterNode(node, ShiftExpression());
+            nodeTwo = ShiftExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new EqualOrGreaterNode(node, nodeTwo);
+            if(node == NULL)
+            {
+                delete nodeTwo;
+                return NULL;
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         case SimpleToken::EqualOrLower:
             eat(SimpleToken::EqualOrLower);
-            node = new EqualOrLowerNode(node, ShiftExpression());
+            nodeTwo = ShiftExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new EqualOrLowerNode(node, nodeTwo);
+            if(node == NULL)
+            {
+                delete nodeTwo;
+                return NULL;
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         default:
@@ -320,6 +550,11 @@ SimpleNode *SimpleParser::RelationalExpression()
 SimpleNode *SimpleParser::ShiftExpression()
 {
     SimpleNode *node = AdditiveExpression();
+    if(node == NULL)
+    {
+        return NULL;
+    }
+    SimpleNode *nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -329,18 +564,43 @@ SimpleNode *SimpleParser::ShiftExpression()
         {
         case SimpleToken::LeftShift:
             eat(SimpleToken::LeftShift);
-            node = new LeftShiftNode(node, AdditiveExpression());
+            nodeTwo = AdditiveExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new LeftShiftNode(node, nodeTwo);
+            if(node == NULL)
+                return node;
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         case SimpleToken::RightShift:
             eat(SimpleToken::RightShift);
-            node = new RightShiftNode(node, AdditiveExpression());
+            nodeTwo = AdditiveExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new RightShiftNode(node, nodeTwo);
+            if(node == NULL)
+            {
+                return NULL;
+                delete nodeTwo;
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         default:
@@ -355,6 +615,11 @@ SimpleNode *SimpleParser::ShiftExpression()
 SimpleNode *SimpleParser::AdditiveExpression()
 {
     SimpleNode *node = MultiplicativeExpression();
+    if(node == NULL)
+    {
+        return NULL;
+    }
+    SimpleNode *nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -364,18 +629,46 @@ SimpleNode *SimpleParser::AdditiveExpression()
         {
         case SimpleToken::Plus:
             eat(SimpleToken::Plus);
-            node = new AdditionNode(node, MultiplicativeExpression());
+            nodeTwo = MultiplicativeExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new AdditionNode(node, nodeTwo);
+            if(node == NULL)
+            {
+                delete nodeTwo;
+                return NULL;
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         case SimpleToken::Minus:
             eat(SimpleToken::Minus);
-            node = new SubtractionNode(node, MultiplicativeExpression());
+            nodeTwo = MultiplicativeExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new SubtractionNode(node, nodeTwo);
+            if(node == NULL)
+            {
+                delete nodeTwo;
+                return NULL;
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         default:
@@ -390,6 +683,11 @@ SimpleNode *SimpleParser::AdditiveExpression()
 SimpleNode *SimpleParser::MultiplicativeExpression()
 {
     SimpleNode *node = UnaryExpression();
+    if(node == NULL)
+    {
+        return NULL;
+    }
+    SimpleNode *nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -399,26 +697,68 @@ SimpleNode *SimpleParser::MultiplicativeExpression()
         {
         case SimpleToken::Multiplication:
             eat(SimpleToken::Multiplication);
-            node = new MultiplicationNode(node, UnaryExpression());
+            nodeTwo = UnaryExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new MultiplicationNode(node, nodeTwo);
+            if(node == NULL)
+            {
+                delete nodeTwo;
+                return NULL;
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         case SimpleToken::Division:
             eat(SimpleToken::Division);
-            node = new DivisionNode(node, UnaryExpression());
+            nodeTwo = UnaryExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new DivisionNode(node, nodeTwo);
+            if(node == NULL)
+            {
+                delete nodeTwo;
+                return NULL;
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         case SimpleToken::Modulo:
             eat(SimpleToken::Modulo);
-            node = new ModuloNode(node, UnaryExpression());
+            nodeTwo = UnaryExpression();
+            if(nodeTwo == NULL)
+            {
+                SyntacticError(CurrentToken);
+                delete node;
+                return NULL;
+            }
+            node = new ModuloNode(node, nodeTwo);
+            if(node == NULL)
+            {
+                delete nodeTwo;
+                return NULL;
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
-                lexer->LexErrorAtToken(token,1);
+                TypeError(token);
+                delete node;
+                return NULL;
             }
             break;
         default:
@@ -439,38 +779,111 @@ SimpleNode *SimpleParser::UnaryExpression()
     {
     case SimpleToken::Plus:
         eat(SimpleToken::Plus);
-        node = new PositiveNode(UnaryExpression());
+        node = UnaryExpression();
+        if(node == NULL)
+        {
+            SyntacticError(CurrentToken);
+            return NULL;
+        }
+        node = new PositiveNode(node);
         if(node->getReturnType() == ValueNode::ErrorType)
         {
-            lexer->LexErrorAtToken(token,1);
+            TypeError(token);
+            delete node;
+            return NULL;
         }
         break;
     case SimpleToken::Minus:
         eat(SimpleToken::Minus);
-        node = new NegativeNode(UnaryExpression());
+        node = UnaryExpression();
+        if(node == NULL)
+        {
+            SyntacticError(CurrentToken);
+            return NULL;
+        }
+        node = new NegativeNode(node);
         if(node->getReturnType() == ValueNode::ErrorType)
         {
-            lexer->LexErrorAtToken(token,1);
+            TypeError(token);
+            delete node;
+            return NULL;
         }
         break;
     case SimpleToken::LogicalNegation:
         eat(SimpleToken::LogicalNegation);
-        node = new LogicalNegationNode(UnaryExpression());
+        node = UnaryExpression();
+        if(node == NULL)
+        {
+            SyntacticError(CurrentToken);
+            return NULL;
+        }
+        node = new LogicalNegationNode(node);
         if(node->getReturnType() == ValueNode::ErrorType)
         {
-            lexer->LexErrorAtToken(token,1);
+            TypeError(token);
+            delete node;
+            return NULL;
         }
         break;
     case SimpleToken::OnesComplement:
         eat(SimpleToken::OnesComplement);
-        node = new OnesComplementNode(UnaryExpression());
+        node = UnaryExpression();
+        if(node == NULL)
+        {
+            SyntacticError(CurrentToken);
+            return NULL;
+        }
+        node = new OnesComplementNode(node);
         if(node->getReturnType() == ValueNode::ErrorType)
         {
-            lexer->LexErrorAtToken(token,1);
+            TypeError(token);
+            delete node;
+            return NULL;
         }
+        break;
+    case SimpleToken::TypeCast:
+    {
+        eat(SimpleToken::TypeCast);
+        SimpleToken::TokenType typeToCastToTokenType = qSharedPointerDynamicCast<TypeCastToken>(token)->getTypeToCastTo();
+        SimpleNode::ValueTypes typeToCastToValueType = SimpleNode::Integer;
+        switch(typeToCastToTokenType)
+        {
+        case SimpleToken::Integer:
+            typeToCastToValueType = SimpleNode::Integer;
+            break;
+        case SimpleToken::Double:
+            typeToCastToValueType = SimpleNode::Double;
+            break;
+        case SimpleToken::Bool:
+            typeToCastToValueType = SimpleNode::Bool;
+            break;
+        case SimpleToken::String:
+            typeToCastToValueType = SimpleNode::String;
+            break;
+        default:
+            break;
+        }
+        node = UnaryExpression();
+        if(node == NULL)
+        {
+            SyntacticError(CurrentToken);
+            return NULL;
+        }
+        node = new TypeCastNode(node, typeToCastToValueType);
+        if(node->getReturnType() == ValueNode::ErrorType)
+        {
+            TypeError(token);
+            delete node;
+            return NULL;
+        }
+    }
         break;
     default:
         node = PostFixExpression();
+        if(node == NULL)
+        {
+            return NULL;
+        }
     }
 
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
@@ -480,6 +893,10 @@ SimpleNode *SimpleParser::UnaryExpression()
 SimpleNode *SimpleParser::PostFixExpression()
 {
     SimpleNode *node = PrimaryExpression();
+    if(node == NULL)
+    {
+        return NULL;
+    }
     SharedSimpleTokenPtr token = CurrentToken;
 
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
@@ -516,13 +933,56 @@ SimpleNode *SimpleParser::PrimaryExpression()
     case SimpleToken::LParan:
         eat(SimpleToken::LParan);
         node = Expression();
+        if(node == NULL)
+        {
+            return NULL;
+        }
         eat(SimpleToken::RParan);
         break;
+    case SimpleToken::EOFToken:
+        qDebug() << __PRETTY_FUNCTION__ << "EOF reached too soon!!!";
+        CurrentToken = SharedSimpleTokenPtr(new EOFToken(CurrentToken->getTokenPos(),0));
+        EOFUnexpectedError(CurrentToken);
+        return NULL;
+        break;
     default:
-        qDebug() << __PRETTY_FUNCTION__ << "EOF reached";
-        node = new EOFNode();
+//        SyntacticError(CurrentToken);
+        return NULL;
     }
 
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
     return node;
+}
+
+
+void SimpleParser::SyntacticError(SharedSimpleTokenPtr Token)
+{
+    if(ErrorOccured)
+        return;
+    ErrorOccured = true;
+    lexer->LexErrorAtToken(Token, 0);
+}
+
+void SimpleParser::TypeError(SharedSimpleTokenPtr Token)
+{
+    if(ErrorOccured)
+        return;
+    ErrorOccured = true;
+    lexer->LexErrorAtToken(Token, 1);
+}
+
+void SimpleParser::EOFUnexpectedError(SharedSimpleTokenPtr Token)
+{
+    if(ErrorOccured)
+        return;
+    ErrorOccured = true;
+    lexer->LexErrorAtToken(Token, 2);
+}
+
+void SimpleParser::EOFExpectedError(SharedSimpleTokenPtr Token)
+{
+    if(ErrorOccured)
+        return;
+    ErrorOccured = true;
+    lexer->LexErrorAtToken(Token, 3);
 }

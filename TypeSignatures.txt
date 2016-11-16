@@ -4,6 +4,21 @@ DataNode  			-> 		Integer
 
 Operators:
 
+(Type) TypeCast
+            Integer -> Integer -> Integer 	| 
+            Integer -> Double  -> Double 	| 
+            Integer -> Bool    -> Bool   	| 
+            Integer -> String  -> String 	| 
+            Double  -> Integer -> Integer 	| 
+            Double  -> Double  -> Double 	| 
+            Double  -> Bool    -> Bool   	| 
+            Double  -> String  -> String 	| 
+            Bool    -> Integer -> Integer 	| 
+            Bool    -> Double  -> Double 	| 
+            Bool    -> Bool    -> Bool   	| 
+            Bool    -> String  -> String 	| 
+            String  -> String  -> String 	 
+
 ++  increment		
             Integer -> Integer
 
@@ -154,7 +169,7 @@ Operators:
 >>  rightShift		
             Integer -> Integer -> Integer 
 
-?:  Conditional		
+?:  Conditional
             Bool 	-> Integer -> Integer -> Integer |
 			Bool 	-> Integer -> Double  -> Double  |
 			Bool 	-> Integer -> Bool    -> Bool    |

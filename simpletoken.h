@@ -16,7 +16,8 @@ public:
         LParan,
         RParan,
         Data,
-        Symbol,
+        Variable,
+        TypeCast,
         Increment,
         Decrement,
         Plus,
@@ -44,16 +45,23 @@ public:
         EOFToken
     }TokenType;
 
-    SimpleToken();
-    SimpleToken(const TokenType type);
+    SimpleToken(const int TokenPos = 0, const int TokenLen = 0);
+    SimpleToken(const TokenType type, const int TokenPos = 0, const int TokenLen = 0);
     virtual ~SimpleToken();
 
     TokenType getTokenType() const;
+    int getTokenPos() const;
+    int getTokenLen() const;
+
     virtual QString printValue() const = 0;
     virtual QString printToken() const = 0;
 
 protected:
     const TokenType type;
+
+private:
+    const int TokenPos;
+    const int TokenLen;
 };
 
 typedef QSharedPointer<SimpleToken> SharedSimpleTokenPtr;
@@ -61,7 +69,7 @@ typedef QSharedPointer<SimpleToken> SharedSimpleTokenPtr;
 class EOFToken : public SimpleToken
 {
 public:
-    EOFToken();
+    EOFToken(const int TokenPos, const int TokenLen);
     ~EOFToken();
 
     // SimpleToken interface
@@ -73,7 +81,7 @@ public:
 class IntegerToken : public SimpleToken
 {
 public:
-    IntegerToken(int value);
+    IntegerToken(const int value, const int TokenPos, const int TokenLen);
     ~IntegerToken();
     int getValue() const;
 
@@ -89,7 +97,7 @@ public:
 class DoubleToken : public SimpleToken
 {
 public:
-    DoubleToken(double value);
+    DoubleToken(double value, const int TokenPos, const int TokenLen);
     ~DoubleToken();
     double getValue() const;
 
@@ -105,7 +113,7 @@ public:
 class BoolToken : public SimpleToken
 {
 public:
-    BoolToken(bool value);
+    BoolToken(const bool value, const int TokenPos, const int TokenLen);
     ~BoolToken();
     bool getValue() const;
 
@@ -121,7 +129,7 @@ public:
 class StringToken : public SimpleToken
 {
 public:
-    StringToken(QString &value);
+    StringToken(const QString &value, const int TokenPos, const int TokenLen);
     ~StringToken();
     QString const &getValue() const;
 
@@ -137,7 +145,7 @@ public:
 class DataToken : public SimpleToken
 {
 public:
-    DataToken(const unsigned int dataIndex);
+    DataToken(const unsigned int dataIndex, const int TokenPos, const int TokenLen);
     ~DataToken();
 
     QString printValue() const;
@@ -149,10 +157,24 @@ private:
     const unsigned int dataIndex;
 };
 
+class VariableToken : public SimpleToken
+{
+    VariableToken(const QString &VariableName, const int TokenPos, const int TokenLen);
+    ~VariableToken();
+
+    QString printValue() const;
+    QString printToken() const;
+
+    QString &getVariableName() const;
+
+private:
+    const QString VariableName;
+};
+
 class OperationToken : public SimpleToken
 {
 public:
-    OperationToken(const SimpleToken::TokenType op);
+    OperationToken(const SimpleToken::TokenType op, const int TokenPos, const int TokenLen);
     ~OperationToken();
 
     QString printValue() const;
@@ -162,7 +184,7 @@ public:
 class LParanToken : public OperationToken
 {
 public:
-    LParanToken();
+    LParanToken(const int TokenPos, const int TokenLen);
     ~LParanToken();
 
     // SimpleToken interface
@@ -174,13 +196,30 @@ public:
 class RParanToken : public OperationToken
 {
 public:
-    RParanToken();
+    RParanToken(const int TokenPos, const int TokenLen);
     ~RParanToken();
 
     // SimpleToken interface
 public:
     QString printValue() const;
     QString printToken() const;
+};
+
+class TypeCastToken : public OperationToken
+{
+public:
+    TypeCastToken(SimpleToken::TokenType typeToCastTo, const int TokenPos, const int TokenLen);
+    ~TypeCastToken();
+
+    SimpleToken::TokenType getTypeToCastTo() const;
+
+    // SimpleToken interface
+public:
+    QString printValue() const;
+    QString printToken() const;
+
+private:
+    SimpleToken::TokenType typeToCastTo;
 };
 
 #endif // SIMPLETOKEN_H

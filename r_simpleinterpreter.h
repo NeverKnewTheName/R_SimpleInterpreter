@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+class SimpleLexer;
+
 namespace Ui {
 class R_SimpleInterpreter;
 }
@@ -17,9 +19,11 @@ public:
 
 private slots:
     void on_pushButton_clicked();
-
+    void lexerPosChanged(int pos, int len);
+    void receiveLexerHTMLFormattedErrMsg(QString HTMLFormattedErrMsg);
 private:
     Ui::R_SimpleInterpreter *ui;
+    SimpleLexer *lex;
 };
 
 #endif // R_SIMPLEINTERPRETER_H

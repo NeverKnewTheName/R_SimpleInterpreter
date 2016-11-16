@@ -13,6 +13,7 @@ public:
     {
         Value,
         Data,
+        Variable,
         Operation,
         EOFNode
     }NodeType;
@@ -25,7 +26,8 @@ public:
         ErrorType
     }ValueTypes;
     SimpleNode();
-    virtual ~SimpleNode();
+
+    virtual ~SimpleNode() = 0;
 
     virtual NodeType getNodeType() const = 0;
     virtual ValueTypes getReturnType() const = 0;
@@ -87,6 +89,25 @@ private:
     const SymbolTable * const SymblTbl;
 };
 
+class VariableNode : public SimpleNode
+{
+public:
+    VariableNode(const QString &VariableName, const SymbolTable * const SymblTbl);
+    ~VariableNode();
+    NodeType getNodeType() const;
+    SimpleNode::ValueTypes getReturnType() const;
+
+    ValueNode &visit();
+
+    QString printValue() const;
+    QString printNode() const;
+
+private:
+    ValueNode Result;
+    const QString VariableName;
+    const SymbolTable * const SymblTbl;
+};
+
 class OperationNode : public SimpleNode
 {
 public:
@@ -104,6 +125,7 @@ public:
     }OperationTypes;
     typedef enum _Operation
     {
+        TypeCast,
         Increment,
         Decrement,
         Positive,
@@ -209,6 +231,33 @@ public:
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
+};
+
+class TypeCastNode : public UnaryArithmeticOperationNode
+{
+public:
+    TypeCastNode(SimpleNode *rightChild, SimpleNode::ValueTypes typeToCastTo);
+    Operation getOp() const;
+    Associativity getAssociativity() const;
+    Precedence getPrecedence() const;
+
+    /**
+     * \brief Increments Integer Values by one and returns the result as a new ValueNode
+     *
+     * \param value[in] value to applay the operation to
+     *
+     * \return ValueNode with the operation's result
+     * \returns ValueNode of type Integer when successful
+     * \returns ValueNode of type ErrorType when failed
+     *
+     * \warning Only use this operation on Integer ValueNodes
+     */
+    ValueNode &DoOperation();
+
+    QString printValue() const;
+    QString printNode() const;
+private:
+    SimpleNode::ValueTypes typeToCastTo;
 };
 
 class IncrementNode : public UnaryArithmeticOperationNode

@@ -127,9 +127,15 @@ private:
     SimpleNode *PostFixExpression();
     SimpleNode *PrimaryExpression();
 
+    void SyntacticError(SharedSimpleTokenPtr Token);
+    void TypeError(SharedSimpleTokenPtr Token);
+    void EOFUnexpectedError(SharedSimpleTokenPtr Token);
+    void EOFExpectedError(SharedSimpleTokenPtr Token);
+
     SimpleLexer *lexer;
     SharedSimpleTokenPtr CurrentToken;
     SymbolTable SymblTbl;
+    bool ErrorOccured;
 };
 
 #endif // SIMPLEPARSER_H

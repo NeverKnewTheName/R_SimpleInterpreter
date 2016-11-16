@@ -57,6 +57,7 @@ ValueNode::ValueNode(const QString &value) :
 ValueNode::~ValueNode()
 {
     qDebug() << __PRETTY_FUNCTION__;
+    qDebug() << printNode();
 }
 
 SimpleNode::NodeType ValueNode::getNodeType() const
@@ -130,6 +131,7 @@ DataNode::DataNode(const unsigned int dataIndex, const SymbolTable * const Symbl
 DataNode::~DataNode()
 {
     qDebug() << __PRETTY_FUNCTION__;
+    qDebug() << printNode();
 }
 
 SimpleNode::NodeType DataNode::getNodeType() const
@@ -156,6 +158,47 @@ QString DataNode::printValue() const
 QString DataNode::printNode() const
 {
     QString NodeType = "DataNode";
+    QString value = printValue();
+
+    return QString("{(%1):(%2)}").arg(NodeType).arg(value);
+}
+
+VariableNode::VariableNode(const QString &VariableName, const SymbolTable * const SymblTbl) :
+    VariableName(VariableName),
+    SymblTbl(SymblTbl)
+{
+
+}
+
+VariableNode::~VariableNode()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+SimpleNode::NodeType VariableNode::getNodeType() const
+{
+    return SimpleNode::Variable;
+}
+
+SimpleNode::ValueTypes VariableNode::getReturnType() const
+{
+    return SimpleNode::Integer;
+}
+
+ValueNode &VariableNode::visit()
+{
+    Result = ValueNode(const_cast<SymbolTable*>(SymblTbl)->lookup(VariableName).getSymbolTableEntryValue().value<int>());
+    return Result;
+}
+
+QString VariableNode::printValue() const
+{
+    return QString(VariableName);
+}
+
+QString VariableNode::printNode() const
+{
+    QString NodeType("VariableNode");
     QString value = printValue();
 
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
@@ -211,12 +254,130 @@ OperationNode::OperationTypes UnaryArithmeticOperationNode::getOpType() const
     return OperationNode::Arithmetic;
 }
 
+TypeCastNode::TypeCastNode(SimpleNode *rightChild, SimpleNode::ValueTypes typeToCastTo) :
+    UnaryArithmeticOperationNode(rightChild),
+    typeToCastTo(typeToCastTo)
+{
+    returnType = rightChild->getReturnType();
+
+    switch(returnType)
+    {
+    case SimpleNode::Integer:
+    case SimpleNode::Double:
+    case SimpleNode::Bool:
+        if(typeToCastTo != SimpleNode::ErrorType )
+        {
+            implicitCastRightChild = typeToCastTo;
+            returnType = typeToCastTo;
+        }
+        else
+        {
+            implicitCastRightChild = SimpleNode::ErrorType;
+            returnType = ErrorType;
+        }
+        break;
+    case SimpleNode::String:
+        if(typeToCastTo == SimpleNode::String)
+        {
+            implicitCastRightChild = SimpleNode::String;
+            returnType = SimpleNode::String;
+        }
+        else
+        {
+            implicitCastRightChild = SimpleNode::ErrorType;
+            returnType = ErrorType;
+        }
+        break;
+    case SimpleNode::ErrorType:
+        implicitCastRightChild = SimpleNode::ErrorType;
+        returnType = ErrorType;
+        break;
+    }
+}
+
+OperationNode::Operation TypeCastNode::getOp() const
+{
+    return OperationNode::TypeCast;
+}
+
+OperationNode::Associativity TypeCastNode::getAssociativity() const
+{
+    return OperationNode::RightToLeft;
+}
+
+OperationNode::Precedence TypeCastNode::getPrecedence() const
+{
+    return OperationNode::UnaryPrec;
+}
+
+ValueNode &TypeCastNode::DoOperation()
+{
+    ValueNode &value = rightChild->visit();
+
+    switch(typeToCastTo)
+    {
+    case SimpleNode::Integer:
+        Result = ValueNode(value.getValue().value<int>());
+        break;
+    case SimpleNode::Double:
+        Result = ValueNode(value.getValue().value<double>());
+        break;
+    case SimpleNode::Bool:
+        Result = ValueNode(value.getValue().value<bool>());
+        break;
+    case SimpleNode::String:
+        Result = ValueNode(value.getValue().value<QString>());
+        break;
+    case SimpleNode::ErrorType:
+        Result = ValueNode();
+        break;
+    }
+
+    return Result;
+}
+
+QString TypeCastNode::printValue() const
+{
+    QString TypeClearName;
+    switch(typeToCastTo)
+    {
+    case SimpleNode::Integer:
+        TypeClearName = QString("Integer");
+        break;
+    case SimpleNode::Double:
+        TypeClearName = QString("Double");
+        break;
+    case SimpleNode::Bool:
+        TypeClearName = QString("Bool");
+        break;
+    case SimpleNode::String:
+        TypeClearName = QString("String");
+        break;
+    case SimpleNode::ErrorType:
+        TypeClearName = QString("ErrorType");
+        break;
+    }
+
+    return QString("(%1)").arg(TypeClearName);
+}
+
+QString TypeCastNode::printNode() const
+{
+    return QString("{(TypeCast):(%1)}").arg(printValue());
+}
+
 IncrementNode::IncrementNode(SimpleNode *rightChild) :
     UnaryArithmeticOperationNode(rightChild)
 {
     returnType = rightChild->getReturnType();
-    if(returnType != ValueNode::Integer)
+    if(returnType == ValueNode::Integer)
+    {
+        implicitCastRightChild = SimpleNode::Integer;
+    }
+    else
+    {
         returnType = ValueNode::ErrorType;
+    }
 }
 
 OperationNode::Operation IncrementNode::getOp() const
@@ -260,8 +421,14 @@ DecrementNode::DecrementNode(SimpleNode *rightChild) :
     UnaryArithmeticOperationNode(rightChild)
 {
     returnType = rightChild->getReturnType();
-    if(returnType != ValueNode::Integer)
+    if(returnType == ValueNode::Integer)
+    {
+        implicitCastRightChild = SimpleNode::Integer;
+    }
+    else
+    {
         returnType = ValueNode::ErrorType;
+    }
 }
 
 OperationNode::Operation DecrementNode::getOp() const
@@ -305,8 +472,18 @@ PositiveNode::PositiveNode(SimpleNode *rightChild) :
     UnaryArithmeticOperationNode(rightChild)
 {
     returnType = rightChild->getReturnType();
-    if( ( returnType != ValueNode::Integer ) && ( returnType != ValueNode::Double) )
-        returnType = ValueNode::ErrorType;// IS NOT either Integer or Double THUS ErrorType
+    if( returnType == ValueNode::Integer )
+    {
+        implicitCastRightChild = SimpleNode::Integer;
+    }
+    else if( returnType == ValueNode::Double )
+    {
+        implicitCastRightChild = SimpleNode::Double;
+    }
+    else
+    {
+        returnType = ValueNode::ErrorType;
+    }
 }
 
 OperationNode::Operation PositiveNode::getOp() const
@@ -358,8 +535,18 @@ NegativeNode::NegativeNode(SimpleNode *rightChild) :
     UnaryArithmeticOperationNode(rightChild)
 {
     returnType = rightChild->getReturnType();
-    if( ( returnType != ValueNode::Integer ) && ( returnType != ValueNode::Double ) )
+    if( returnType == ValueNode::Integer )
+    {
+        implicitCastRightChild = SimpleNode::Integer;
+    }
+    else if( returnType == ValueNode::Double )
+    {
+        implicitCastRightChild = SimpleNode::Double;
+    }
+    else
+    {
         returnType = ValueNode::ErrorType;
+    }
 }
 
 OperationNode::Operation NegativeNode::getOp() const
@@ -821,7 +1008,7 @@ MultiplicationNode::MultiplicationNode(SimpleNode *leftChild, SimpleNode *rightC
         /*
           * String * Integer -> String repeated for the value of the Integer and concatenated
           */
-        if( returnTypeRChild = ValueNode::Integer )
+        if( returnTypeRChild == ValueNode::Integer )
         {
             implicitCastLeftChild = SimpleNode::String;
             implicitCastRightChild = SimpleNode::Integer;
@@ -850,11 +1037,8 @@ ValueNode &MultiplicationNode::DoOperation()
 {
     ValueNode &value1 = leftChild->visit();
     ValueNode &value2 = rightChild->visit();
-    SimpleNode::ValueTypes resultType = ValueNode::Integer;
-    if( ( value1.getValueType() == ValueNode::Double ) || ( value2.getValueType() == ValueNode::Double ) )
-        resultType = ValueNode::Double;
 
-    switch(resultType)
+    switch(implicitCastLeftChild)
     {
     case ValueNode::Integer:
         if(implicitCastRightChild == SimpleNode::Double)
@@ -870,15 +1054,20 @@ ValueNode &MultiplicationNode::DoOperation()
         Result =  ValueNode(value1.getValue().value<double>() * value2.getValue().value<double>());
         break;
     case SimpleNode::String:
+    {
         QString input(value1.getValue().value<QString>());
         QString output(input);
         int cntr = value2.getValue().value<int>();
-        while(cntr)
+        if(cntr--)
         {
-            output.append(input);
-            cntr--;
+            while(cntr)
+            {
+                output.append(input);
+                cntr--;
+            }
         }
         Result =  ValueNode( output );
+    }
         break;
     default:
         Result =  ValueNode();
@@ -965,11 +1154,8 @@ ValueNode &DivisionNode::DoOperation()
 {
     ValueNode &value1 = leftChild->visit();
     ValueNode &value2 = rightChild->visit();
-    SimpleNode::ValueTypes resultType = ValueNode::Integer;
-    if( ( value1.getValueType() == ValueNode::Double ) || ( value2.getValueType() == ValueNode::Double ) )
-        resultType = ValueNode::Double;
 
-    switch(resultType)
+    switch(implicitCastLeftChild)
     {
     case ValueNode::Integer:
         if(implicitCastRightChild == SimpleNode::Double)
@@ -1596,7 +1782,7 @@ ValueNode &EqualNode::DoOperation()
         Result = ValueNode((value1.getValue().value<bool>() == value2.getValue().value<bool>()) ? true : false );
         break;
     case ValueNode::String:
-        Result = (!value1.getValue().value<QString>().compare(value2.getValue().value<QString>())) ? ValueNode(true) : ValueNode(false);
+        Result = ValueNode((!value1.getValue().value<QString>().compare(value2.getValue().value<QString>())) ? true : false );
         break;
     default:
         Result = ValueNode();
@@ -1679,23 +1865,25 @@ OperationNode::Precedence EqualOrGreaterNode::getPrecedence() const
     return OperationNode::RelationalPrec;
 }
 
-// // // ////////////////////////////////////////////////////////////ToCONTINUE
-
 ValueNode &EqualOrGreaterNode::DoOperation()
 {
     ValueNode &value1 = leftChild->visit();
     ValueNode &value2 = rightChild->visit();
-    SimpleNode::ValueTypes resultType = ValueNode::Integer;
-    if( ( value1.getValueType() == ValueNode::Double ) || ( value2.getValueType() == ValueNode::Double ) )
-        resultType = ValueNode::Double;
 
-    switch(resultType)
+    switch(implicitCastLeftChild)
     {
     case ValueNode::Integer:
-        Result = (value1.getValue().value<int>() >= value2.getValue().value<int>()) ? ValueNode(true) : ValueNode(false);
+        if(implicitCastRightChild == SimpleNode::Integer)
+        {
+            Result = ValueNode((value1.getValue().value<int>() >= value2.getValue().value<int>()) ? true : false );
+        }
+        else
+        {
+            Result = ValueNode((value1.getValue().value<double>() >= value2.getValue().value<double>()) ? true : false );
+        }
         break;
     case ValueNode::Double:
-        Result = (value1.getValue().value<double>() >= value2.getValue().value<double>()) ? ValueNode(true) : ValueNode(false);
+        Result = ValueNode((value1.getValue().value<double>() >= value2.getValue().value<double>()) ? true : false );
         break;
     default:
         Result = ValueNode();
@@ -1782,17 +1970,21 @@ ValueNode &EqualOrLowerNode::DoOperation()
 {
     ValueNode &value1 = leftChild->visit();
     ValueNode &value2 = rightChild->visit();
-    SimpleNode::ValueTypes resultType = ValueNode::Integer;
-    if( ( value1.getValueType() == ValueNode::Double ) || ( value2.getValueType() == ValueNode::Double ) )
-        resultType = ValueNode::Double;
 
-    switch(resultType)
+    switch(implicitCastLeftChild)
     {
     case ValueNode::Integer:
-        Result = (value1.getValue().value<int>() <= value2.getValue().value<int>()) ? ValueNode(true) : ValueNode(false);
+        if(implicitCastRightChild == SimpleNode::Integer)
+        {
+            Result = ValueNode((value1.getValue().value<int>() <= value2.getValue().value<int>()) ? true : false );
+        }
+        else
+        {
+            Result = ValueNode((value1.getValue().value<double>() <= value2.getValue().value<double>()) ? true : false );
+        }
         break;
     case ValueNode::Double:
-        Result = (value1.getValue().value<double>() <= value2.getValue().value<double>()) ? ValueNode(true) : ValueNode(false);
+        Result = ValueNode((value1.getValue().value<double>() <= value2.getValue().value<double>()) ? true : false );
         break;
     default:
         Result = ValueNode();
@@ -1837,22 +2029,38 @@ ValueNode &UnequalNode::DoOperation()
 {
     ValueNode &value1 = leftChild->visit();
     ValueNode &value2 = rightChild->visit();
-    SimpleNode::ValueTypes resultType = ValueNode::Integer; //Bool is treated as Integer
-    if( ( value1.getValueType() == ValueNode::Double ) || ( value2.getValueType() == ValueNode::Double ) )
-        resultType = ValueNode::Double;
-    if( ( value1.getValueType() == ValueNode::String ) || ( value2.getValueType() == ValueNode::String ) )
-        resultType = ValueNode::String;
 
-    switch(resultType)
+    switch(implicitCastLeftChild)
     {
     case ValueNode::Integer:
-        Result = (value1.getValue().value<int>() != value2.getValue().value<int>()) ? ValueNode(true) : ValueNode(false);
+        if(implicitCastRightChild == SimpleNode::Integer)
+        {
+            Result = ValueNode((value1.getValue().value<int>() != value2.getValue().value<int>()) ? true : false );
+        }
+        else if( implicitCastRightChild == SimpleNode::Double )
+        {
+            Result = ValueNode((value1.getValue().value<double>() != value2.getValue().value<double>()) ? true : false );
+        }
+        else if( implicitCastRightChild == SimpleNode::Bool )
+        {
+            Result = ValueNode((value1.getValue().value<bool>() != value2.getValue().value<bool>()) ? true : false );
+        }
         break;
     case ValueNode::Double:
-        Result = (value1.getValue().value<double>() != value2.getValue().value<double>()) ? ValueNode(true) : ValueNode(false);
+        if((implicitCastRightChild == SimpleNode::Double) || ( implicitCastRightChild == SimpleNode::Integer ))
+        {
+            Result = ValueNode((value1.getValue().value<double>() != value2.getValue().value<double>()) ? true : false );
+        }
+        else if( implicitCastRightChild == SimpleNode::Bool )
+        {
+            Result = ValueNode((value1.getValue().value<bool>() != value2.getValue().value<bool>()) ? true : false );
+        }
+        break;
+    case SimpleNode::Bool:
+        Result = ValueNode((value1.getValue().value<bool>() != value2.getValue().value<bool>()) ? true : false );
         break;
     case ValueNode::String:
-        Result = (value1.getValue().value<QString>().compare(value2.getValue().value<QString>())) ? ValueNode(true) : ValueNode(false);
+        Result = ValueNode((value1.getValue().value<QString>().compare(value2.getValue().value<QString>())) ? true : false );
         break;
     default:
         Result = ValueNode();
@@ -2315,7 +2523,43 @@ ValueNode &ConditionalNode::DoOperation()
     ValueNode value2 = midChild->visit();
     ValueNode &value3 = leftChild->visit();
 
-    Result = (value1.getValue().value<bool>()) ? ValueNode(value2) : ValueNode(value3);
+    bool IsTrue = value1.getValue().value<bool>();
+
+    switch(implicitCastMidChild)
+    {
+    case SimpleNode::Integer:
+        if(implicitCastRightChild == SimpleNode::Double)
+        {
+            Result = ValueNode((IsTrue) ? value2.getValue().value<double>() : value3.getValue().value<double>() );
+        }
+        else if(implicitCastRightChild == SimpleNode::Bool)
+        {
+            Result = ValueNode((IsTrue) ? value2.getValue().value<bool>() : value3.getValue().value<bool>() );
+        }
+        else
+        {
+            Result = ValueNode((IsTrue) ? value2.getValue().value<int>() : value3.getValue().value<int>() );
+        }
+        break;
+    case SimpleNode::Double:
+        if(implicitCastRightChild == SimpleNode::Bool)
+        {
+            Result = ValueNode((IsTrue) ? value2.getValue().value<bool>() : value3.getValue().value<bool>() );
+        }
+        else
+        {
+            Result = ValueNode((IsTrue) ? value2.getValue().value<double>() : value3.getValue().value<double>() );
+        }
+        break;
+    case SimpleNode::Bool:
+        Result = ValueNode((IsTrue) ? value2.getValue().value<bool>() : value3.getValue().value<bool>() );
+        break;
+    case SimpleNode::String:
+        Result = ValueNode((IsTrue) ? value2.getValue().value<QString>() : value3.getValue().value<QString>() );
+        break;
+    default:
+        Result = ValueNode();
+    }
 
     return Result;
 }
@@ -2341,6 +2585,7 @@ EOFNode::EOFNode()
 EOFNode::~EOFNode()
 {
     qDebug() << __PRETTY_FUNCTION__;
+    qDebug() << printNode();
 }
 
 SimpleNode::NodeType EOFNode::getNodeType() const
@@ -2367,3 +2612,4 @@ ValueNode &EOFNode::visit()
 {
     return InvalidValue;
 }
+

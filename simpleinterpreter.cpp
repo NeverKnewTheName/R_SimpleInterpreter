@@ -20,5 +20,8 @@ SimpleInterpreter::~SimpleInterpreter()
 
 ValueNode *SimpleInterpreter::interpret()
 {
+    if(tree == NULL)
+        return new ValueNode();
+
     return &tree->visit();
 }
