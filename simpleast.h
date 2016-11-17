@@ -2,6 +2,7 @@
 #define SIMPLEAST_H
 
 #include <QVariant>
+#include <QVector>
 #include <simplesymboltable.h>
 
 class ValueNode;
@@ -15,6 +16,7 @@ public:
         Data,
         Variable,
         Operation,
+        Function,
         EOFNode
     }NodeType;
     typedef enum _ValueTypes
@@ -23,10 +25,11 @@ public:
         Double,
         Bool,
         String,
+        Void,
         ErrorType
     }ValueTypes;
-    SimpleNode();
 
+    SimpleNode();
     virtual ~SimpleNode() = 0;
 
     virtual NodeType getNodeType() const = 0;
@@ -36,8 +39,9 @@ public:
     virtual QString printNode() const = 0;
 
     virtual ValueNode &visit() = 0;
-};
 
+    static QString getHumanReadableTypeNameToValueType(const ValueTypes type);
+};
 
 class ValueNode : public SimpleNode
 {
@@ -70,6 +74,33 @@ private:
     QVariant value;
 };
 
+class FunctionNode : public SimpleNode
+{
+public:
+    FunctionNode(
+            QString FunctionName,
+            SimpleNode::ValueTypes returnType,
+            QVector<SimpleNode *> FuncExpressions,
+            SimpleNode *returnNode
+            );
+    ~FunctionNode();
+
+    // SimpleNode interface
+public:
+    NodeType getNodeType() const;
+    ValueTypes getReturnType() const;
+    QString printValue() const;
+    QString printNode() const;
+    ValueNode &visit();
+
+private:
+    ValueNode Result;
+    QString FunctionName;
+    SimpleNode::ValueTypes returnType;
+    QVector<SimpleNode *> FuncExpressions;
+    SimpleNode *returnNode;
+};
+
 class DataNode : public SimpleNode
 {
 public:
@@ -92,7 +123,7 @@ private:
 class VariableNode : public SimpleNode
 {
 public:
-    VariableNode(const QString &VariableName, const SymbolTable * const SymblTbl, SimpleNode::ValueTypes type = SimpleNode::ErrorType);
+    VariableNode(const QString &VariableName, SymbolTable * const SymblTbl, SimpleNode::ValueTypes type = SimpleNode::ErrorType);
     ~VariableNode();
     NodeType getNodeType() const;
     SimpleNode::ValueTypes getReturnType() const;
@@ -105,7 +136,7 @@ public:
 private:
     ValueNode Result;
     const QString VariableName;
-    const SymbolTable * const SymblTbl;
+    SymbolTable * const SymblTbl;
     SimpleNode::ValueTypes type;
 };
 

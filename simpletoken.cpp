@@ -41,23 +41,32 @@ QString SimpleToken::convertTokenTypeToString(SimpleToken::TokenType type)
     QString typeString("UNDEFINED");
     switch(type)
     {
-    case Integer:
-        typeString = QString("Integer");
-        break;
-    case Double:
-        typeString = QString("Double");
-        break;
-    case Bool:
-        typeString = QString("Bool");
-        break;
-    case String:
-        typeString = QString("String");
+//    case Integer:
+//        typeString = QString("Integer");
+//        break;
+//    case Double:
+//        typeString = QString("Double");
+//        break;
+//    case Bool:
+//        typeString = QString("Bool");
+//        break;
+//    case String:
+//        typeString = QString("String");
+//        break;
+    case Value:
+        typeString = QString("Value");
         break;
     case LParan:
         typeString = QString("LParan");
         break;
+    case LCurlyParan:
+        typeString = QString("LCurlyParan");
+        break;
     case RParan:
         typeString = QString("RParan");
+        break;
+    case RCurlyParan:
+        typeString = QString("RCurlyParan");
         break;
     case Data:
         typeString = QString("Data");
@@ -146,6 +155,9 @@ QString SimpleToken::convertTokenTypeToString(SimpleToken::TokenType type)
     case SemiColonDelim:
         typeString = QString("SemiColonDelim");
         break;
+    case ReturnKeyword:
+        typeString = QString("ReturnKeyword");
+        break;
     case EOFToken:
         typeString = QString("EOFToken");
         break;
@@ -153,109 +165,109 @@ QString SimpleToken::convertTokenTypeToString(SimpleToken::TokenType type)
     return typeString;
 }
 
-IntegerToken::IntegerToken(int value, const int TokenPos, const int TokenLen) :
-    SimpleToken(SimpleToken::Integer, TokenPos, TokenLen),
-    value(value)
-{
-}
+//IntegerToken::IntegerToken(int value, const int TokenPos, const int TokenLen) :
+//    SimpleToken(SimpleToken::Integer, TokenPos, TokenLen),
+//    value(value)
+//{
+//}
 
-IntegerToken::~IntegerToken()
-{
-    qDebug() << __PRETTY_FUNCTION__;
-}
+//IntegerToken::~IntegerToken()
+//{
+//    qDebug() << __PRETTY_FUNCTION__;
+//}
 
-int IntegerToken::getValue() const
-{
-    return value;
-}
+//int IntegerToken::getValue() const
+//{
+//    return value;
+//}
 
-QString IntegerToken::printValue() const
-{
-    return QString::number(value);
-}
+//QString IntegerToken::printValue() const
+//{
+//    return QString::number(value);
+//}
 
-QString IntegerToken::printToken() const
-{
-    return QString("{IntegerToken}:{%1}").arg(value);
-}
+//QString IntegerToken::printToken() const
+//{
+//    return QString("{IntegerToken}:{%1}").arg(value);
+//}
 
-DoubleToken::DoubleToken(const double value, const int TokenPos, const int TokenLen ) :
-    SimpleToken(SimpleToken::Double, TokenPos, TokenLen),
-    value(value)
-{
-}
+//DoubleToken::DoubleToken(const double value, const int TokenPos, const int TokenLen ) :
+//    SimpleToken(SimpleToken::Double, TokenPos, TokenLen),
+//    value(value)
+//{
+//}
 
-DoubleToken::~DoubleToken()
-{
-    qDebug() << __PRETTY_FUNCTION__;
-}
+//DoubleToken::~DoubleToken()
+//{
+//    qDebug() << __PRETTY_FUNCTION__;
+//}
 
-double DoubleToken::getValue() const
-{
-    return value;
-}
+//double DoubleToken::getValue() const
+//{
+//    return value;
+//}
 
-QString DoubleToken::printValue() const
-{
-    return QString::number(value);
-}
+//QString DoubleToken::printValue() const
+//{
+//    return QString::number(value);
+//}
 
-QString DoubleToken::printToken() const
-{
-    return QString("{DoubleToken}:{%1}").arg(value);
-}
+//QString DoubleToken::printToken() const
+//{
+//    return QString("{DoubleToken}:{%1}").arg(value);
+//}
 
-BoolToken::BoolToken(bool value, const int TokenPos, const int TokenLen) :
-    SimpleToken(SimpleToken::Bool, TokenPos, TokenLen),
-    value(value)
-{
-}
+//BoolToken::BoolToken(bool value, const int TokenPos, const int TokenLen) :
+//    SimpleToken(SimpleToken::Bool, TokenPos, TokenLen),
+//    value(value)
+//{
+//}
 
-BoolToken::~BoolToken()
-{
-    qDebug() << __PRETTY_FUNCTION__;
-}
+//BoolToken::~BoolToken()
+//{
+//    qDebug() << __PRETTY_FUNCTION__;
+//}
 
-bool BoolToken::getValue() const
-{
-    return value;
-}
+//bool BoolToken::getValue() const
+//{
+//    return value;
+//}
 
-QString BoolToken::printValue() const
-{
-    return QString(value);
-}
+//QString BoolToken::printValue() const
+//{
+//    return QString(value);
+//}
 
-QString BoolToken::printToken() const
-{
-    return QString("{BoolToken}:{%1}").arg(value);
-}
+//QString BoolToken::printToken() const
+//{
+//    return QString("{BoolToken}:{%1}").arg(value);
+//}
 
-StringToken::StringToken(const QString &value, const int TokenPos, const int TokenLen) :
-    SimpleToken(SimpleToken::String, TokenPos, TokenLen),
-    value(value)
-{
-}
+//StringToken::StringToken(const QString &value, const int TokenPos, const int TokenLen) :
+//    SimpleToken(SimpleToken::String, TokenPos, TokenLen),
+//    value(value)
+//{
+//}
 
-StringToken::~StringToken()
-{
-    qDebug() << __PRETTY_FUNCTION__;
-}
+//StringToken::~StringToken()
+//{
+//    qDebug() << __PRETTY_FUNCTION__;
+//}
 
-const QString &StringToken::getValue() const
-{
-    return value;
-}
+//const QString &StringToken::getValue() const
+//{
+//    return value;
+//}
 
-QString StringToken::printValue() const
-{
-    return QString(value);
-}
+//QString StringToken::printValue() const
+//{
+//    return QString(value);
+//}
 
-QString StringToken::printToken() const
-{
-    return QString("{StringToken}:{%1}").arg(value);
-}
+//QString StringToken::printToken() const
+//{
+//    return QString("{StringToken}:{%1}").arg(value);
+//}
 
 DataToken::DataToken(const unsigned int dataIndex, const int TokenPos, const int TokenLen) :
     SimpleToken(SimpleToken::Data, TokenPos, TokenLen),
@@ -441,7 +453,7 @@ QString RParanToken::printToken() const
 //}
 
 
-TypeNameToken::TypeNameToken(SimpleToken::TokenType type, const int TokenPos, const int TokenLen) :
+TypeNameToken::TypeNameToken(SimpleNode::ValueTypes type, const int TokenPos, const int TokenLen) :
     SimpleToken(SimpleToken::TypeName, TokenPos, TokenLen),
     type(type)
 {
@@ -453,34 +465,14 @@ TypeNameToken::~TypeNameToken()
     qDebug() << __PRETTY_FUNCTION__;
 }
 
-SimpleToken::TokenType TypeNameToken::getType() const
+SimpleNode::ValueTypes TypeNameToken::getType() const
 {
     return type;
 }
 
 QString TypeNameToken::printValue() const
 {
-    QString typeRealName;
-    switch(type)
-    {
-    case SimpleToken::Integer:
-        typeRealName = QString("(Integer)");
-        break;
-    case SimpleToken::Double:
-        typeRealName = QString("(Double)");
-        break;
-    case SimpleToken::Bool:
-        typeRealName = QString("(Bool)");
-        break;
-    case SimpleToken::String:
-        typeRealName = QString("(String)");
-        break;
-    default:
-        typeRealName = QString("(ERROR)");
-        break;
-    }
-
-    return QString("(%1)").arg(typeRealName);
+    return QString("(%1)").arg(SimpleNode::getHumanReadableTypeNameToValueType(type));
 }
 
 QString TypeNameToken::printToken() const
@@ -613,3 +605,4 @@ QString ColonToken::printToken() const
 {
     return QString("{ColonToken}:{%1}").arg(printValue());
 }
+

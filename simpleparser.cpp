@@ -70,38 +70,31 @@ SimpleNode *SimpleParser::Function()
     SharedSimpleTokenPtr token;
     if(CurrentToken->getTokenType() == SimpleToken::TypeName)
     {
+        SymbolTable *FuncSubSymblTbl = new SymbolTable();
+        CurSymblTbl = FuncSubSymblTbl;
+
         token = CurrentToken;
         eat(SimpleToken::TypeName);
-        SimpleToken::TokenType returnType = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
+        SimpleNode::ValueTypes returnType = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
+
         token = CurrentToken;
         eat(SimpleToken::VariableID);
         QString FuncName = qSharedPointerDynamicCast<VariableIDToken>(token)->getID();
+
         eat(SimpleToken::LParan);
-        SymbolTable *FuncSubSymblTbl = new SymbolTable();
-        SymblTbl.addEntry(QString("FuncSubSymblTbl_%1").arg(FuncName), SymbolTableEntry(FuncSubSymblTbl));
-        QVector<VariableNode *> paramVariables;
+
         while(CurrentToken->getTokenType() == SimpleToken::TypeName)
         {
-            token = CurrentToken;
-            eat(SimpleToken::TypeName);
-            SimpleToken::TokenType type = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
-            token = CurrentToken;
-            eat(SimpleToken::VariableID);
-            paramVariables.append(new VariableNode(qSharedPointerDynamicCast<VariableIDToken>(token)->getID(),FuncSubSymblTbl,type));
+            VarDeclaration(FuncSubSymblTbl);
         }
 
         eat(SimpleToken::RParan);
         eat(SimpleToken::LCurlyParan);
-        QVector<VariableNode*> FuncVariables;
-        SimpleNode * VarDeclNode = NULL;
-        do
+        while(CurrentToken->getTokenType() == SimpleToken::TypeName)
         {
-            VarDeclNode = VarDeclaration();
-            if(VarDeclNode != NULL)
-            {
-                FuncVariables.append(VarDeclNode);
-            }
-        }while(VarDeclNode != NULL);
+            VarDeclaration(FuncSubSymblTbl);
+            eat(SimpleToken::SemiColonDelim);
+        }
 
         QVector<SimpleNode*> FuncExpressions;
         SimpleNode * ExpressionNode = NULL;
@@ -113,24 +106,24 @@ SimpleNode *SimpleParser::Function()
                 eat(SimpleToken::SemiColonDelim);
                 FuncExpressions.append(ExpressionNode);
             }
+            CurSymblTbl = FuncSubSymblTbl;
         }while(ExpressionNode != NULL);
         SimpleNode *ReturnStatementNode = ReturnStatement();
 
-        //ToDO CREATE FUNCTION NODE
-        //ADD VariablesDeclarations and ParameterVariables to SubSymbolTable of the Function; ADD GLOBAL SYMBOL TABLE TO FUNCTION;
         eat(SimpleToken::RCurlyParan);
+
+        node = new FunctionNode(FuncName,returnType,FuncExpressions,ReturnStatementNode);
     }
     else
     {
         SyntacticError(CurrentToken, QString("Expected FunctionDeclaration!"));
     }
 
-
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
     return node;
 }
 
-SimpleNode *SimpleParser::VarDeclaration()
+SimpleNode *SimpleParser::VarDeclaration(SymbolTable *SymbolTableToRegisterVariableTo)
 {
     SimpleNode *node;
     SharedSimpleTokenPtr token;
@@ -141,10 +134,9 @@ SimpleNode *SimpleParser::VarDeclaration()
         eat(SimpleToken::TypeName);
         if(CurrentToken->getTokenType() == SimpleToken::VariableID)
         {
-            SimpleToken::TokenType type = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
+            SimpleNode::ValueTypes type = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
             token = CurrentToken;
             eat(SimpleToken::VariableID);
-            eat(SimpleToken::SemiColonDelim);
             node = new VariableNode(qSharedPointerDynamicCast<VariableIDToken>(token)->getID(),&SymblTbl, type);
 
             return node;
@@ -164,11 +156,11 @@ SimpleNode *SimpleParser::ReturnStatement()
     {
         eat(SimpleToken::ReturnKeyword);
         node = Expression();
+        eat(SimpleToken::SemiColonDelim);
         if(node == NULL)
         {
-            eat(SimpleToken::SemiColonDelim);
+            return NULL;
         }
-//        node = ReturnNode(node);
     }
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
     return node;
@@ -1036,26 +1028,9 @@ SimpleNode *SimpleParser::UnaryExpression()
                 SyntacticError(CurrentToken);
                 return NULL;
             }
-            SimpleToken::TokenType typeToCastToTokenType = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
-            SimpleNode::ValueTypes typeToCastToValueType = SimpleNode::Integer;
-            switch(typeToCastToTokenType)
-            {
-            case SimpleToken::Integer:
-                typeToCastToValueType = SimpleNode::Integer;
-                break;
-            case SimpleToken::Double:
-                typeToCastToValueType = SimpleNode::Double;
-                break;
-            case SimpleToken::Bool:
-                typeToCastToValueType = SimpleNode::Bool;
-                break;
-            case SimpleToken::String:
-                typeToCastToValueType = SimpleNode::String;
-                break;
-            default:
-                break;
-            }
-            node = new TypeCastNode(node, typeToCastToValueType);
+
+            SimpleNode::ValueTypes typeToCastTo = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
+            node = new TypeCastNode(node, typeToCastTo);
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer and cast to (Integer|Double|Bool|String) | Double and cast to (Integer|Double|Bool|String) | Bool and cast to (Integer|Double|Bool|String) | String and cast to String"));
@@ -1134,21 +1109,10 @@ SimpleNode *SimpleParser::PrimaryExpression()
 
     switch(CurrentToken->getTokenType())
     {
-    case SimpleToken::Integer:
-        eat(SimpleToken::Integer);
-        node = new ValueNode(qSharedPointerDynamicCast<IntegerToken>(token)->getValue());
-        break;
-    case SimpleToken::Double:
-        eat(SimpleToken::Double);
-        node = new ValueNode(qSharedPointerDynamicCast<DoubleToken>(token)->getValue());
-        break;
-    case SimpleToken::Bool:
-        eat(SimpleToken::Bool);
-        node = new ValueNode(qSharedPointerDynamicCast<BoolToken>(token)->getValue());
-        break;
-    case SimpleToken::String:
-        eat(SimpleToken::String);
-        node = new ValueNode(qSharedPointerDynamicCast<StringToken>(token)->getValue());
+    case SimpleToken::Value:
+        eat(SimpleToken::Value);
+//        switch(token->getToken)
+        node = new ValueNode(qSharedPointerDynamicCast<ValueToken<int>>(token)->getValue());
         break;
     case SimpleToken::LParan:
         eat(SimpleToken::LParan);
@@ -1166,7 +1130,11 @@ SimpleNode *SimpleParser::PrimaryExpression()
         return NULL;
         break;
     default:
-        return Symbol();
+        node = Symbol();
+        if(node == NULL)
+        {
+            return NULL;
+        }
     }
 
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
@@ -1186,7 +1154,7 @@ SimpleNode *SimpleParser::Symbol()
         break;
     case SimpleToken::VariableID:
         eat(SimpleToken::VariableID);
-        node = new VariableNode(qSharedPointerDynamicCast<VariableIDToken>(token)->getVariableName(), &SymblTbl);
+        node = new VariableNode(qSharedPointerDynamicCast<VariableIDToken>(token)->getID(), &SymblTbl);
         break;
         //    case SimpleToken::Function:
         //        eat(SimpleToken::Data);

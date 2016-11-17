@@ -75,22 +75,26 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
         {
             //TypeName
             QString TypeName = regExMatch.captured(REGEX_TYPENAME);
-            SimpleToken::TokenType type = SimpleToken::Integer;
+            SimpleNode::ValueTypes type = SimpleNode::Integer;
             if(!TypeName.compare(QString("Integer")))
             {
-                type = SimpleToken::Integer;
+                type = SimpleNode::Integer;
             }
             else if(!TypeName.compare(QString("Double")))
             {
-                type = SimpleToken::Double;
+                type = SimpleNode::Double;
             }
             else if(!TypeName.compare(QString("Bool")))
             {
-                type = SimpleToken::Bool;
+                type = SimpleNode::Bool;
             }
             else if(!TypeName.compare(QString("String")))
             {
-                type = SimpleToken::String;
+                type = SimpleNode::String;
+            }
+            else if(!TypeName.compare(QString("Void")))
+            {
+                type = SimpleNode::Void;
             }
             Token = SharedSimpleTokenPtr(new TypeNameToken(type, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
         }
@@ -98,7 +102,7 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
         {
             //IsString
             QString string = regExMatch.captured(REGEX_STRING);
-            Token = SharedSimpleTokenPtr(new StringToken(string, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+            Token = SharedSimpleTokenPtr(new ValueToken<QString>(string, SimpleNode::String, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
         }
         else if(!regExMatch.captured(REGEX_VALUE).isNull())
         {
@@ -109,18 +113,18 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
                 if(!regExMatch.captured(REGEX_NUMBER_AFTER_POINT).isNull())
                 {
                     //IsDouble
-                    Token = SharedSimpleTokenPtr(new DoubleToken(regExMatch.captured(REGEX_VALUE).toDouble(), PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+                    Token = SharedSimpleTokenPtr(new ValueToken<double>(regExMatch.captured(REGEX_VALUE).toDouble(), SimpleNode::Double, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else
                 {
                     //IsInteger
-                    Token = SharedSimpleTokenPtr(new IntegerToken(regExMatch.captured(REGEX_VALUE).toInt(), PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+                    Token = SharedSimpleTokenPtr(new ValueToken<int>(regExMatch.captured(REGEX_VALUE).toInt(), SimpleNode::Integer, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
             }
             else if(!regExMatch.captured(REGEX_VALUE_BOOL).isNull())
             {
                 //Boolean
-                Token = SharedSimpleTokenPtr(new BoolToken((regExMatch.captured(REGEX_VALUE).compare(QString("true")) ? false : true), PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+                Token = SharedSimpleTokenPtr(new ValueToken<bool>((regExMatch.captured(REGEX_VALUE).compare(QString("true")) ? false : true), SimpleNode::Bool, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
             }
         }
         else if(!regExMatch.captured(REGEX_DATA).isNull())
@@ -143,6 +147,16 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
                 //RPARAN
                 Token = SharedSimpleTokenPtr(new RParanToken(PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
             }
+            else if(!operatorString.compare(QString("{")))
+            {
+                //LPARAN
+                Token = SharedSimpleTokenPtr(new LCurlyParanToken(PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+            }
+            else if(!operatorString.compare(QString("}")))
+            {
+                //RPARAN
+                Token = SharedSimpleTokenPtr(new RCurlyParanToken(PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+            }
             else
                 //Currently Increment and Decrement unsupported... Does it even make sense without variables??
                 if(!operatorString.compare(QString("++")))
@@ -153,8 +167,7 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
                 {
                     Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Decrement, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
-                else
-                    if(!operatorString.compare(QString("+")))
+                else if(!operatorString.compare(QString("+")))
                 {
                     //Plus
                     Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Plus, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
@@ -264,6 +277,16 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
                     //Conditional
                     Token = SharedSimpleTokenPtr(new QMarkToken(PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
+                else if(!operatorString.compare(QString(":")))
+                {
+                    //Conditional
+                    Token = SharedSimpleTokenPtr(new ColonToken(PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+                }
+                else if(!operatorString.compare(QString(";")))
+                {
+                    //Conditional
+                    Token = SharedSimpleTokenPtr(new SemiColonDelimToken(PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+                }
         }
         else if(!regExMatch.captured(REGEX_IDENTIFIER).isNull())
         {
@@ -273,7 +296,7 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
         if(consume)
         {
             PosInInputString = regExMatch.capturedStart() + regExMatch.capturedLength();
-//            LexerString.replace(regExMatch.capturedStart(),regExMatch.capturedLength(),QString(""));
+            //            LexerString.replace(regExMatch.capturedStart(),regExMatch.capturedLength(),QString(""));
         }
     }
     else

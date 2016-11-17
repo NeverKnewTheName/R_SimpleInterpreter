@@ -21,6 +21,7 @@ public:
     }SymbolTableEntryType;
 
     SymbolTableEntry();
+    SymbolTableEntry(SymbolTableEntryType type);
     SymbolTableEntry(SymbolTable * const symblTbl);
     SymbolTableEntry(int IntegerValue);
     SymbolTableEntry(double DoubleValue);

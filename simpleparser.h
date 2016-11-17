@@ -126,7 +126,7 @@ private:
     void eat(SimpleToken::TokenType tokenType);
     SimpleNode *Program();
     SimpleNode *Function();
-    SimpleNode *VarDeclaration();
+    SimpleNode *VarDeclaration(SymbolTable *SymbolTableToRegisterVariableTo);
     SimpleNode *ReturnStatement();
     SimpleNode *Expression();
     SimpleNode *AssignmentExpression();

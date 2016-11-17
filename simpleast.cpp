@@ -7,6 +7,34 @@ SimpleNode::SimpleNode()
 {
 }
 
+QString SimpleNode::getHumanReadableTypeNameToValueType(const SimpleNode::ValueTypes type)
+{
+    QString HumanReadableTypeName("UNDEFINED");
+    switch(type)
+    {
+    case SimpleNode::Integer:
+        HumanReadableTypeName = QString("Integer");
+        break;
+    case SimpleNode::Double:
+        HumanReadableTypeName = QString("Double");
+        break;
+    case SimpleNode::Bool:
+        HumanReadableTypeName = QString("Bool");
+        break;
+    case SimpleNode::String:
+        HumanReadableTypeName = QString("String");
+        break;
+    case SimpleNode::Void:
+        HumanReadableTypeName = QString("Void");
+        break;
+    case SimpleNode::ErrorType:
+        HumanReadableTypeName = QString("ErrorType");
+        break;
+    }
+
+    return HumanReadableTypeName;
+}
+
 SimpleNode::~SimpleNode()
 {
     qDebug() << __PRETTY_FUNCTION__;
@@ -163,7 +191,7 @@ QString DataNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
-VariableNode::VariableNode(const QString &VariableName, const SymbolTable * const SymblTbl, SimpleNode::ValueTypes type) :
+VariableNode::VariableNode(const QString &VariableName, SymbolTable * const SymblTbl, SimpleNode::ValueTypes type) :
     VariableName(VariableName),
     SymblTbl(SymblTbl)
 {
@@ -173,7 +201,7 @@ VariableNode::VariableNode(const QString &VariableName, const SymbolTable * cons
     }
     else
     {
-        SymbolTableEntry::SymbolTableEntryType symblTblEntryType = SymblTbl->lookup(VariableName).getSymbolTableEntryType();
+        const SymbolTableEntry::SymbolTableEntryType symblTblEntryType = this->SymblTbl->lookup(VariableName).getSymbolTableEntryType();
         switch(symblTblEntryType)
         {
         case SymbolTableEntry::Integer:
@@ -2638,3 +2666,77 @@ ValueNode &EOFNode::visit()
     return InvalidValue;
 }
 
+
+FunctionNode::FunctionNode(QString FunctionName, SimpleNode::ValueTypes returnType, QVector<SimpleNode *> FuncExpressions, SimpleNode *returnNode) :
+    FunctionName(FunctionName),
+    returnType(returnType),
+    FuncExpressions(FuncExpressions),
+    returnNode(returnNode)
+{
+    if( (returnType == SimpleNode::Void) && ( returnNode != NULL ) )
+    {
+        returnType = ValueNode::ErrorType;
+    }
+
+    SimpleNode::ValueTypes tempReturnType = returnNode->getReturnType();
+
+    if( ( tempReturnType == SimpleNode::String ) && ( returnType != SimpleNode::String ) )
+    {
+        returnType = SimpleNode::ErrorType;
+    }
+}
+
+FunctionNode::~FunctionNode()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+SimpleNode::NodeType FunctionNode::getNodeType() const
+{
+    return SimpleNode::Function;
+}
+
+SimpleNode::ValueTypes FunctionNode::getReturnType() const
+{
+    return returnType;
+}
+
+QString FunctionNode::printValue() const
+{
+    return QString("%1 %2").arg(SimpleNode::getHumanReadableTypeNameToValueType(returnType)).arg(FunctionName);
+}
+
+QString FunctionNode::printNode() const
+{
+    return QString("{(FunctionNode):(%1)}").arg(printValue());
+}
+
+ValueNode &FunctionNode::visit()
+{
+    for(SimpleNode *expr : FuncExpressions)
+    {
+        ValueNode exprRes = expr->visit();
+        qDebug() << "FunctionNode visited --> " << exprRes.printNode();
+    }
+
+    switch(returnType)
+    {
+    case SimpleNode::Integer:
+        Result = ValueNode(returnNode->visit().getValue().value<int>());
+        break;
+    case SimpleNode::Double:
+        Result = ValueNode(returnNode->visit().getValue().value<double>());
+        break;
+    case SimpleNode::Bool:
+        Result = ValueNode(returnNode->visit().getValue().value<bool>());
+        break;
+    case SimpleNode::String:
+        Result = ValueNode(returnNode->visit().getValue().value<QString>());
+        break;
+    case SimpleNode::Void:
+    default:
+        Result = ValueNode();
+    }
+
+    return Result;
+}

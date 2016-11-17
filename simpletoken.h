@@ -3,17 +3,21 @@
 
 #include <QVariant>
 #include <QSharedPointer>
+#include <QDebug>
+
+#include "simpleast.h"
 
 class SimpleToken
 {
 public:
     typedef enum _TokenType
     {
-        Integer,
-        Double,
-        Bool,
-        String,
-        Void,
+//        Integer,
+//        Double,
+//        Bool,
+//        String,
+//        Void,
+        Value,
         LParan,
         LCurlyParan,
         RParan,
@@ -84,6 +88,48 @@ public:
 public:
     QString printValue() const;
     QString printToken() const;
+};
+
+template<typename T> class ValueToken : public SimpleToken
+{
+public:
+    ValueToken(const T value, const SimpleNode::ValueTypes valueType, const int TokenPos, const int TokenLen) :
+        SimpleToken(SimpleToken::Value, TokenPos, TokenLen),
+        value(value),
+        valueType(valueType)
+    {
+        qDebug() << "ValueToken - Value: " << value << " Type: " << valueType;
+    }
+
+    ~ValueToken()
+    {
+        qDebug() << __PRETTY_FUNCTION__;
+    }
+
+    T getValue() const
+    {
+        return value;
+    }
+
+    SimpleNode::ValueTypes getValueType() const
+    {
+        return valueType;
+    }
+
+    // SimpleToken interface
+public:
+    QString printValue() const
+    {
+        return QString("%1").arg(value);
+    }
+    QString printToken() const
+    {
+        return QString("{ValueToken(%1)}:{%2}").arg(SimpleNode::getHumanReadableTypeNameToValueType(valueType)).arg(printValue());
+    }
+
+private:
+    const T value;
+    const SimpleNode::ValueTypes valueType;
 };
 
 class IntegerToken : public SimpleToken
@@ -240,10 +286,10 @@ public:
 class TypeNameToken : public SimpleToken
 {
 public:
-    TypeNameToken(SimpleToken::TokenType type, const int TokenPos, const int TokenLen);
+    TypeNameToken(SimpleNode::ValueTypes type, const int TokenPos, const int TokenLen);
     ~TypeNameToken();
 
-    SimpleToken::TokenType getType() const;
+    SimpleNode::ValueTypes getType() const;
 
     // SimpleToken interface
 public:
@@ -251,7 +297,7 @@ public:
     QString printToken() const;
 
 private:
-    const SimpleToken::TokenType type;
+    const SimpleNode::ValueTypes type;
 };
 
 class SemiColonDelimToken : public SimpleToken
