@@ -62,8 +62,8 @@ QString SimpleToken::convertTokenTypeToString(SimpleToken::TokenType type)
     case Data:
         typeString = QString("Data");
         break;
-    case Variable:
-        typeString = QString("Variable");
+    case VariableID:
+        typeString = QString("VariableID");
         break;
     case TypeName:
         typeString = QString("TypeName");
@@ -137,8 +137,14 @@ QString SimpleToken::convertTokenTypeToString(SimpleToken::TokenType type)
     case RightShift:
         typeString = QString("RightShift");
         break;
-    case Conditional:
-        typeString = QString("Conditional");
+    case QMark:
+        typeString = QString("QMark");
+        break;
+    case Colon:
+        typeString = QString("Colon");
+        break;
+    case SemiColonDelim:
+        typeString = QString("SemiColonDelim");
         break;
     case EOFToken:
         typeString = QString("EOFToken");
@@ -277,31 +283,31 @@ unsigned int DataToken::getDataIndex() const
     return dataIndex;
 }
 
-VariableToken::VariableToken(const QString &VariableName, const int TokenPos, const int TokenLen) :
-    SimpleToken(SimpleToken::Variable, TokenPos, TokenLen),
-    VariableName(VariableName)
+VariableIDToken::VariableIDToken(const QString &ID, const int TokenPos, const int TokenLen) :
+    SimpleToken(SimpleToken::VariableID, TokenPos, TokenLen),
+    ID(ID)
 {
 
 }
 
-VariableToken::~VariableToken()
+VariableIDToken::~VariableIDToken()
 {
     qDebug() << __PRETTY_FUNCTION__;
 }
 
-QString VariableToken::printValue() const
+QString VariableIDToken::printValue() const
 {
-    return QString(VariableName);
+    return QString(ID);
 }
 
-QString VariableToken::printToken() const
+QString VariableIDToken::printToken() const
 {
-    return QString("{VariableToken}:{%1}").arg(VariableName);
+    return QString("{VariableIDToken}:{%1}").arg(ID);
 }
 
-QString VariableToken::getVariableName() const
+QString VariableIDToken::getID() const
 {
-    return VariableName;
+    return ID;
 }
 
 OperationToken::OperationToken(const SimpleToken::TokenType op, const int TokenPos, const int TokenLen) :
@@ -480,4 +486,130 @@ QString TypeNameToken::printValue() const
 QString TypeNameToken::printToken() const
 {
     return QString("{TypeNameToken}:{%1}").arg(printValue());
+}
+
+SemiColonDelimToken::SemiColonDelimToken(const int TokenPos, const int TokenLen) :
+    SimpleToken(SimpleToken::SemiColonDelim, TokenPos, TokenLen)
+{
+
+}
+
+SemiColonDelimToken::~SemiColonDelimToken()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+QString SemiColonDelimToken::printValue() const
+{
+    return QString(";");
+}
+
+QString SemiColonDelimToken::printToken() const
+{
+    return QString("{SemiColonDelimToken}:{%1}").arg(printValue());
+}
+
+ReturnKeywordToken::ReturnKeywordToken(const int TokenPos, const int TokenLen) :
+    SimpleToken(SimpleToken::ReturnKeyword, TokenPos, TokenLen)
+{
+
+}
+
+ReturnKeywordToken::~ReturnKeywordToken()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+QString ReturnKeywordToken::printValue() const
+{
+    return QString("return");
+}
+
+QString ReturnKeywordToken::printToken() const
+{
+    return QString("{ReturnKeywordToken}:{%1}").arg(printValue());
+}
+
+LCurlyParanToken::LCurlyParanToken(const int TokenPos, const int TokenLen) :
+    OperationToken(SimpleToken::LCurlyParan, TokenPos, TokenLen)
+{
+
+}
+
+LCurlyParanToken::~LCurlyParanToken()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+QString LCurlyParanToken::printValue() const
+{
+    return QString("{");
+}
+
+QString LCurlyParanToken::printToken() const
+{
+    return QString("{LCurlyParanToken}:{%1}").arg(printValue());
+}
+
+RCurlyParanToken::RCurlyParanToken(const int TokenPos, const int TokenLen) :
+    OperationToken(SimpleToken::RCurlyParan, TokenPos, TokenLen)
+{
+
+}
+
+RCurlyParanToken::~RCurlyParanToken()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+QString RCurlyParanToken::printValue() const
+{
+    return QString("}");
+}
+
+QString RCurlyParanToken::printToken() const
+{
+    return QString("{RCurlyParanToken}:{%1}").arg(printValue());
+}
+
+QMarkToken::QMarkToken(const int TokenPos, const int TokenLen) :
+    SimpleToken(SimpleToken::QMark, TokenPos, TokenLen)
+{
+
+}
+
+QMarkToken::~QMarkToken()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+QString QMarkToken::printValue() const
+{
+    return QString("?");
+}
+
+QString QMarkToken::printToken() const
+{
+    return QString("{QMarkToken}:{%1}").arg(printValue());
+}
+
+ColonToken::ColonToken(const int TokenPos, const int TokenLen) :
+    SimpleToken(SimpleToken::Colon, TokenPos, TokenLen)
+{
+
+}
+
+ColonToken::~ColonToken()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+QString ColonToken::printValue() const
+{
+    return QString(":");
+}
+
+QString ColonToken::printToken() const
+{
+    return QString("{ColonToken}:{%1}").arg(printValue());
 }

@@ -1,7 +1,5 @@
 Program                  :   Function
-Function                 :   FunctionName TypeName "("(TypeName Variable)*")" "{" (VarDeclaration)* (Expression ";")* ReturnStatement "}"
-VarDeclaration           :   TypeName Variable ";"
-ReturnStatement          :   "return"  Expression? ";"
+Function                 :   ReturnType ID "("(TypeName Variable)*")" "{" (VarDeclaration)* (Expression ";")* ReturnStatement "}"
 Expression               :   AssignmentExpression 
 AssignmentExpression     :   (Variable ( "=" | "+=" | "-=" | "*=" | "/=" | "%="  | ">>="  | "<<="  | "&="  | "|="  | "^=" ))? ConditionalExpression
 ConditionalExpression    :   LogicalORExpression         ( "?" Expression ":" AssignmentExpression )*
@@ -16,17 +14,19 @@ RelationalExpression     :   ShiftExpression             ( ( "<" | ">" | "<=" | 
 ShiftExpression          :   AdditiveExpression          ( ( "<<" | ">>" ) AdditiveExpression )*
 AdditiveExpression       :   MultiplicativeExpression    ( ( "+" | "-" ) MultiplicativeExpression )*
 MultiplicativeExpression :   UnaryExpression             ( ( "*" | "/" | "%" ) UnaryExpression )*
-UnaryExpression          :   (( "++" | "--" )* | ( "+" | "-" | "~" | "!" | "("TypeName")" )*) PostFixExpression
-TypeName                 :   "Integer" | "Double" | "Bool" | "String"   ## Parsed by the LEXER
-PostFixExpression        :   Variable ( "++" | "--" )* | PrimaryExpression
+UnaryExpression          :   (( "++" | "--" ) | ( "+" | "-" | "~" | "!" | "("TypeName")" )*) PostFixExpression
+PostFixExpression        :   ( Variable ( "++" | "--" ) ) | PrimaryExpression
 PrimaryExpression        :   Value | Symbol | "(" Expression ")"
-Symbol                   :   Data | Variable | FunctionName
-Data                     :   "D"Integer                        ## Parsed by the LEXER
-Variable                 :   ID
-FunctionName             :   "Func"Integer
-Value                    :   Integer | Double | Bool | String   ## Parsed by the LEXER
+Symbol                   :   Data | VariableID
+VarDeclaration           :   TypeName Variable ";"
+ReturnStatement          :   "return"  Expression ? ";"
+ReturnType               :   TypeName | "Void"
+TypeName                 :   "Integer" | "Double" | "Bool" | "String"   ## Parsed by the LEXER
+Data                     :   "D"Integer                                 ## Parsed by the LEXER
+VariableID               :   ID
+Value                    :   Integer | Double | Bool | String           ## Parsed by the LEXER
 Integer                  :   (0-9)+
 Double                   :   (0-9)+.(0-9)+
-Bool                     :   true | false
+Bool                     :   "true" | "false"
 String                   :   "(a-z | 0-9)*"
-ID                       :   (a-z) (a-z | 0-9)*
+ID                       :   ( "_" | a-z ) ( "_" | a-z | 0-9)*

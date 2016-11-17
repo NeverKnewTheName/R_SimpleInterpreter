@@ -68,14 +68,14 @@ SimpleNode *SimpleParser::Function()
 {
     SimpleNode *node = NULL;
     SharedSimpleTokenPtr token;
-    if(CurrentToken->getTokenType() == SimpleToken::FunctionName)
+    if(CurrentToken->getTokenType() == SimpleToken::TypeName)
     {
         token = CurrentToken;
-        eat(SimpleToken::FunctionName);t
-                //        QString FuncName = qSharedPointerDynamicCast<FunctionNameToken>(token)->getFuncName();
-                token = CurrentToken;
         eat(SimpleToken::TypeName);
-        SimpleNode::NodeType returnType = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
+        SimpleToken::TokenType returnType = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
+        token = CurrentToken;
+        eat(SimpleToken::VariableID);
+        QString FuncName = qSharedPointerDynamicCast<VariableIDToken>(token)->getID();
         eat(SimpleToken::LParan);
         SymbolTable *FuncSubSymblTbl = new SymbolTable();
         SymblTbl.addEntry(QString("FuncSubSymblTbl_%1").arg(FuncName), SymbolTableEntry(FuncSubSymblTbl));
@@ -86,8 +86,8 @@ SimpleNode *SimpleParser::Function()
             eat(SimpleToken::TypeName);
             SimpleToken::TokenType type = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
             token = CurrentToken;
-            eat(SimpleToken::Variable);
-            paramVariables.append(new VariableNode(qSharedPointerDynamicCast<VariableToken>(token)->getVariableName(),FuncSubSymblTbl,type));
+            eat(SimpleToken::VariableID);
+            paramVariables.append(new VariableNode(qSharedPointerDynamicCast<VariableIDToken>(token)->getID(),FuncSubSymblTbl,type));
         }
 
         eat(SimpleToken::RParan);
@@ -97,7 +97,7 @@ SimpleNode *SimpleParser::Function()
         do
         {
             VarDeclNode = VarDeclaration();
-            if(ExpressionNode != NULL)
+            if(VarDeclNode != NULL)
             {
                 FuncVariables.append(VarDeclNode);
             }
@@ -139,13 +139,13 @@ SimpleNode *SimpleParser::VarDeclaration()
     {
         token = CurrentToken;
         eat(SimpleToken::TypeName);
-        if(CurrentToken->getTokenType() == SimpleToken::Variable)
+        if(CurrentToken->getTokenType() == SimpleToken::VariableID)
         {
             SimpleToken::TokenType type = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
             token = CurrentToken;
-            eat(SimpleToken::Variable);
+            eat(SimpleToken::VariableID);
             eat(SimpleToken::SemiColonDelim);
-            node = new VariableNode(qSharedPointerDynamicCast<VariableToken>(token)->getVariableName(),&SymblTbl, type);
+            node = new VariableNode(qSharedPointerDynamicCast<VariableIDToken>(token)->getID(),&SymblTbl, type);
 
             return node;
         }
@@ -168,7 +168,7 @@ SimpleNode *SimpleParser::ReturnStatement()
         {
             eat(SimpleToken::SemiColonDelim);
         }
-        node = ReturnNode(node);
+//        node = ReturnNode(node);
     }
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
     return node;
@@ -901,7 +901,7 @@ SimpleNode *SimpleParser::UnaryExpression()
     switch(CurrentToken->getTokenType())
     {
     case SimpleToken::Increment:
-        if(lexer->peekAtNextToken()->getTokenType() == SimpleToken::Variable )
+        if(lexer->peekAtNextToken()->getTokenType() == SimpleToken::VariableID )
         {
             eat(SimpleToken::Increment);
             node = Symbol();
@@ -930,7 +930,7 @@ SimpleNode *SimpleParser::UnaryExpression()
         }
         break;
     case SimpleToken::Decrement:
-        if(lexer->peekAtNextToken()->getTokenType() == SimpleToken::Variable )
+        if(lexer->peekAtNextToken()->getTokenType() == SimpleToken::VariableID )
         {
             eat(SimpleToken::Decrement);
             node = Symbol();
@@ -1184,9 +1184,9 @@ SimpleNode *SimpleParser::Symbol()
         eat(SimpleToken::Data);
         node = new DataNode(qSharedPointerDynamicCast<DataToken>(token)->getDataIndex(), &SymblTbl);
         break;
-    case SimpleToken::Variable:
-        eat(SimpleToken::Variable);
-        node = new VariableNode(qSharedPointerDynamicCast<VariableToken>(token)->getVariableName(), &SymblTbl);
+    case SimpleToken::VariableID:
+        eat(SimpleToken::VariableID);
+        node = new VariableNode(qSharedPointerDynamicCast<VariableIDToken>(token)->getVariableName(), &SymblTbl);
         break;
         //    case SimpleToken::Function:
         //        eat(SimpleToken::Data);

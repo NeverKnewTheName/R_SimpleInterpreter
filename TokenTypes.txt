@@ -1,0 +1,51 @@
+Integer					-> IntegerToken					-> RegEx: ((\d+(\.\d+)?)|(true|false))
+Double					-> DoubleToken					-> RegEx: ((\d+(\.\d+)?)|(true|false))
+Bool					-> BoolToken					-> RegEx: ((\d+(\.\d+)?)|(true|false))
+String					-> StringToken					-> RegEx: (?:"(.*?)")
+Void					-> TypeNameToken				-> RegEx: (Integer|Double|Bool|String|Void)
+LParan					-> LParanToken					-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+LCurlyParan				-> LCurlyParanToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+RParan					-> RParanToken					-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+RCurlyParan				-> RCurlyParanToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+Data					-> DataToken					-> RegEx: (D(\d+))
+VariableID				-> VariableIDToken				-> RegEx: ([_a-zA-Z]\w*)
+TypeName				-> TypeNameToken				-> RegEx: (Integer|Double|Bool|String|Void)
+Increment				-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+Decrement				-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+Plus					-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+Minus					-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+LogicalNegation			-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+OnesComplement			-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+Multiplication			-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+Division				-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+Modulo					-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+LogicalAND				-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+LogicalOR				-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+LogicalXOR				-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+Greater					-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+Lower					-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+Equal					-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+EqualOrGreater			-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+EqualOrLower			-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+Unequal					-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+BitwiseAND				-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+BitwiseOR				-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+BitwiseXOR				-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+LeftShift				-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+RightShift				-> OperationToken				-> RegEx: (\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])
+QMark   				-> QMarkToken					-> RegEx: ?
+Colon   				-> ColonToken					-> RegEx: :
+SemiColonDelim			-> SemiColonDelimToken			-> RegEx: ;
+ReturnKeyword			-> ReturnKeywordToken			-> RegEx: return
+EOFToken                -> EOFToken                     -> AutoDetected at end of INPUT
+
+
+
+(
+(return) |
+(Integer|Double|Bool|String|Void) | 
+(?:"(.*?)") | ((\d+(\.\d+)?) | (true|false) ) | 
+(D(\d+)) | 
+(\(|\{|\)|\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%\?;:]) | 
+( (?:\_|[a-z]|[A-Z])\w*)
+)

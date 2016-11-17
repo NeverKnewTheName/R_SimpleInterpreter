@@ -7,21 +7,21 @@
 #include <QThread>
 
 #define REGEX_WHOLE                 1
-#define REGEX_TYPENAME              2
-#define REGEX_STRING                3
-#define REGEX_VALUE                 4
-#define REGEX_NUMBER                5
-#define REGEX_NUMBER_AFTER_POINT    6
-#define REGEX_VALUE_BOOL            7
-#define REGEX_DATA                  8
-#define REGEX_DATA_INDEX            9
-#define REGEX_OPERATION             10
-#define REGEX_IDENTIFIER            11
-//#define REGEX_TYPENAME              12
+#define REGEX_RETRNKW               2
+#define REGEX_TYPENAME              3
+#define REGEX_STRING                4
+#define REGEX_VALUE                 5
+#define REGEX_NUMBER                6
+#define REGEX_NUMBER_AFTER_POINT    7
+#define REGEX_VALUE_BOOL            8
+#define REGEX_DATA                  9
+#define REGEX_DATA_INDEX            10
+#define REGEX_OPERATION             11
+#define REGEX_IDENTIFIER            12
 
 SimpleLexer::SimpleLexer(QObject *parent) :
     QObject(parent),
-    regEx(QString("((Integer|Double|Bool|String)|(?:\"(.*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\)|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|\\+{1,2}|\\-{1,2}|[!~\\*\\/%])|(\\w+))")),
+    regEx(QString("((return)|(Integer|Double|Bool|String|Void)|(?:\"(.*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\{|\\)|\\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|\\+{1,2}|\\-{1,2}|[!~\\*\\/%\\?;:])|([_a-zA-Z]\\w*))")),
     CurrentToken(new EOFToken(0,0)),
     PosInInputString(0)
 {
@@ -29,7 +29,7 @@ SimpleLexer::SimpleLexer(QObject *parent) :
 
 SimpleLexer::SimpleLexer(const QString &InputString, QObject *parent) :
     QObject(parent),
-    regEx(QString("((Integer|Double|Bool|String)|(?:\"(.*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\)|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|\\+{1,2}|\\-{1,2}|[!~\\*\\/%])|(\\w+))")),
+    regEx(QString("((return)|(Integer|Double|Bool|String|Void)|(?:\"(.*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\{|\\)|\\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|\\+{1,2}|\\-{1,2}|[!~\\*\\/%\\?;:])|([_a-zA-Z]\\w*))")),
     InputString(InputString),
     LexerString(InputString),
     CurrentToken(new EOFToken(0,0)),
@@ -58,13 +58,20 @@ SharedSimpleTokenPtr SimpleLexer::peekAtNextToken()
 SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
 {
     SharedSimpleTokenPtr Token;
-    QRegularExpressionMatch regExMatch = regEx.match(LexerString);
+    QRegularExpressionMatch regExMatch = regEx.match(LexerString,PosInInputString);
 
     if(regExMatch.hasMatch())
     {
+        qDebug() << PosInInputString;
         qDebug() << regExMatch.captured(1);
+        qDebug() << regExMatch.capturedStart(1);
+        qDebug() << regExMatch.capturedLength(1);
 
-        if(!regExMatch.captured(REGEX_TYPENAME).isNull())
+        if(!regExMatch.captured(REGEX_RETRNKW).isNull())
+        {
+            Token = SharedSimpleTokenPtr(new ReturnKeywordToken(PosInInputString,regExMatch.capturedLength(REGEX_WHOLE)));
+        }
+        else if(!regExMatch.captured(REGEX_TYPENAME).isNull())
         {
             //TypeName
             QString TypeName = regExMatch.captured(REGEX_TYPENAME);
@@ -252,21 +259,21 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
                     //RightShift
                     Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::RightShift, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
-                else if(!operatorString.compare(QString("?:")))
+                else if(!operatorString.compare(QString("?")))
                 {
                     //Conditional
-                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Conditional, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+                    Token = SharedSimpleTokenPtr(new QMarkToken(PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
         }
         else if(!regExMatch.captured(REGEX_IDENTIFIER).isNull())
         {
             //Identifier -> Variable
-            Token = SharedSimpleTokenPtr(new VariableToken(regExMatch.captured(REGEX_IDENTIFIER), PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+            Token = SharedSimpleTokenPtr(new VariableIDToken(regExMatch.captured(REGEX_IDENTIFIER), PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
         }
         if(consume)
         {
-            PosInInputString += regExMatch.capturedStart() + regExMatch.capturedLength();
-            LexerString.replace(regExMatch.capturedStart(),regExMatch.capturedLength(),QString(""));
+            PosInInputString = regExMatch.capturedStart() + regExMatch.capturedLength();
+//            LexerString.replace(regExMatch.capturedStart(),regExMatch.capturedLength(),QString(""));
         }
     }
     else

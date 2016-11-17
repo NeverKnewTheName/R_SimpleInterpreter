@@ -13,14 +13,14 @@ public:
         Double,
         Bool,
         String,
+        Void,
         LParan,
         LCurlyParan,
         RParan,
         RCurlyParan,
         Data,
-        Variable,
+        VariableID,
         TypeName,
-        FunctionName,
         Increment,
         Decrement,
         Plus,
@@ -44,9 +44,10 @@ public:
         BitwiseXOR,
         LeftShift,
         RightShift,
-        Conditional,
-        ReturnKeyword,
+        QMark,
+        Colon,
         SemiColonDelim,
+        ReturnKeyword,
         EOFToken
     }TokenType;
 
@@ -164,19 +165,19 @@ private:
     const unsigned int dataIndex;
 };
 
-class VariableToken : public SimpleToken
+class VariableIDToken : public SimpleToken
 {
 public:
-    VariableToken(const QString &VariableName, const int TokenPos, const int TokenLen);
-    ~VariableToken();
+    VariableIDToken(const QString &ID, const int TokenPos, const int TokenLen);
+    ~VariableIDToken();
 
     QString printValue() const;
     QString printToken() const;
 
-    QString getVariableName() const;
+    QString getID() const;
 
 private:
-    const QString VariableName;
+    const QString ID;
 };
 
 class OperationToken : public SimpleToken
@@ -200,12 +201,35 @@ public:
     QString printValue() const;
     QString printToken() const;
 };
+class LCurlyParanToken : public OperationToken
+{
+public:
+    LCurlyParanToken(const int TokenPos, const int TokenLen);
+    ~LCurlyParanToken();
+
+    // SimpleToken interface
+public:
+    QString printValue() const;
+    QString printToken() const;
+};
 
 class RParanToken : public OperationToken
 {
 public:
     RParanToken(const int TokenPos, const int TokenLen);
     ~RParanToken();
+
+    // SimpleToken interface
+public:
+    QString printValue() const;
+    QString printToken() const;
+};
+
+class RCurlyParanToken : public OperationToken
+{
+public:
+    RCurlyParanToken(const int TokenPos, const int TokenLen);
+    ~RCurlyParanToken();
 
     // SimpleToken interface
 public:
@@ -230,21 +254,52 @@ private:
     const SimpleToken::TokenType type;
 };
 
-//class TypeCastToken : public OperationToken
-//{
-//public:
-//    TypeCastToken(SimpleToken::TokenType typeToCastTo, const int TokenPos, const int TokenLen);
-//    ~TypeCastToken();
+class SemiColonDelimToken : public SimpleToken
+{
+public:
+    SemiColonDelimToken(const int TokenPos, const int TokenLen);
+    ~SemiColonDelimToken();
 
-//    SimpleToken::TokenType getTypeToCastTo() const;
+    // SimpleToken interface
+public:
+    QString printValue() const;
+    QString printToken() const;
+};
 
-//    // SimpleToken interface
-//public:
-//    QString printValue() const;
-//    QString printToken() const;
+class ReturnKeywordToken : public SimpleToken
+{
+public:
+    ReturnKeywordToken(const int TokenPos, const int TokenLen);
+    ~ReturnKeywordToken();
 
-//private:
-//    SimpleToken::TokenType typeToCastTo;
-//};
+    // SimpleToken interface
+public:
+    QString printValue() const;
+    QString printToken() const;
+};
+
+class QMarkToken : public SimpleToken
+{
+public:
+    QMarkToken(const int TokenPos, const int TokenLen);
+    ~QMarkToken();
+
+    // SimpleToken interface
+public:
+    QString printValue() const;
+    QString printToken() const;
+};
+
+class ColonToken : public SimpleToken
+{
+public:
+    ColonToken(const int TokenPos, const int TokenLen);
+    ~ColonToken();
+
+    // SimpleToken interface
+public:
+    QString printValue() const;
+    QString printToken() const;
+};
 
 #endif // SIMPLETOKEN_H
