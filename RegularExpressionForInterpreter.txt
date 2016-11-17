@@ -5,9 +5,10 @@ Value       -       ((\d+(\.\d+)?)|(true|false))
 Data        -       (D(\d+))
 Operator    -       ([<>!=]?=|[<>]{1,2}|[&\|\^\+\-]{1,2}|[!~\*\/%])
 Conditional -       \?: ToDO
+Variable    -       (\w+)
 
-Combined            ((".*")|((\d+(\.\d+)?)|(true|false))|(D(\d+))|([<>!=]?=|[<>]{1,2}|[&\|\^\+\-]{1,2}|[!~\*\/%]))
-CombinedEscaped     ((\".*\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|([<>!=]?=|[<>]{1,2}|[&\\|\\^\\+\\-]{1,2}|[!~\\*\\/%]))
+Combined            ((?:"(.*?)")|((\d+(\.\d+)?)|(true|false))|(D(\d+))|(\((Integer|Double|Bool|String)\)|\(|\)|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|[\+\-!~\*\/%])|(\w+))
+CombinedEscaped     ((?:\"(.*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\((Integer|Double|Bool|String)\\)|\\(|\\)|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|[\\+\\-!~\\*\\/%]))
 
 Operators:
 ++  increment
@@ -36,3 +37,157 @@ Operators:
 <<  leftShift
 >>  rightShift
 ?:  Conditional
+
+
+
+
+( Capturing group #1. Groups multiple tokens together and creates a capture group for extracting a substring or using a backreference.
+(?: Non-capturing group. Groups multiple tokens together without creating a capture group.
+" Character. Matches a """ character (char code 34).
+( Capturing group #2. Groups multiple tokens together and creates a capture group for extracting a substring or using a backreference.
+. Dot. Matches any character except line breaks.
+* Star. Match 0 or more of the preceding token.
+? Lazy. Makes the preceding quantifier lazy, causing it to match as few characters as possible.
+)
+" Character. Matches a """ character (char code 34).
+)
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+( Capturing group #3. Groups multiple tokens together and creates a capture group for extracting a substring or using a backreference.
+( Capturing group #4. Groups multiple tokens together and creates a capture group for extracting a substring or using a backreference.
+\d Digit. Matches any digit character (0-9).
++ Plus. Match 1 or more of the preceding token.
+( Capturing group #5. Groups multiple tokens together and creates a capture group for extracting a substring or using a backreference.
+\. Escaped character. Matches a "." character (char code 46).
+\d Digit. Matches any digit character (0-9).
++ Plus. Match 1 or more of the preceding token.
+)
+? Optional. Match between 0 and 1 of the preceding token.
+)
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+( Capturing group #6. Groups multiple tokens together and creates a capture group for extracting a substring or using a backreference.
+t Character. Matches a "t" character (char code 116).
+r Character. Matches a "r" character (char code 114).
+u Character. Matches a "u" character (char code 117).
+e Character. Matches a "e" character (char code 101).
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+f Character. Matches a "f" character (char code 102).
+a Character. Matches a "a" character (char code 97).
+l Character. Matches a "l" character (char code 108).
+s Character. Matches a "s" character (char code 115).
+e Character. Matches a "e" character (char code 101).
+)
+)
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+( Capturing group #7. Groups multiple tokens together and creates a capture group for extracting a substring or using a backreference.
+D Character. Matches a "D" character (char code 68).
+( Capturing group #8. Groups multiple tokens together and creates a capture group for extracting a substring or using a backreference.
+\d Digit. Matches any digit character (0-9).
++ Plus. Match 1 or more of the preceding token.
+)
+)
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+( Capturing group #9. Groups multiple tokens together and creates a capture group for extracting a substring or using a backreference.
+\( Escaped character. Matches a "(" character (char code 40).
+( Capturing group #10. Groups multiple tokens together and creates a capture group for extracting a substring or using a backreference.
+I Character. Matches a "I" character (char code 73).
+n Character. Matches a "n" character (char code 110).
+t Character. Matches a "t" character (char code 116).
+e Character. Matches a "e" character (char code 101).
+g Character. Matches a "g" character (char code 103).
+e Character. Matches a "e" character (char code 101).
+r Character. Matches a "r" character (char code 114).
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+D Character. Matches a "D" character (char code 68).
+o Character. Matches a "o" character (char code 111).
+u Character. Matches a "u" character (char code 117).
+b Character. Matches a "b" character (char code 98).
+l Character. Matches a "l" character (char code 108).
+e Character. Matches a "e" character (char code 101).
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+B Character. Matches a "B" character (char code 66).
+o Character. Matches a "o" character (char code 111).
+o Character. Matches a "o" character (char code 111).
+l Character. Matches a "l" character (char code 108).
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+S Character. Matches a "S" character (char code 83).
+t Character. Matches a "t" character (char code 116).
+r Character. Matches a "r" character (char code 114).
+i Character. Matches a "i" character (char code 105).
+n Character. Matches a "n" character (char code 110).
+g Character. Matches a "g" character (char code 103).
+)
+\) Escaped character. Matches a ")" character (char code 41).
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+\( Escaped character. Matches a "(" character (char code 40).
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+\) Escaped character. Matches a ")" character (char code 41).
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+[ Character set. Match any character in the set.
+< Character. Matches a "<" character (char code 60).
+> Character. Matches a ">" character (char code 62).
+! Character. Matches a "!" character (char code 33).
+= Character. Matches a "=" character (char code 61).
+]
+? Optional. Match between 0 and 1 of the preceding token.
+= Character. Matches a "=" character (char code 61).
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+< Character. Matches a "<" character (char code 60).
+{1,2} Quantifier. Match between 1 and 2 of the preceding token.
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+> Character. Matches a ">" character (char code 62).
+{1,2} Quantifier. Match between 1 and 2 of the preceding token.
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+& Character. Matches a "&" character (char code 38).
+{1,2} Quantifier. Match between 1 and 2 of the preceding token.
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+\| Escaped character. Matches a "|" character (char code 124).
+{1,2} Quantifier. Match between 1 and 2 of the preceding token.
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+\^ Escaped character. Matches a "^" character (char code 94).
+{1,2} Quantifier. Match between 1 and 2 of the preceding token.
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+[ Character set. Match any character in the set.
+\+ Escaped character. Matches a "+" character (char code 43).
+\- Escaped character. Matches a "-" character (char code 45).
+! Character. Matches a "!" character (char code 33).
+~ Character. Matches a "~" character (char code 126).
+\* Escaped character. Matches a "*" character (char code 42).
+\/ Escaped character. Matches a "/" character (char code 47).
+% Character. Matches a "%" character (char code 37).
+]
+)
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+( Capturing group #11. Groups multiple tokens together and creates a capture group for extracting a substring or using a backreference.
+I Character. Matches a "I" character (char code 73).
+n Character. Matches a "n" character (char code 110).
+t Character. Matches a "t" character (char code 116).
+e Character. Matches a "e" character (char code 101).
+g Character. Matches a "g" character (char code 103).
+e Character. Matches a "e" character (char code 101).
+r Character. Matches a "r" character (char code 114).
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+D Character. Matches a "D" character (char code 68).
+o Character. Matches a "o" character (char code 111).
+u Character. Matches a "u" character (char code 117).
+b Character. Matches a "b" character (char code 98).
+l Character. Matches a "l" character (char code 108).
+e Character. Matches a "e" character (char code 101).
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+B Character. Matches a "B" character (char code 66).
+o Character. Matches a "o" character (char code 111).
+o Character. Matches a "o" character (char code 111).
+l Character. Matches a "l" character (char code 108).
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+S Character. Matches a "S" character (char code 83).
+t Character. Matches a "t" character (char code 116).
+r Character. Matches a "r" character (char code 114).
+i Character. Matches a "i" character (char code 105).
+n Character. Matches a "n" character (char code 110).
+g Character. Matches a "g" character (char code 103).
+)
+| Alternation. Acts like a boolean OR. Matches the expression before or after the |.
+( Capturing group #12. Groups multiple tokens together and creates a capture group for extracting a substring or using a backreference.
+\w Word. Matches any word character (alphanumeric & underscore).
++ Plus. Match 1 or more of the preceding token.
+)
+)

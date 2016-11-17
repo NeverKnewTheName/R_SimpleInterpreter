@@ -188,7 +188,7 @@ QString VariableToken::printToken() const
     return QString("{VariableToken}:{%1}").arg(VariableName);
 }
 
-QString &VariableToken::getVariableName() const
+QString VariableToken::getVariableName() const
 {
     return VariableName;
 }

@@ -159,13 +159,14 @@ private:
 
 class VariableToken : public SimpleToken
 {
+public:
     VariableToken(const QString &VariableName, const int TokenPos, const int TokenLen);
     ~VariableToken();
 
     QString printValue() const;
     QString printToken() const;
 
-    QString &getVariableName() const;
+    QString getVariableName() const;
 
 private:
     const QString VariableName;
