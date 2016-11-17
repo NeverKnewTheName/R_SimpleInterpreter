@@ -3,15 +3,16 @@
  * Capture Groups:
  *
  * 1 - Whole Result
- * 2 - String
- * 3 - Value
- *  -- 4 Number
- *  -- 5 Part after point -> Detects Double Values!
- *  -- 6 Bool Detects if a boolean value was found
- * 7 - Data
- *  -- 8 Index of data
- * 9 - Operation
- *  -- 10 Type
+ * 2 - TypeName
+ * 3 - String
+ * 4 - Value
+ *  -- 5 Number
+ *  -- 6 Part after point -> Detects Double Values!
+ *  -- 7 Bool Detects if a boolean value was found
+ * 8 - Data
+ *  -- 9 Index of data
+ * 10 - Operation
+ * 11 Identifier
  *
  */
 
@@ -36,8 +37,9 @@ public:
     ~SimpleLexer();
     void setStringForLexer(const QString &InputString);
 
-    SharedSimpleTokenPtr getNextToken();
-    void LexErrorAtToken(SharedSimpleTokenPtr ErrorAtToken, int type);
+    SharedSimpleTokenPtr peekAtNextToken();
+    SharedSimpleTokenPtr getNextToken(bool consume = true);
+    void LexErrorAtToken(SharedSimpleTokenPtr ErrorAtToken, int type, QString details = QString());
 
 signals:
     void LexerPosAt(int pos, int len);

@@ -6,10 +6,22 @@
 #include <QDebug>
 #include <QThread>
 
+#define REGEX_WHOLE                 1
+#define REGEX_TYPENAME              2
+#define REGEX_STRING                3
+#define REGEX_VALUE                 4
+#define REGEX_NUMBER                5
+#define REGEX_NUMBER_AFTER_POINT    6
+#define REGEX_VALUE_BOOL            7
+#define REGEX_DATA                  8
+#define REGEX_DATA_INDEX            9
+#define REGEX_OPERATION             10
+#define REGEX_IDENTIFIER            11
+//#define REGEX_TYPENAME              12
 
 SimpleLexer::SimpleLexer(QObject *parent) :
     QObject(parent),
-    regEx(QString("((?:\"(.*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\((Integer|Double|Bool|String)\\)|\\(|\\)|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|[\\+\\-!~\\*\\/%]))")),
+    regEx(QString("((Integer|Double|Bool|String)|(?:\"(.*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\)|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|\\+{1,2}|\\-{1,2}|[!~\\*\\/%])|(\\w+))")),
     CurrentToken(new EOFToken(0,0)),
     PosInInputString(0)
 {
@@ -17,7 +29,7 @@ SimpleLexer::SimpleLexer(QObject *parent) :
 
 SimpleLexer::SimpleLexer(const QString &InputString, QObject *parent) :
     QObject(parent),
-    regEx(QString("((?:\"(.*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\((Integer|Double|Bool|String)\\)|\\(|\\)|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|[\\+\\-!~\\*\\/%]))")),
+    regEx(QString("((Integer|Double|Bool|String)|(?:\"(.*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\)|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|\\+{1,2}|\\-{1,2}|[!~\\*\\/%])|(\\w+))")),
     InputString(InputString),
     LexerString(InputString),
     CurrentToken(new EOFToken(0,0)),
@@ -37,220 +49,241 @@ void SimpleLexer::setStringForLexer(const QString &InputString)
     this->PosInInputString = 0;
 }
 
-SharedSimpleTokenPtr SimpleLexer::getNextToken()
+SharedSimpleTokenPtr SimpleLexer::peekAtNextToken()
 {
+    qDebug() << __PRETTY_FUNCTION__;
+    return getNextToken(false);
+}
+
+SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
+{
+    SharedSimpleTokenPtr Token;
     QRegularExpressionMatch regExMatch = regEx.match(LexerString);
 
     if(regExMatch.hasMatch())
     {
-        if(!regExMatch.captured(2).isNull())
+        qDebug() << regExMatch.captured(1);
+
+        if(!regExMatch.captured(REGEX_TYPENAME).isNull())
+        {
+            //TypeName
+            QString TypeName = regExMatch.captured(REGEX_TYPENAME);
+            SimpleToken::TokenType type = SimpleToken::Integer;
+            if(!TypeName.compare(QString("Integer")))
+            {
+                type = SimpleToken::Integer;
+            }
+            else if(!TypeName.compare(QString("Double")))
+            {
+                type = SimpleToken::Double;
+            }
+            else if(!TypeName.compare(QString("Bool")))
+            {
+                type = SimpleToken::Bool;
+            }
+            else if(!TypeName.compare(QString("String")))
+            {
+                type = SimpleToken::String;
+            }
+            Token = SharedSimpleTokenPtr(new TypeNameToken(type, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+        }
+        else if(!regExMatch.captured(REGEX_STRING).isNull())
         {
             //IsString
-            QString string = regExMatch.captured(2);
-            CurrentToken = SharedSimpleTokenPtr(new StringToken(string, PosInInputString, regExMatch.capturedLength(1)));
+            QString string = regExMatch.captured(REGEX_STRING);
+            Token = SharedSimpleTokenPtr(new StringToken(string, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
         }
-        else if(!regExMatch.captured(3).isNull())
+        else if(!regExMatch.captured(REGEX_VALUE).isNull())
         {
             //IsValue
-            if(!regExMatch.captured(4).isNull()) //Number
+            if(!regExMatch.captured(REGEX_NUMBER).isNull()) //Number
             {
                 //IsNumber
-                if(!regExMatch.captured(5).isNull())
+                if(!regExMatch.captured(REGEX_NUMBER_AFTER_POINT).isNull())
                 {
                     //IsDouble
-                    CurrentToken = SharedSimpleTokenPtr(new DoubleToken(regExMatch.captured(3).toDouble(), PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new DoubleToken(regExMatch.captured(REGEX_VALUE).toDouble(), PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else
                 {
                     //IsInteger
-                    CurrentToken = SharedSimpleTokenPtr(new IntegerToken(regExMatch.captured(3).toInt(), PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new IntegerToken(regExMatch.captured(REGEX_VALUE).toInt(), PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
             }
-            else if(!regExMatch.captured(6).isNull())
+            else if(!regExMatch.captured(REGEX_VALUE_BOOL).isNull())
             {
                 //Boolean
-                CurrentToken = SharedSimpleTokenPtr(new BoolToken((regExMatch.captured(3).compare(QString("true")) ? false : true), PosInInputString, regExMatch.capturedLength(1)));
+                Token = SharedSimpleTokenPtr(new BoolToken((regExMatch.captured(REGEX_VALUE).compare(QString("true")) ? false : true), PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
             }
         }
-        else if(!regExMatch.captured(7).isNull())
+        else if(!regExMatch.captured(REGEX_DATA).isNull())
         {
             //IsData
-            int dataIndex = regExMatch.captured(8).toInt(); //DataIndex
-            CurrentToken = SharedSimpleTokenPtr(new DataToken(dataIndex, PosInInputString, regExMatch.capturedLength(1)));
+            int dataIndex = regExMatch.captured(REGEX_DATA_INDEX).toInt(); //DataIndex
+            Token = SharedSimpleTokenPtr(new DataToken(dataIndex, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
         }
-        else if(!regExMatch.captured(9).isNull())
+        else if(!regExMatch.captured(REGEX_OPERATION).isNull())
         {
             //IsOperator
-            QString operatorString = regExMatch.captured(9);
-            QString typeString = regExMatch.captured(10);
-            if(!typeString.isNull())
+            QString operatorString = regExMatch.captured(REGEX_OPERATION);
+            if(!operatorString.compare(QString("(")))
             {
-                //TypeCast
-                SimpleToken::TokenType typeToCastTo = SimpleToken::Integer; // IF ERROR -> CAST TO INTEGER
-                if(!typeString.compare("Integer"))
-                {
-                    typeToCastTo = SimpleToken::Integer;
-                }
-                else if(!typeString.compare("Double"))
-                {
-                    typeToCastTo = SimpleToken::Double;
-                }
-                else if(!typeString.compare("Bool"))
-                {
-                    typeToCastTo = SimpleToken::Bool;
-                }
-                else if(!typeString.compare("String"))
-                {
-                    typeToCastTo = SimpleToken::String;
-                }
-                CurrentToken = SharedSimpleTokenPtr(new TypeCastToken(typeToCastTo, PosInInputString, regExMatch.capturedLength(1)));
-            }
-            else if(!operatorString.compare(QString("(")))
-            {
-                //Plus
-                CurrentToken = SharedSimpleTokenPtr(new LParanToken(PosInInputString, regExMatch.capturedLength(1)));
+                //LPARAN
+                Token = SharedSimpleTokenPtr(new LParanToken(PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
             }
             else if(!operatorString.compare(QString(")")))
             {
-                //Minus
-                CurrentToken = SharedSimpleTokenPtr(new RParanToken(PosInInputString, regExMatch.capturedLength(1)));
+                //RPARAN
+                Token = SharedSimpleTokenPtr(new RParanToken(PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
             }
             else
                 //Currently Increment and Decrement unsupported... Does it even make sense without variables??
-                //            if(!operatorString.compare(QString("++")))
-                //            {
-                //                CurrentToken = SharedSimpleTokenPtr(OperationToken(SimpleToken::Increment));
-                //            }
-                //            else if(!operatorString.compare(QString("--")))
-                //            {
-                //                CurrentToken = SharedSimpleTokenPtr(OperationToken(SimpleToken::Decrement));
-                //            }
-                //            else
-                if(!operatorString.compare(QString("+")))
+                if(!operatorString.compare(QString("++")))
+                {
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Increment, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+                }
+                else if(!operatorString.compare(QString("--")))
+                {
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Decrement, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+                }
+                else
+                    if(!operatorString.compare(QString("+")))
                 {
                     //Plus
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Plus, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Plus, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString("-")))
                 {
                     //Minus
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Minus, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Minus, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString("!")))
                 {
                     //LogicalNegation
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::LogicalNegation, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::LogicalNegation, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString("~")))
                 {
                     //OnesComplement
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::OnesComplement, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::OnesComplement, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString("*")))
                 {
                     //Multiplication
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Multiplication, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Multiplication, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString("/")))
                 {
                     //Division
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Division, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Division, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString("%")))
                 {
                     //Modulo
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Modulo, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Modulo, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString("&&")))
                 {
                     //LogicalAND
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::LogicalAND, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::LogicalAND, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString("||")))
                 {
                     //LogicalOR
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::LogicalOR, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::LogicalOR, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString("^^")))
                 {
                     //LogicalXOR
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::LogicalXOR, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::LogicalXOR, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString(">")))
                 {
                     //Greater
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Greater, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Greater, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString("<")))
                 {
                     //Lower
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Lower, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Lower, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString("==")))
                 {
                     //Equal
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Equal, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Equal, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString(">=")))
                 {
                     //EqualOrGreater
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::EqualOrGreater, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::EqualOrGreater, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString("<=")))
                 {
                     //EqualOrLower
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::EqualOrLower, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::EqualOrLower, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString("!=")))
                 {
                     //Unequal
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Unequal, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Unequal, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString("&")))
                 {
                     //AND
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::BitwiseAND, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::BitwiseAND, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString("|")))
                 {
                     //OR
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::BitwiseOR, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::BitwiseOR, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString("^")))
                 {
                     //XOR
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::BitwiseXOR, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::BitwiseXOR, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString("<<")))
                 {
                     //LeftShift
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::LeftShift, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::LeftShift, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString(">>")))
                 {
                     //RightShift
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::RightShift, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::RightShift, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString("?:")))
                 {
                     //Conditional
-                    CurrentToken = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Conditional, PosInInputString, regExMatch.capturedLength(1)));
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Conditional, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
         }
-        PosInInputString += regExMatch.capturedStart() + regExMatch.capturedLength();
-        LexerString.replace(regExMatch.capturedStart(),regExMatch.capturedLength(),QString(""));
-        regExMatch = regEx.match(LexerString);
+        else if(!regExMatch.captured(REGEX_IDENTIFIER).isNull())
+        {
+            //Identifier -> Variable
+            Token = SharedSimpleTokenPtr(new VariableToken(regExMatch.captured(REGEX_IDENTIFIER), PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+        }
+        if(consume)
+        {
+            PosInInputString += regExMatch.capturedStart() + regExMatch.capturedLength();
+            LexerString.replace(regExMatch.capturedStart(),regExMatch.capturedLength(),QString(""));
+        }
     }
     else
     {
-        CurrentToken = SharedSimpleTokenPtr(new EOFToken(PosInInputString,0));
+        Token = SharedSimpleTokenPtr(new EOFToken(PosInInputString,0));
     }
 
-    qDebug() << __PRETTY_FUNCTION__ << " new Token: " << CurrentToken->printToken();
-    return CurrentToken;
+    if(consume)
+    {
+        CurrentToken = Token;
+    }
+
+    qDebug() << __PRETTY_FUNCTION__ << " new Token: " << Token->printToken();
+    return Token;
 }
 
-void SimpleLexer::LexErrorAtToken(SharedSimpleTokenPtr ErrorAtToken, int type)
+void SimpleLexer::LexErrorAtToken(SharedSimpleTokenPtr ErrorAtToken, int type, QString details)
 {
     QString FaultyInput = InputString;
     QString ErrorType = QString("Undefined");
@@ -294,17 +327,18 @@ void SimpleLexer::LexErrorAtToken(SharedSimpleTokenPtr ErrorAtToken, int type)
     FaultyInput.append(QString("</font>"));
     qDebug() << FaultyInput;
 
-    emit LexerErrorHTMLMsg(QString("<b>%1</b> at Token:<br><code><b>%2</b></code><br><br><code>%3</code>")
+    emit LexerErrorHTMLMsg(QString("<b>%1</b> at Token:<br><code><b>%2</b></code><br><br><code>%3</code>\n%4")
                            .arg(ErrorType)
                            .arg(ErrorAtToken->printToken())
-                           .arg(FaultyInput));
-//    QMessageBox::critical(&parent,
-//                          QString("Parser ERROR"),
-//                          QString("<b>%1</b> at Token:<br><code><b>%2</b></code><br><br><code>%3</code>")
-//                          .arg(ErrorType)
-//                          .arg(ErrorAtToken->printToken())
-//                          .arg(FaultyInput),
-//                          QMessageBox::Ok);
+                           .arg(FaultyInput)
+                           .arg(details));
+    //    QMessageBox::critical(&parent,
+    //                          QString("Parser ERROR"),
+    //                          QString("<b>%1</b> at Token:<br><code><b>%2</b></code><br><br><code>%3</code>")
+    //                          .arg(ErrorType)
+    //                          .arg(ErrorAtToken->printToken())
+    //                          .arg(FaultyInput),
+    //                          QMessageBox::Ok);
 }
 
 void SimpleLexer::RemoveWhitespacesFromString(QString &string)

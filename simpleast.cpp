@@ -163,11 +163,36 @@ QString DataNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
-VariableNode::VariableNode(const QString &VariableName, const SymbolTable * const SymblTbl) :
+VariableNode::VariableNode(const QString &VariableName, const SymbolTable * const SymblTbl, SimpleNode::ValueTypes type) :
     VariableName(VariableName),
     SymblTbl(SymblTbl)
 {
-
+    if(type != SimpleNode::ErrorType)
+    {
+        this->type = type;
+    }
+    else
+    {
+        SymbolTableEntry::SymbolTableEntryType symblTblEntryType = SymblTbl->lookup(VariableName).getSymbolTableEntryType();
+        switch(symblTblEntryType)
+        {
+        case SymbolTableEntry::Integer:
+            type = SimpleNode::Integer;
+            break;
+        case SymbolTableEntry::Double:
+            type = SimpleNode::Double;
+            break;
+        case SymbolTableEntry::Bool:
+            type = SimpleNode::Bool;
+            break;
+        case SymbolTableEntry::String:
+            type = SimpleNode::String;
+            break;
+        case SymbolTableEntry::SubSymbolTable:
+        default:
+            type = SimpleNode::ErrorType;
+        }
+    }
 }
 
 VariableNode::~VariableNode()

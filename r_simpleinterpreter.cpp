@@ -46,6 +46,7 @@ void R_SimpleInterpreter::on_pushButton_clicked()
     symblTbl.addEntry(QString("D5"), 15);
     symblTbl.addEntry(QString("D6"), 16);
     symblTbl.addEntry(QString("D7"), 17);
+    symblTbl.addEntry(QString("xxVARxx"), 1);
 
     SimpleInterpreter interpreter(&parser);
     ValueNode *result = interpreter.interpret();

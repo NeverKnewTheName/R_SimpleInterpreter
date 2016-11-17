@@ -14,10 +14,13 @@ public:
         Bool,
         String,
         LParan,
+        LCurlyParan,
         RParan,
+        RCurlyParan,
         Data,
         Variable,
-        TypeCast,
+        TypeName,
+        FunctionName,
         Increment,
         Decrement,
         Plus,
@@ -42,6 +45,8 @@ public:
         LeftShift,
         RightShift,
         Conditional,
+        ReturnKeyword,
+        SemiColonDelim,
         EOFToken
     }TokenType;
 
@@ -55,6 +60,8 @@ public:
 
     virtual QString printValue() const = 0;
     virtual QString printToken() const = 0;
+
+    static QString convertTokenTypeToString(TokenType type);
 
 protected:
     const TokenType type;
@@ -206,13 +213,13 @@ public:
     QString printToken() const;
 };
 
-class TypeCastToken : public OperationToken
+class TypeNameToken : public SimpleToken
 {
 public:
-    TypeCastToken(SimpleToken::TokenType typeToCastTo, const int TokenPos, const int TokenLen);
-    ~TypeCastToken();
+    TypeNameToken(SimpleToken::TokenType type, const int TokenPos, const int TokenLen);
+    ~TypeNameToken();
 
-    SimpleToken::TokenType getTypeToCastTo() const;
+    SimpleToken::TokenType getType() const;
 
     // SimpleToken interface
 public:
@@ -220,7 +227,24 @@ public:
     QString printToken() const;
 
 private:
-    SimpleToken::TokenType typeToCastTo;
+    const SimpleToken::TokenType type;
 };
+
+//class TypeCastToken : public OperationToken
+//{
+//public:
+//    TypeCastToken(SimpleToken::TokenType typeToCastTo, const int TokenPos, const int TokenLen);
+//    ~TypeCastToken();
+
+//    SimpleToken::TokenType getTypeToCastTo() const;
+
+//    // SimpleToken interface
+//public:
+//    QString printValue() const;
+//    QString printToken() const;
+
+//private:
+//    SimpleToken::TokenType typeToCastTo;
+//};
 
 #endif // SIMPLETOKEN_H

@@ -7,8 +7,24 @@ Operator    -       ([<>!=]?=|[<>]{1,2}|[&\|\^\+\-]{1,2}|[!~\*\/%])
 Conditional -       \?: ToDO
 Variable    -       (\w+)
 
-Combined            ((?:"(.*?)")|((\d+(\.\d+)?)|(true|false))|(D(\d+))|(\((Integer|Double|Bool|String)\)|\(|\)|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|[\+\-!~\*\/%])|(\w+))
+Combined            ((?:"(.*?)")|((\d+(\.\d+)?)|(true|false))|(D(\d+))|(Integer|Double|Bool|String)|(\(|\)|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|[\+\-!~\*\/%])|(\w+))
 CombinedEscaped     ((?:\"(.*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\((Integer|Double|Bool|String)\\)|\\(|\\)|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|[\\+\\-!~\\*\\/%]))
+                    
+((Integer|Double|Bool|String)|(?:"(.*?)")|((\d+(\.\d+)?)|(true|false))|(D(\d+))|(\(|\)|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\|{1,2}|\^{1,2}|\+{1,2}|\-{1,2}|[!~\*\/%])|(\w+))
+((Integer|Double|Bool|String)|(?:\"(.*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\)|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|\\+{1,2}|\\-{1,2}|[!~\\*\\/%])|(\\w+))
+
+
+1 - Whole Result
+2 - TypeName
+3 - String
+4 - Value
+ -- 5 Number
+ -- 6 Part after point -> Detects Double Values!
+ -- 7 Bool Detects if a boolean value was found
+8 - Data
+ -- 9 Index of data
+10 - Operation
+11 Identifier
 
 Operators:
 ++  increment

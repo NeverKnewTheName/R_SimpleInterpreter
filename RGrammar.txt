@@ -1,8 +1,8 @@
 Program                  :   Function
-Function                 :   Func Integer TypeName "("(TypeName Variable)*")" "{" (VarDeclaration)* (Expression)* ReturnStatement "}"
+Function                 :   FunctionName TypeName "("(TypeName Variable)*")" "{" (VarDeclaration)* (Expression ";")* ReturnStatement "}"
 VarDeclaration           :   TypeName Variable ";"
-ReturnStatement          :   "return" ( Expression | ";" )
-Expression               :   AssignmentExpression ";"
+ReturnStatement          :   "return"  Expression? ";"
+Expression               :   AssignmentExpression 
 AssignmentExpression     :   (Variable ( "=" | "+=" | "-=" | "*=" | "/=" | "%="  | ">>="  | "<<="  | "&="  | "|="  | "^=" ))? ConditionalExpression
 ConditionalExpression    :   LogicalORExpression         ( "?" Expression ":" AssignmentExpression )*
 LogicalORExpression      :   LogicalXORExpression        ( "||" LogicalXORExpression )*
@@ -16,15 +16,17 @@ RelationalExpression     :   ShiftExpression             ( ( "<" | ">" | "<=" | 
 ShiftExpression          :   AdditiveExpression          ( ( "<<" | ">>" ) AdditiveExpression )*
 AdditiveExpression       :   MultiplicativeExpression    ( ( "+" | "-" ) MultiplicativeExpression )*
 MultiplicativeExpression :   UnaryExpression             ( ( "*" | "/" | "%" ) UnaryExpression )*
-UnaryExpression          :   ( "++" | "--" | "+" | "-" | "~" | "!" | "("TypeName")" )* PostFixExpression
-TypeName                 :   "Integer" | "Double" | "Bool" | "String"
+UnaryExpression          :   (( "++" | "--" )* | ( "+" | "-" | "~" | "!" | "("TypeName")" )*) PostFixExpression
+TypeName                 :   "Integer" | "Double" | "Bool" | "String"   ## Parsed by the LEXER
 PostFixExpression        :   Variable ( "++" | "--" )* | PrimaryExpression
-PrimaryExpression        :   Value | Data | Symbol | "(" Expression ")"
-Symbol                   :   Data | Variable | Function
-Data                     :   "D" Integer                        ## Parsed by the Interpreter
-Variable                 :   Value
-Value                    :   Integer | Double | Bool | String   ## Parsed by the Interpreter
+PrimaryExpression        :   Value | Symbol | "(" Expression ")"
+Symbol                   :   Data | Variable | FunctionName
+Data                     :   "D"Integer                        ## Parsed by the LEXER
+Variable                 :   ID
+FunctionName             :   "Func"Integer
+Value                    :   Integer | Double | Bool | String   ## Parsed by the LEXER
 Integer                  :   (0-9)+
 Double                   :   (0-9)+.(0-9)+
 Bool                     :   true | false
 String                   :   "(a-z | 0-9)*"
+ID                       :   (a-z) (a-z | 0-9)*

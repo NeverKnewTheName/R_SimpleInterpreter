@@ -36,6 +36,117 @@ int SimpleToken::getTokenLen() const
     return TokenLen;
 }
 
+QString SimpleToken::convertTokenTypeToString(SimpleToken::TokenType type)
+{
+    QString typeString("UNDEFINED");
+    switch(type)
+    {
+    case Integer:
+        typeString = QString("Integer");
+        break;
+    case Double:
+        typeString = QString("Double");
+        break;
+    case Bool:
+        typeString = QString("Bool");
+        break;
+    case String:
+        typeString = QString("String");
+        break;
+    case LParan:
+        typeString = QString("LParan");
+        break;
+    case RParan:
+        typeString = QString("RParan");
+        break;
+    case Data:
+        typeString = QString("Data");
+        break;
+    case Variable:
+        typeString = QString("Variable");
+        break;
+    case TypeName:
+        typeString = QString("TypeName");
+        break;
+    case Increment:
+        typeString = QString("Increment");
+        break;
+    case Decrement:
+        typeString = QString("Decrement");
+        break;
+    case Plus:
+        typeString = QString("Plus");
+        break;
+    case Minus:
+        typeString = QString("Minus");
+        break;
+    case LogicalNegation:
+        typeString = QString("LogicalNegation");
+        break;
+    case OnesComplement:
+        typeString = QString("OnesComplement");
+        break;
+    case Multiplication:
+        typeString = QString("Multiplication");
+        break;
+    case Division:
+        typeString = QString("Division");
+        break;
+    case Modulo:
+        typeString = QString("Modulo");
+        break;
+    case LogicalAND:
+        typeString = QString("LogicalAND");
+        break;
+    case LogicalOR:
+        typeString = QString("LogicalOR");
+        break;
+    case LogicalXOR:
+        typeString = QString("LogicalXOR");
+        break;
+    case Greater:
+        typeString = QString("Greater");
+        break;
+    case Lower:
+        typeString = QString("Lower");
+        break;
+    case Equal:
+        typeString = QString("Equal");
+        break;
+    case EqualOrGreater:
+        typeString = QString("EqualOrGreater");
+        break;
+    case EqualOrLower:
+        typeString = QString("EqualOrLower");
+        break;
+    case Unequal:
+        typeString = QString("Unequal");
+        break;
+    case BitwiseAND:
+        typeString = QString("BitwiseAND");
+        break;
+    case BitwiseOR:
+        typeString = QString("BitwiseOR");
+        break;
+    case BitwiseXOR:
+        typeString = QString("BitwiseXOR");
+        break;
+    case LeftShift:
+        typeString = QString("LeftShift");
+        break;
+    case RightShift:
+        typeString = QString("RightShift");
+        break;
+    case Conditional:
+        typeString = QString("Conditional");
+        break;
+    case EOFToken:
+        typeString = QString("EOFToken");
+        break;
+    }
+    return typeString;
+}
+
 IntegerToken::IntegerToken(int value, const int TokenPos, const int TokenLen) :
     SimpleToken(SimpleToken::Integer, TokenPos, TokenLen),
     value(value)
@@ -211,7 +322,7 @@ QString OperationToken::printValue() const
 
 QString OperationToken::printToken() const
 {
-    return QString("{OperationToken}:{%1}").arg(type);
+    return QString("{OperationToken}:{%1}").arg(SimpleToken::convertTokenTypeToString(type));
 }
 
 EOFToken::EOFToken(const int TokenPos, const int TokenLen) :
@@ -277,26 +388,74 @@ QString RParanToken::printToken() const
     return QString("{RParanToken}:{)}");
 }
 
-TypeCastToken::TypeCastToken(SimpleToken::TokenType typeToCastTo, const int TokenPos, const int TokenLen) :
-    OperationToken(SimpleToken::TypeCast, TokenPos, TokenLen),
-    typeToCastTo(typeToCastTo)
+//TypeCastToken::TypeCastToken(SimpleToken::TokenType typeToCastTo, const int TokenPos, const int TokenLen) :
+//    OperationToken(SimpleToken::TypeCast, TokenPos, TokenLen),
+//    typeToCastTo(typeToCastTo)
+//{
+//}
+
+//TypeCastToken::~TypeCastToken()
+//{
+//    qDebug() << __PRETTY_FUNCTION__;
+//}
+
+//SimpleToken::TokenType TypeCastToken::getTypeToCastTo() const
+//{
+//    return typeToCastTo;
+//}
+
+//QString TypeCastToken::printValue() const
+//{
+//    QString typeRealName;
+//    switch(typeToCastTo)
+//    {
+//    case SimpleToken::Integer:
+//        typeRealName = QString("(Integer)");
+//        break;
+//    case SimpleToken::Double:
+//        typeRealName = QString("(Double)");
+//        break;
+//    case SimpleToken::Bool:
+//        typeRealName = QString("(Bool)");
+//        break;
+//    case SimpleToken::String:
+//        typeRealName = QString("(String)");
+//        break;
+//    default:
+//        typeRealName = QString("(ERROR)");
+//        break;
+//    }
+
+//    return QString("(%1)").arg(typeRealName);
+//}
+
+//QString TypeCastToken::printToken() const
+//{
+//    return QString("{TypeCastToken}:{%1}").arg(printValue());
+//}
+
+
+TypeNameToken::TypeNameToken(SimpleToken::TokenType type, const int TokenPos, const int TokenLen) :
+    SimpleToken(SimpleToken::TypeName, TokenPos, TokenLen),
+    type(type)
 {
+
 }
 
-TypeCastToken::~TypeCastToken()
+TypeNameToken::~TypeNameToken()
 {
     qDebug() << __PRETTY_FUNCTION__;
 }
 
-SimpleToken::TokenType TypeCastToken::getTypeToCastTo() const
+SimpleToken::TokenType TypeNameToken::getType() const
 {
-    return typeToCastTo;
+    return type;
 }
 
-QString TypeCastToken::printValue() const
+QString TypeNameToken::printValue() const
 {
     QString typeRealName;
-    switch(typeToCastTo)
+    switch(type)
     {
     case SimpleToken::Integer:
         typeRealName = QString("(Integer)");
@@ -318,8 +477,7 @@ QString TypeCastToken::printValue() const
     return QString("(%1)").arg(typeRealName);
 }
 
-QString TypeCastToken::printToken() const
+QString TypeNameToken::printToken() const
 {
-    return QString("{TypeCastToken}:{%1}").arg(printValue());
+    return QString("{TypeNameToken}:{%1}").arg(printValue());
 }
-

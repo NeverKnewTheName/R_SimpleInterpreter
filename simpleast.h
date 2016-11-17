@@ -92,7 +92,7 @@ private:
 class VariableNode : public SimpleNode
 {
 public:
-    VariableNode(const QString &VariableName, const SymbolTable * const SymblTbl);
+    VariableNode(const QString &VariableName, const SymbolTable * const SymblTbl, SimpleNode::ValueTypes type = SimpleNode::ErrorType);
     ~VariableNode();
     NodeType getNodeType() const;
     SimpleNode::ValueTypes getReturnType() const;
@@ -106,6 +106,7 @@ private:
     ValueNode Result;
     const QString VariableName;
     const SymbolTable * const SymblTbl;
+    SimpleNode::ValueTypes type;
 };
 
 class OperationNode : public SimpleNode
