@@ -1,5 +1,6 @@
 #include "simpleinterpreter.h"
 
+#include "simplelexer.h"
 #include "simpleparser.h"
 #include "simpleast.h"
 
@@ -8,6 +9,13 @@
 SimpleInterpreter::SimpleInterpreter(SimpleParser *parser) :
     parser(parser)
 {
+    tree = parser->parse();
+}
+
+SimpleInterpreter::SimpleInterpreter(const QString &StringToInterpret)
+{
+    SimpleLexer *lexer = new SimpleLexer(StringToInterpret);
+    parser = new SimpleParser(lexer);
     tree = parser->parse();
 }
 

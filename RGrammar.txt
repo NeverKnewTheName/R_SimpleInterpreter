@@ -1,6 +1,8 @@
-Program                  :   Function
-Function                 :   ReturnType ID "("(VarDeclaration)*")" "{" (VarDeclaration ";")* (Expression ";")* ReturnStatement "}"
+Program                  :   (VarDefinition)* (FunctionDefinition)* (Expression ";")* ReturnStatement
+FunctionDefinition       :   FunctionDeclaration "{" (VarDefinition)* (Expression ";")* ReturnStatement "}" ";"
+FunctionDeclaration      :   ReturnType ID "("(VarDeclaration)*")"
 ReturnType               :   TypeName | "Void"
+VarDefinition            :   VarDeclaration "=" Expression ";"
 VarDeclaration           :   TypeName VariableID 
 ReturnStatement          :   "return"  Expression? ";"
 Expression               :   AssignmentExpression 
@@ -20,13 +22,14 @@ MultiplicativeExpression :   UnaryExpression             ( ( "*" | "/" | "%" ) U
 UnaryExpression          :   (( "++" | "--" ) VariableID) | (( "+" | "-" | "~" | "!" | "("TypeName")" )* PostFixExpression)
 TypeName                 :   "Integer" | "Double" | "Bool" | "String"   ## Parsed by the LEXER
 PostFixExpression        :   ( VariableID ( "++" | "--" ) ) | PrimaryExpression
-PrimaryExpression        :   Value | Symbol | "(" Expression ")"
-Symbol                   :   Data | VariableID
-Data                     :   "D"Integer                                 ## Parsed by the LEXER
-VariableID               :   ID
+PrimaryExpression        :   Value | Symbol | "(" Expression ")" | FunctionInvocation
 Value                    :   Integer | Double | Bool | String           ## Parsed by the LEXER
+Symbol                   :   Data | VariableID
+FunctionInvocation       :   ID"(" (Expression)* ")"
+Data                     :   "D"Integer                                 ## Parsed by the LEXER
+VariableID               :   ID                                         ## Parsed by the LEXER
 Integer                  :   \d+
 Double                   :   \d+"."\d+
 Bool                     :   "true" | "false"
-String                   :   "(\w*)"
+String                   :   """(\w*)"""
 ID                       :   ( [_a-zA-Z] \w* )

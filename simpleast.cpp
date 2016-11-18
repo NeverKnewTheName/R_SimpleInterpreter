@@ -1,4 +1,5 @@
 #include "simpleast.h"
+#include "simplesymboltable.h"
 
 #include <QVariant>
 #include <QDebug>
@@ -33,6 +34,39 @@ QString SimpleNode::getHumanReadableTypeNameToValueType(const SimpleNode::ValueT
     }
 
     return HumanReadableTypeName;
+}
+
+bool SimpleNode::canConvertTypes(const SimpleNode::ValueTypes OrigType, const SimpleNode::ValueTypes NewType)
+{
+    switch(OrigType)
+    {
+    case SimpleNode::Integer:
+        //FALLTHROUGH
+    case SimpleNode::Double:
+        //FALLTHROUGH
+    case SimpleNode::Bool:
+        if(NewType == Integer  || NewType == Double || NewType == Bool || NewType == String)
+        {
+            return true;
+        }
+        break;
+    case SimpleNode::String:
+        if(NewType == String)
+        {
+            return true;
+        }
+        break;
+    case SimpleNode::Void:
+        if(NewType == Void)
+        {
+            return true;
+        }
+        break;
+    case SimpleNode::ErrorType:
+    default:
+        break;
+    }
+    return false;
 }
 
 SimpleNode::~SimpleNode()
@@ -174,7 +208,7 @@ SimpleNode::ValueTypes DataNode::getReturnType() const
 
 ValueNode &DataNode::visit()
 {
-    Result = ValueNode(const_cast<SymbolTable*>(SymblTbl)->lookup(QString("D%1").arg(dataIndex)).getSymbolTableEntryValue().value<int>());
+    Result = ValueNode(dynamic_cast<VariableSymbol*>(const_cast<SymbolTable*>(SymblTbl)->lookup(QString("D%1").arg(dataIndex)))->getValueNode()->getValue().value<int>());
     return Result;
 }
 
@@ -193,34 +227,35 @@ QString DataNode::printNode() const
 
 VariableNode::VariableNode(const QString &VariableName, SymbolTable * const SymblTbl, SimpleNode::ValueTypes type) :
     VariableName(VariableName),
-    SymblTbl(SymblTbl)
+    SymblTbl(SymblTbl),
+    type(type)
 {
-    if(type != SimpleNode::ErrorType)
-    {
-        this->type = type;
-    }
-    else
-    {
-        const SymbolTableEntry::SymbolTableEntryType symblTblEntryType = this->SymblTbl->lookup(VariableName).getSymbolTableEntryType();
-        switch(symblTblEntryType)
-        {
-        case SymbolTableEntry::Integer:
-            type = SimpleNode::Integer;
-            break;
-        case SymbolTableEntry::Double:
-            type = SimpleNode::Double;
-            break;
-        case SymbolTableEntry::Bool:
-            type = SimpleNode::Bool;
-            break;
-        case SymbolTableEntry::String:
-            type = SimpleNode::String;
-            break;
-        case SymbolTableEntry::SubSymbolTable:
-        default:
-            type = SimpleNode::ErrorType;
-        }
-    }
+//    if(type != SimpleNode::ErrorType)
+//    {
+//        this->type = type;
+//    }
+//    else
+//    {
+//        const SymbolTableEntry::SymbolTableEntryType symblTblEntryType = this->SymblTbl->lookup(VariableName).getSymbolTableEntryType();
+//        switch(symblTblEntryType)
+//        {
+//        case SymbolTableEntry::Integer:
+//            type = SimpleNode::Integer;
+//            break;
+//        case SymbolTableEntry::Double:
+//            type = SimpleNode::Double;
+//            break;
+//        case SymbolTableEntry::Bool:
+//            type = SimpleNode::Bool;
+//            break;
+//        case SymbolTableEntry::String:
+//            type = SimpleNode::String;
+//            break;
+//        case SymbolTableEntry::SubSymbolTable:
+//        default:
+//            type = SimpleNode::ErrorType;
+//        }
+//    }
 }
 
 VariableNode::~VariableNode()
@@ -238,9 +273,15 @@ SimpleNode::ValueTypes VariableNode::getReturnType() const
     return SimpleNode::Integer;
 }
 
+void VariableNode::setAssignment(SimpleNode *assignment)
+{
+    Assignment = assignment;
+    dynamic_cast<VariableSymbol *>(const_cast<SymbolTable*>(SymblTbl)->lookup(VariableName))->assignValue(assignment);
+}
+
 ValueNode &VariableNode::visit()
 {
-    Result = ValueNode(const_cast<SymbolTable*>(SymblTbl)->lookup(VariableName).getSymbolTableEntryValue().value<int>());
+    Result = ValueNode(dynamic_cast<VariableSymbol*>(const_cast<SymbolTable*>(SymblTbl)->lookup(VariableName))->getValueNode());
     return Result;
 }
 
@@ -255,6 +296,11 @@ QString VariableNode::printNode() const
     QString value = printValue();
 
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
+}
+
+QString VariableNode::getVariableName() const
+{
+    return VariableName;
 }
 
 OperationNode::OperationNode()
@@ -2667,28 +2713,32 @@ ValueNode &EOFNode::visit()
 }
 
 
-FunctionNode::FunctionNode(QString FunctionName, SimpleNode::ValueTypes returnType, QVector<SimpleNode *> FuncExpressions, SimpleNode *returnNode) :
+FunctionNode::FunctionNode(QString FunctionName, SimpleNode::ValueTypes returnType, SymbolTable *SubSymbolTable) :
     FunctionName(FunctionName),
     returnType(returnType),
-    FuncExpressions(FuncExpressions),
-    returnNode(returnNode)
+    FuncSymbolTable(SubSymbolTable)
 {
-    if( (returnType == SimpleNode::Void) && ( returnNode != NULL ) )
-    {
-        returnType = ValueNode::ErrorType;
-    }
-
-    SimpleNode::ValueTypes tempReturnType = returnNode->getReturnType();
-
-    if( ( tempReturnType == SimpleNode::String ) && ( returnType != SimpleNode::String ) )
-    {
-        returnType = SimpleNode::ErrorType;
-    }
 }
 
 FunctionNode::~FunctionNode()
 {
     qDebug() << __PRETTY_FUNCTION__;
+}
+
+void FunctionNode::addFuncExpressions(QVector<SimpleNode *> FuncExpressions)
+{
+    this->FuncExpressions = FuncExpressions;
+}
+
+void FunctionNode::addReturnStatement(SimpleNode *returnNode)
+{
+    if( ( (returnNode == NULL) && ( returnType != SimpleNode::Void ) ) || ( !SimpleNode::canConvertTypes(returnType, returnNode->getReturnType()) ) )
+    {
+        this->returnType = SimpleNode::ErrorType;
+        this->returnNode = NULL;
+    }
+
+    this->returnNode = returnNode;
 }
 
 SimpleNode::NodeType FunctionNode::getNodeType() const

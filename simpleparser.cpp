@@ -1,5 +1,5 @@
 #include "simpleparser.h"
-
+#include "simplesymboltable.h"
 #include <QDebug>
 
 SimpleParser::SimpleParser(SimpleLexer *lexer) :
@@ -53,7 +53,7 @@ void SimpleParser::eat(SimpleToken::TokenType tokenType)
 
 SimpleNode *SimpleParser::Program()
 {
-    SimpleNode *node = Function();
+    SimpleNode *node = FunctionDefinition();
     if(node == NULL)
     {
         return NULL;
@@ -64,31 +64,20 @@ SimpleNode *SimpleParser::Program()
     return node;
 }
 
-SimpleNode *SimpleParser::Function()
+SimpleNode *SimpleParser::FunctionDefinition()
 {
-    SimpleNode *node = NULL;
-    SharedSimpleTokenPtr token;
-    if(CurrentToken->getTokenType() == SimpleToken::TypeName)
+    SymbolTable *FuncSubSymblTbl = new SymbolTable();
+    CurSymblTbl = FuncSubSymblTbl;
+    FunctionNode *node = FunctionDeclaration(FuncSubSymblTbl);
+    if(node == NULL)
     {
-        SymbolTable *FuncSubSymblTbl = new SymbolTable();
-        CurSymblTbl = FuncSubSymblTbl;
+        delete FuncSubSymblTbl;
+        return NULL;
+    }
+    SharedSimpleTokenPtr token = CurrentToken;
 
-        token = CurrentToken;
-        eat(SimpleToken::TypeName);
-        SimpleNode::ValueTypes returnType = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
-
-        token = CurrentToken;
-        eat(SimpleToken::VariableID);
-        QString FuncName = qSharedPointerDynamicCast<VariableIDToken>(token)->getID();
-
-        eat(SimpleToken::LParan);
-
-        while(CurrentToken->getTokenType() == SimpleToken::TypeName)
-        {
-            VarDeclaration(FuncSubSymblTbl);
-        }
-
-        eat(SimpleToken::RParan);
+    if(CurrentToken->getTokenType() == SimpleToken::LCurlyParan)
+    {
         eat(SimpleToken::LCurlyParan);
         while(CurrentToken->getTokenType() == SimpleToken::TypeName)
         {
@@ -112,10 +101,19 @@ SimpleNode *SimpleParser::Function()
 
         eat(SimpleToken::RCurlyParan);
 
-        node = new FunctionNode(FuncName,returnType,FuncExpressions,ReturnStatementNode);
+        node->addFuncExpressions(FuncExpressions);
+        node->addReturnStatement(ReturnStatementNode);
+        if(node->getReturnType() == ValueNode::ErrorType)
+        {
+            delete node;
+            delete FuncSubSymblTbl;
+            return NULL;
+        }
     }
     else
     {
+        delete node;
+        delete FuncSubSymblTbl;
         SyntacticError(CurrentToken, QString("Expected FunctionDeclaration!"));
     }
 
@@ -123,9 +121,145 @@ SimpleNode *SimpleParser::Function()
     return node;
 }
 
-SimpleNode *SimpleParser::VarDeclaration(SymbolTable *SymbolTableToRegisterVariableTo)
+FunctionNode *SimpleParser::FunctionDeclaration(SymbolTable *FuncSubSymblTbl)
 {
-    SimpleNode *node;
+    FunctionNode *node = NULL;
+    SharedSimpleTokenPtr token;
+
+    if(CurrentToken->getTokenType() == SimpleToken::TypeName)
+    {
+        token = CurrentToken;
+        eat(SimpleToken::TypeName);
+        SimpleNode::ValueTypes returnType = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
+
+        token = CurrentToken;
+        eat(SimpleToken::VariableID);
+        QString FuncName = qSharedPointerDynamicCast<VariableIDToken>(token)->getID();
+
+        eat(SimpleToken::LParan);
+
+        while(CurrentToken->getTokenType() == SimpleToken::TypeName)
+        {
+            VarDeclaration(FuncSubSymblTbl);
+        }
+
+        eat(SimpleToken::RParan);
+
+        node = new FunctionNode(FuncName,returnType,FuncSubSymblTbl);
+        SymblTbl.addEntry(FuncName,new FunctionSymbol(node));
+    }
+
+    if(node == NULL)
+    {
+        SyntacticError(CurrentToken,QString("Expected Function Declaration"));
+        return NULL;
+    }
+    qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+    return node;
+}
+
+//SimpleNode *SimpleParser::Function()
+//{
+//    SimpleNode *node = NULL;
+//    SharedSimpleTokenPtr token;
+//    if(CurrentToken->getTokenType() == SimpleToken::TypeName)
+//    {
+//        SymbolTable *FuncSubSymblTbl = new SymbolTable();
+//        CurSymblTbl = FuncSubSymblTbl;
+
+//        token = CurrentToken;
+//        eat(SimpleToken::TypeName);
+//        SimpleNode::ValueTypes returnType = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
+
+//        token = CurrentToken;
+//        eat(SimpleToken::VariableID);
+//        QString FuncName = qSharedPointerDynamicCast<VariableIDToken>(token)->getID();
+
+//        eat(SimpleToken::LParan);
+
+//        while(CurrentToken->getTokenType() == SimpleToken::TypeName)
+//        {
+//            VarDeclaration(FuncSubSymblTbl);
+//        }
+
+//        eat(SimpleToken::RParan);
+//        eat(SimpleToken::LCurlyParan);
+//        while(CurrentToken->getTokenType() == SimpleToken::TypeName)
+//        {
+//            VarDeclaration(FuncSubSymblTbl);
+//            eat(SimpleToken::SemiColonDelim);
+//        }
+
+//        QVector<SimpleNode*> FuncExpressions;
+//        SimpleNode * ExpressionNode = NULL;
+//        do
+//        {
+//            ExpressionNode = Expression();
+//            if(ExpressionNode != NULL)
+//            {
+//                eat(SimpleToken::SemiColonDelim);
+//                FuncExpressions.append(ExpressionNode);
+//            }
+//            CurSymblTbl = FuncSubSymblTbl;
+//        }while(ExpressionNode != NULL);
+//        SimpleNode *ReturnStatementNode = ReturnStatement();
+
+//        eat(SimpleToken::RCurlyParan);
+
+//        node = new FunctionNode(FuncName,returnType,FuncExpressions,ReturnStatementNode);
+//    }
+//    else
+//    {
+//        SyntacticError(CurrentToken, QString("Expected FunctionDeclaration!"));
+//    }
+
+//    qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+//    return node;
+//}
+
+SimpleNode *SimpleParser::VarDefinition(SymbolTable *SymbolTableToRegisterVariableTo)
+{
+    VariableNode *node = VarDeclaration(SymbolTableToRegisterVariableTo);
+    SimpleNode *nodeTwo = NULL;
+    if(node == NULL)
+    {
+        return NULL;
+    }
+
+    SharedSimpleTokenPtr token = CurrentToken;
+    if(CurrentToken->getTokenType() == SimpleToken::Assign)
+    {
+        eat(SimpleToken::Assign);
+        nodeTwo = Expression();
+        if(nodeTwo == NULL)
+        {
+            delete node;
+            return NULL;
+        }
+        SimpleNode::ValueTypes exprReturnType = nodeTwo->getReturnType();
+        if( ( exprReturnType == ValueNode::ErrorType ) || ( SimpleNode::canConvertTypes(node->getReturnType(), exprReturnType) ) )
+        {
+            TypeError(
+                        token,
+                        QString("Expected: %1")
+                        .arg(SimpleNode::getHumanReadableTypeNameToValueType(node->getReturnType()))
+                        .arg(SimpleNode::getHumanReadableTypeNameToValueType(nodeTwo->getReturnType()))
+                        );
+            delete nodeTwo;
+            delete node;
+            return NULL;
+        }
+        dynamic_cast<VariableNode*>(node)->setAssignment(nodeTwo);
+    }
+
+
+    qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+    return node;
+}
+
+VariableNode *SimpleParser::VarDeclaration(SymbolTable *SymbolTableToRegisterVariableTo)
+{
+    VariableNode *node = NULL;
     SharedSimpleTokenPtr token;
 
     if(CurrentToken->getTokenType() == SimpleToken::TypeName)
@@ -137,10 +271,19 @@ SimpleNode *SimpleParser::VarDeclaration(SymbolTable *SymbolTableToRegisterVaria
             SimpleNode::ValueTypes type = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
             token = CurrentToken;
             eat(SimpleToken::VariableID);
-            node = new VariableNode(qSharedPointerDynamicCast<VariableIDToken>(token)->getID(),&SymblTbl, type);
-
-            return node;
+            QString VariableID = qSharedPointerDynamicCast<VariableIDToken>(token)->getID();
+            node = new VariableNode(VariableID, SymbolTableToRegisterVariableTo, type);
+            if( node == NULL )
+            {
+                return NULL;
+            }
+            SymbolTableToRegisterVariableTo->addEntry(VariableID, new VariableSymbol());
         }
+    }
+
+    if(node == NULL)
+    {
+        return NULL;
     }
 
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();

@@ -38,15 +38,15 @@ void R_SimpleInterpreter::on_pushButton_clicked()
     SimpleParser parser(lex);
 
     SymbolTable &symblTbl = parser.getSymblTbl();
-    symblTbl.addEntry(QString("D0"), 10);
-    symblTbl.addEntry(QString("D1"), 11);
-    symblTbl.addEntry(QString("D2"), 12);
-    symblTbl.addEntry(QString("D3"), 13);
-    symblTbl.addEntry(QString("D4"), 14);
-    symblTbl.addEntry(QString("D5"), 15);
-    symblTbl.addEntry(QString("D6"), 16);
-    symblTbl.addEntry(QString("D7"), 17);
-    symblTbl.addEntry(QString("xxVARxx"), 1);
+    symblTbl.addEntry(QString("D0"), new VariableSymbol(new ValueNode(10)));
+    symblTbl.addEntry(QString("D1"), new VariableSymbol(new ValueNode(11)));
+    symblTbl.addEntry(QString("D2"), new VariableSymbol(new ValueNode(12)));
+    symblTbl.addEntry(QString("D3"), new VariableSymbol(new ValueNode(13)));
+    symblTbl.addEntry(QString("D4"), new VariableSymbol(new ValueNode(14)));
+    symblTbl.addEntry(QString("D5"), new VariableSymbol(new ValueNode(15)));
+    symblTbl.addEntry(QString("D6"), new VariableSymbol(new ValueNode(16)));
+    symblTbl.addEntry(QString("D7"), new VariableSymbol(new ValueNode(17)));
+    symblTbl.addEntry(QString("xxVARxx"), new VariableSymbol(new ValueNode(1)));
 
     SimpleInterpreter interpreter(&parser);
     ValueNode *result = interpreter.interpret();

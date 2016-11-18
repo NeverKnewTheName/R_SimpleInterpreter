@@ -5,7 +5,11 @@
 #include <QVariant>
 #include <QString>
 
-class SymbolTable;
+//#include "simpleast.h"
+
+class SimpleNode;
+class ValueNode;
+class FunctionNode;
 
 class SymbolTableEntry
 {
@@ -13,43 +17,76 @@ public:
     typedef enum _SymbolTableEntryType
     {
         SubSymbolTable,
-        Integer,
-        Double,
-        Bool,
-        String,
+        Variable,
+        Function,
+        UNAssigned,
         ERRORType
     }SymbolTableEntryType;
 
     SymbolTableEntry();
-    SymbolTableEntry(SymbolTableEntryType type);
-    SymbolTableEntry(SymbolTable * const symblTbl);
-    SymbolTableEntry(int IntegerValue);
-    SymbolTableEntry(double DoubleValue);
-    SymbolTableEntry(bool BoolValue);
-    SymbolTableEntry(QString StringValue);
-    SymbolTableEntry(SymbolTableEntry const &SymblTblEntry);
+    virtual ~SymbolTableEntry();
 
-    SymbolTableEntryType getSymbolTableEntryType() const;
-    QVariant const &getSymbolTableEntryValue() const;
-    void SetSymbolTableEntryValue(int IntegerValue);
-    void SetSymbolTableEntryValue(double IntegerValue);
-    void SetSymbolTableEntryValue(bool IntegerValue);
-    void SetSymbolTableEntryValue(QString IntegerValue);
-
-private:
-    SymbolTableEntryType SymblEntryType;
-    QVariant SymblEntryValue;
+    virtual SymbolTableEntryType getType() const = 0;
+protected:
+    bool isAssigned;
 };
 
-class SymbolTable
+class SymbolTable : public SymbolTableEntry
 {
 public:
-    SymbolTable();
-    SymbolTableEntry &lookup(QString const& identifier);
-    bool addEntry(QString const& identifier, SymbolTableEntry entry);
-    bool removeEntry(QString const& identifier, SymbolTableEntry entry);
+    SymbolTable(SymbolTable *parentSymbolTable = NULL);
+    ~SymbolTable();
+
+    SymbolTableEntry *lookup(QString const& identifier);
+    bool addEntry(QString const& identifier, SymbolTableEntry *entry);
+    bool removeEntry(QString const& identifier);
+
+//    QVector<SymbolTableEntry *> getWholeSymbolTableAsSequence();
+
+    void addParentSymbolTable(SymbolTable * const parent);
+
+    // SymbolTableEntry interface
+public:
+    SymbolTableEntryType getType() const;
+
 private:
-    QHash<QString,SymbolTableEntry> symblTbl;
+    QHash<QString,SymbolTableEntry*> symblTbl;
+//    static QVector<SymbolTableEntry *> WholeSymbolTableAsSequence;
+    SymbolTable *parentSymbolTable;
+};
+
+class VariableSymbol : public SymbolTableEntry
+{
+public:
+    VariableSymbol(SimpleNode *ValueNodeForEntry = NULL);
+    ~VariableSymbol();
+
+    ValueNode *getValueNode() const;
+
+    void assignValue(SimpleNode *AssignmentNode);
+
+    // SymbolTableEntry interface
+public:
+    SymbolTableEntryType getType() const;
+
+private:
+    ValueNode *valueNode;
+};
+
+class FunctionSymbol : public SymbolTableEntry
+{
+public:
+    FunctionSymbol(FunctionNode *FunctionNodeForEntry = NULL);
+    ~FunctionSymbol();
+
+    FunctionNode *GetFunctionNode() const;
+
+    // SymbolTableEntry interface
+public:
+    SymbolTableEntryType getType() const;
+
+private:
+    FunctionNode *functionNode;
 };
 
 #endif // SIMPLESYMBOLTABLE_H

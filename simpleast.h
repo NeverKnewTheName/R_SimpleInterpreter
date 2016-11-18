@@ -3,8 +3,8 @@
 
 #include <QVariant>
 #include <QVector>
-#include <simplesymboltable.h>
 
+class SymbolTable;
 class ValueNode;
 
 class SimpleNode
@@ -41,6 +41,7 @@ public:
     virtual ValueNode &visit() = 0;
 
     static QString getHumanReadableTypeNameToValueType(const ValueTypes type);
+    static bool canConvertTypes(const ValueTypes OrigType, const ValueTypes NewType);
 };
 
 class ValueNode : public SimpleNode
@@ -80,10 +81,12 @@ public:
     FunctionNode(
             QString FunctionName,
             SimpleNode::ValueTypes returnType,
-            QVector<SimpleNode *> FuncExpressions,
-            SimpleNode *returnNode
+            SymbolTable *SubSymbolTable
             );
     ~FunctionNode();
+
+    void addFuncExpressions(QVector<SimpleNode *> FuncExpressions);
+    void addReturnStatement(SimpleNode *returnNode);
 
     // SimpleNode interface
 public:
@@ -99,6 +102,7 @@ private:
     SimpleNode::ValueTypes returnType;
     QVector<SimpleNode *> FuncExpressions;
     SimpleNode *returnNode;
+    SymbolTable *FuncSymbolTable;
 };
 
 class DataNode : public SimpleNode
@@ -127,13 +131,17 @@ public:
     ~VariableNode();
     NodeType getNodeType() const;
     SimpleNode::ValueTypes getReturnType() const;
+    void setAssignment(SimpleNode *assignment);
 
     ValueNode &visit();
 
     QString printValue() const;
     QString printNode() const;
 
+    QString getVariableName() const;
+
 private:
+    SimpleNode *Assignment;
     ValueNode Result;
     const QString VariableName;
     SymbolTable * const SymblTbl;

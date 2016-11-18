@@ -25,6 +25,7 @@ public:
         Data,
         VariableID,
         TypeName,
+        Assign,
         Increment,
         Decrement,
         Plus,

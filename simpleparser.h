@@ -110,9 +110,13 @@
 
 #include "simplelexer.h"
 #include "simplesymboltable.h"
-#include "simpleast.h"
+//#include "simpleast.h"
 
 class Msg;
+//class SymbolTable;
+class SimpleNode;
+class FunctionNode;
+class VariableNode;
 
 class SimpleParser
 {
@@ -125,8 +129,10 @@ public:
 private:
     void eat(SimpleToken::TokenType tokenType);
     SimpleNode *Program();
-    SimpleNode *Function();
-    SimpleNode *VarDeclaration(SymbolTable *SymbolTableToRegisterVariableTo);
+    SimpleNode *FunctionDefinition();
+    FunctionNode *FunctionDeclaration(SymbolTable *FuncSubSymblTbl);
+    SimpleNode *VarDefinition(SymbolTable *SymbolTableToRegisterVariableTo);
+    VariableNode *VarDeclaration(SymbolTable *SymbolTableToRegisterVariableTo);
     SimpleNode *ReturnStatement();
     SimpleNode *Expression();
     SimpleNode *AssignmentExpression();

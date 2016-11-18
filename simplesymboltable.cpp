@@ -1,113 +1,141 @@
 #include "simplesymboltable.h"
 
+#include "simpleast.h"
+
 #include <QDebug>
 
-SymbolTableEntry::SymbolTableEntry() :
-    SymblEntryType(SymbolTableEntry::ERRORType),
-    SymblEntryValue(QVariant())
+SymbolTable::SymbolTable(SymbolTable *parentSymbolTable) :
+    parentSymbolTable(parentSymbolTable)
 {
+
 }
 
-SymbolTableEntry::SymbolTableEntry(SymbolTable * const symblTbl) :
-    SymblEntryType(SymbolTableEntry::SubSymbolTable),
-    SymblEntryValue(QVariant::fromValue(static_cast<void*>(symblTbl)))
+SymbolTable::~SymbolTable()
 {
+   qDebug() << __PRETTY_FUNCTION__;
 }
 
-SymbolTableEntry::SymbolTableEntry(int IntegerValue) :
-    SymblEntryType(SymbolTableEntry::Integer),
-    SymblEntryValue(QVariant::fromValue(IntegerValue))
-{
-}
-
-SymbolTableEntry::SymbolTableEntry(double DoubleValue) :
-    SymblEntryType(SymbolTableEntry::Double),
-    SymblEntryValue(QVariant::fromValue(DoubleValue))
-{
-}
-
-SymbolTableEntry::SymbolTableEntry(bool BoolValue) :
-    SymblEntryType(SymbolTableEntry::Bool),
-    SymblEntryValue(QVariant::fromValue(BoolValue))
-{
-}
-
-SymbolTableEntry::SymbolTableEntry(QString StringValue) :
-    SymblEntryType(SymbolTableEntry::String),
-    SymblEntryValue(QVariant::fromValue(StringValue))
-{
-}
-
-SymbolTableEntry::SymbolTableEntry(const SymbolTableEntry &SymblTblEntry) :
-    SymblEntryType(SymblTblEntry.getSymbolTableEntryType()),
-    SymblEntryValue(QVariant(SymblTblEntry.getSymbolTableEntryValue()))
-{
-}
-
-SymbolTableEntry::SymbolTableEntryType SymbolTableEntry::getSymbolTableEntryType() const
-{
-    return SymblEntryType;
-}
-
-const QVariant &SymbolTableEntry::getSymbolTableEntryValue() const
-{
-    return SymblEntryValue;
-}
-
-void SymbolTableEntry::SetSymbolTableEntryValue(int IntegerValue)
-{
-    if(SymblEntryType != SymbolTableEntry::Integer)
-    {
-        qDebug() << __PRETTY_FUNCTION__ << "ERROR" << " TypeMismatch: " << "is " << SymblEntryType << "; tried to assign " << SymbolTableEntry::Integer;
-        return;
-    }
-    SymblEntryValue = QVariant::fromValue(IntegerValue);
-}
-
-void SymbolTableEntry::SetSymbolTableEntryValue(double DoubleValue)
-{
-    if(SymblEntryType != SymbolTableEntry::Double)
-    {
-        qDebug() << __PRETTY_FUNCTION__ << "ERROR" << " TypeMismatch: " << "is " << SymblEntryType << "; tried to assign " << SymbolTableEntry::Double;
-        return;
-    }
-    SymblEntryValue = QVariant::fromValue(DoubleValue);
-}
-
-void SymbolTableEntry::SetSymbolTableEntryValue(bool BoolValue)
-{
-    if(SymblEntryType != SymbolTableEntry::Bool)
-    {
-        qDebug() << __PRETTY_FUNCTION__ << "ERROR" << " TypeMismatch: " << "is " << SymblEntryType << "; tried to assign " << SymbolTableEntry::Bool;
-        return;
-    }
-    SymblEntryValue = QVariant::fromValue(BoolValue);
-}
-
-void SymbolTableEntry::SetSymbolTableEntryValue(QString StringValue)
-{
-    if(SymblEntryType != SymbolTableEntry::String)
-    {
-        qDebug() << __PRETTY_FUNCTION__ << "ERROR" << " TypeMismatch: " << "is " << SymblEntryType << "; tried to assign " << SymbolTableEntry::String;
-        return;
-    }
-    SymblEntryValue = QVariant::fromValue(StringValue);
-}
-
-SymbolTable::SymbolTable()
-{
-}
-
-SymbolTableEntry &SymbolTable::lookup(const QString &identifier)
+SymbolTableEntry *SymbolTable::lookup(const QString &identifier)
 {
     return symblTbl[identifier];
 }
 
-bool SymbolTable::addEntry(const QString &identifier, SymbolTableEntry entry)
+bool SymbolTable::addEntry(const QString &identifier, SymbolTableEntry *entry)
 {
     if(symblTbl.contains(identifier))
         return false;
 
+    if(entry->getType() == SymbolTableEntry::SubSymbolTable)
+    {
+        dynamic_cast<SymbolTable*>(entry)->addParentSymbolTable(this);
+    }
+
     symblTbl[identifier] = entry;
+//    WholeSymbolTableAsSequence.append(entry);
     return true;
+}
+
+bool SymbolTable::removeEntry(const QString &identifier)
+{
+    if(!symblTbl.contains(identifier))
+        return false;
+    SymbolTableEntry *entry = lookup(identifier);
+
+    symblTbl.remove(identifier);
+//    WholeSymbolTableAsSequence.removeAll(entry);
+
+    return true;
+}
+
+//QVector<SymbolTableEntry *> SymbolTable::getWholeSymbolTableAsSequence()
+//{
+////    return WholeSymbolTableAsSequence;
+//}
+
+void SymbolTable::addParentSymbolTable(SymbolTable * const parent)
+{
+    if(parentSymbolTable == NULL)
+    {
+        qDebug() << "SymbolTable ALREADY HAS A PARENT!";
+        return;
+    }
+    parentSymbolTable = parent;
+}
+
+SymbolTableEntry::SymbolTableEntryType SymbolTable::getType() const
+{
+    return SymbolTableEntry::SubSymbolTable;
+}
+
+VariableSymbol::VariableSymbol(SimpleNode *ValueNodeForEntry) :
+    valueNode(ValueNodeForEntry == NULL ? NULL : new ValueNode(ValueNodeForEntry->visit()))
+//    isAssigned(ValueNodeForEntry == NULL ? false : true)
+{
+
+}
+
+VariableSymbol::~VariableSymbol()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+ValueNode *VariableSymbol::getValueNode() const
+{
+    return valueNode;
+}
+
+void VariableSymbol::assignValue(SimpleNode *AssignmentNode)
+{
+    if(valueNode != NULL)
+    {
+        qDebug() << "VariableSymbol reassignment\nWas: " << valueNode->visit().getValue();
+        delete valueNode;
+    }
+
+    if(AssignmentNode == NULL)
+    {
+        qDebug() << "ERROR: Value to assign is NULL";
+        return;
+    }
+
+    valueNode = new ValueNode(AssignmentNode->visit());
+    qDebug() << "Value Assigned: " << valueNode->visit().getValue();
+}
+
+SymbolTableEntry::SymbolTableEntryType VariableSymbol::getType() const
+{
+    return SymbolTableEntry::Variable;
+}
+
+FunctionSymbol::FunctionSymbol(FunctionNode *FunctionNodeForEntry) :
+    functionNode(FunctionNodeForEntry)
+{
+
+}
+
+FunctionSymbol::~FunctionSymbol()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+FunctionNode *FunctionSymbol::GetFunctionNode() const
+{
+    return functionNode;
+}
+
+SymbolTableEntry::SymbolTableEntryType FunctionSymbol::getType() const
+{
+    return SymbolTableEntry::Function;
+}
+
+
+SymbolTableEntry::SymbolTableEntry()
+{
+
+}
+
+
+SymbolTableEntry::~SymbolTableEntry()
+{
+    qDebug() << __PRETTY_FUNCTION__;
 }
