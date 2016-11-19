@@ -84,12 +84,14 @@ ValueNode::ValueNode(const ValueNode &valueNodeToCopy) :
     valueType(valueNodeToCopy.getValueType()),
     value(valueNodeToCopy.getValue())
 {
+    qDebug() << __PRETTY_FUNCTION__;
 }
 
 ValueNode::ValueNode(ValueNode &&valueNodeToMove) :
     valueType(valueNodeToMove.getValueType()),
     value(valueNodeToMove.getValue())
 {
+    qDebug() << __PRETTY_FUNCTION__;
 }
 
 ValueNode::ValueNode(const int value) :
@@ -227,35 +229,9 @@ QString DataNode::printNode() const
 
 VariableNode::VariableNode(const QString &VariableName, SymbolTable * const SymblTbl, SimpleNode::ValueTypes type) :
     VariableName(VariableName),
-    SymblTbl(SymblTbl),
+    RelatedVariableSymbol(dynamic_cast<VariableSymbol*>(SymblTbl->lookup(VariableName))),
     type(type)
 {
-//    if(type != SimpleNode::ErrorType)
-//    {
-//        this->type = type;
-//    }
-//    else
-//    {
-//        const SymbolTableEntry::SymbolTableEntryType symblTblEntryType = this->SymblTbl->lookup(VariableName).getSymbolTableEntryType();
-//        switch(symblTblEntryType)
-//        {
-//        case SymbolTableEntry::Integer:
-//            type = SimpleNode::Integer;
-//            break;
-//        case SymbolTableEntry::Double:
-//            type = SimpleNode::Double;
-//            break;
-//        case SymbolTableEntry::Bool:
-//            type = SimpleNode::Bool;
-//            break;
-//        case SymbolTableEntry::String:
-//            type = SimpleNode::String;
-//            break;
-//        case SymbolTableEntry::SubSymbolTable:
-//        default:
-//            type = SimpleNode::ErrorType;
-//        }
-//    }
 }
 
 VariableNode::~VariableNode()
@@ -270,18 +246,23 @@ SimpleNode::NodeType VariableNode::getNodeType() const
 
 SimpleNode::ValueTypes VariableNode::getReturnType() const
 {
-    return SimpleNode::Integer;
+    return RelatedVariableSymbol->getVariableType();;
 }
 
 void VariableNode::setAssignment(SimpleNode *assignment)
 {
     Assignment = assignment;
-    dynamic_cast<VariableSymbol *>(const_cast<SymbolTable*>(SymblTbl)->lookup(VariableName))->assignValue(assignment);
+    RelatedVariableSymbol->assignValue(assignment);
 }
 
 ValueNode &VariableNode::visit()
 {
-    Result = ValueNode(dynamic_cast<VariableSymbol*>(const_cast<SymbolTable*>(SymblTbl)->lookup(VariableName))->getValueNode());
+    ValueNode *symblTblEntryValue = RelatedVariableSymbol->getValueNode();
+    if(symblTblEntryValue == NULL)
+        Result = ValueNode();
+    else
+        Result = ValueNode(symblTblEntryValue->visit());
+
     return Result;
 }
 
@@ -301,6 +282,11 @@ QString VariableNode::printNode() const
 QString VariableNode::getVariableName() const
 {
     return VariableName;
+}
+
+VariableSymbol *VariableNode::getRelatedVariableSymbol() const
+{
+    return RelatedVariableSymbol;
 }
 
 OperationNode::OperationNode()
@@ -496,9 +482,12 @@ OperationNode::Precedence IncrementNode::getPrecedence() const
 
 ValueNode &IncrementNode::DoOperation()
 {
+    bool IsVariable = false;
     ValueNode &value = rightChild->visit();
 
     Result = ValueNode(value.getValue().value<int>() + 1);
+
+    dynamic_cast<VariableNode*>(rightChild)->setAssignment(new ValueNode(Result));
 
     return Result;
 }
@@ -550,6 +539,8 @@ ValueNode &DecrementNode::DoOperation()
     ValueNode &value = rightChild->visit();
 
     Result = ValueNode(value.getValue().value<int>() - 1);
+
+    dynamic_cast<VariableNode*>(rightChild)->setAssignment(new ValueNode(Result));
 
     return Result;
 }
@@ -2713,8 +2704,9 @@ ValueNode &EOFNode::visit()
 }
 
 
-FunctionNode::FunctionNode(QString FunctionName, SimpleNode::ValueTypes returnType, SymbolTable *SubSymbolTable) :
+FunctionNode::FunctionNode(QString FunctionName, QVector<VariableNode *> ParametersInOrder, SimpleNode::ValueTypes returnType, SymbolTable *SubSymbolTable) :
     FunctionName(FunctionName),
+    ParametersInOrder(ParametersInOrder),
     returnType(returnType),
     FuncSymbolTable(SubSymbolTable)
 {
@@ -2732,7 +2724,7 @@ void FunctionNode::addFuncExpressions(QVector<SimpleNode *> FuncExpressions)
 
 void FunctionNode::addReturnStatement(SimpleNode *returnNode)
 {
-    if( ( (returnNode == NULL) && ( returnType != SimpleNode::Void ) ) || ( !SimpleNode::canConvertTypes(returnType, returnNode->getReturnType()) ) )
+    if( ( (returnNode == NULL) && ( returnType != SimpleNode::Void ) ) || ( !SimpleNode::canConvertTypes(returnNode->getReturnType(), returnType) ) )
     {
         this->returnType = SimpleNode::ErrorType;
         this->returnNode = NULL;
@@ -2787,6 +2779,132 @@ ValueNode &FunctionNode::visit()
     default:
         Result = ValueNode();
     }
+
+    return Result;
+}
+
+QVector<VariableNode *> FunctionNode::getParametersInOrder() const
+{
+    return ParametersInOrder;
+}
+
+SymbolTable *FunctionNode::getFuncSymbolTable() const
+{
+    return FuncSymbolTable;
+}
+
+FunctionCallNode::FunctionCallNode(const QString &FunctionName, SymbolTable *CurSymblTable, QVector<SimpleNode *> FunctionParameters) :
+    FunctionName(FunctionName),
+    FuncParams(FunctionParameters)
+{
+    RelatedSymbol = dynamic_cast<FunctionSymbol*>(CurSymblTable->lookup(FunctionName));
+    if(RelatedSymbol == NULL)
+    {
+        returnType = SimpleNode::ErrorType;
+    }
+    else
+    {
+        FunctionNode *funcNode = RelatedSymbol->GetFunctionNode();
+        if(funcNode == NULL)
+        {
+            returnType = SimpleNode::ErrorType;
+            return;
+        }
+        QVector<VariableNode *> paramsInOrder = funcNode->getParametersInOrder();
+        int NrOfPassedFuncParams = FunctionParameters.size();
+        if(NrOfPassedFuncParams != FunctionParameters.size())
+        {
+            returnType = SimpleNode::ErrorType;
+            return;
+        }
+        for(int i = 0; i < NrOfPassedFuncParams; i++)
+        {
+            VariableNode *paramDecl = paramsInOrder.at(i);
+            SimpleNode *paramDef = FunctionParameters.at(i);
+            if(!SimpleNode::canConvertTypes(paramDef->getReturnType(),paramDecl->getReturnType()))
+            {
+                returnType = SimpleNode::ErrorType;
+                return;
+            }
+            paramDecl->setAssignment(paramDef);
+        }
+        returnType = funcNode->getReturnType();
+    }
+}
+
+FunctionCallNode::~FunctionCallNode()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+SimpleNode::NodeType FunctionCallNode::getNodeType() const
+{
+    return SimpleNode::FunctionCall;
+}
+
+SimpleNode::ValueTypes FunctionCallNode::getReturnType() const
+{
+    return returnType;
+}
+
+QString FunctionCallNode::printValue() const
+{
+    return QString("%1()").arg(FunctionName);
+}
+
+QString FunctionCallNode::printNode() const
+{
+    return QString("{FunctionCall}:{%1}").arg(printValue());
+}
+
+ValueNode &FunctionCallNode::visit()
+{
+    FunctionNode *symblTblEntryValue = RelatedSymbol->GetFunctionNode();
+    if(symblTblEntryValue == NULL)
+        Result = ValueNode();
+    else
+        Result = ValueNode(symblTblEntryValue->visit());
+
+    return Result;
+}
+
+AssignmentNode::AssignmentNode(VariableNode *VariableToAssign, SimpleNode *ValueToAssign) :
+    VariableToAssign(VariableToAssign),
+    ValueToAssign(ValueToAssign)
+{
+
+}
+
+AssignmentNode::~AssignmentNode()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+SimpleNode::NodeType AssignmentNode::getNodeType() const
+{
+    return SimpleNode::Assignment;
+}
+
+SimpleNode::ValueTypes AssignmentNode::getReturnType() const
+{
+    return VariableToAssign->getReturnType();
+}
+
+QString AssignmentNode::printValue() const
+{
+    return QString("%1 = %2").arg(VariableToAssign->printValue()).arg(ValueToAssign->printValue());
+}
+
+QString AssignmentNode::printNode() const
+{
+    return QString("{AssignmentNode}:{%1}").arg(printValue());
+}
+
+ValueNode &AssignmentNode::visit()
+{
+    VariableToAssign->setAssignment(ValueToAssign);
+
+    Result = VariableToAssign->visit();
 
     return Result;
 }

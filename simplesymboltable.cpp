@@ -17,7 +17,18 @@ SymbolTable::~SymbolTable()
 
 SymbolTableEntry *SymbolTable::lookup(const QString &identifier)
 {
-    return symblTbl[identifier];
+    SymbolTableEntry *entry = NULL;
+
+    if(symblTbl.contains(identifier))
+    {
+        entry = symblTbl[identifier];
+    }
+    else if(parentSymbolTable != NULL)
+    {
+        entry = parentSymbolTable->lookup(identifier);
+    }
+
+    return entry;
 }
 
 bool SymbolTable::addEntry(const QString &identifier, SymbolTableEntry *entry)
@@ -49,12 +60,12 @@ bool SymbolTable::removeEntry(const QString &identifier)
 
 //QVector<SymbolTableEntry *> SymbolTable::getWholeSymbolTableAsSequence()
 //{
-////    return WholeSymbolTableAsSequence;
+//    return WholeSymbolTableAsSequence;
 //}
 
 void SymbolTable::addParentSymbolTable(SymbolTable * const parent)
 {
-    if(parentSymbolTable == NULL)
+    if(parentSymbolTable != NULL)
     {
         qDebug() << "SymbolTable ALREADY HAS A PARENT!";
         return;
@@ -67,8 +78,9 @@ SymbolTableEntry::SymbolTableEntryType SymbolTable::getType() const
     return SymbolTableEntry::SubSymbolTable;
 }
 
-VariableSymbol::VariableSymbol(SimpleNode *ValueNodeForEntry) :
-    valueNode(ValueNodeForEntry == NULL ? NULL : new ValueNode(ValueNodeForEntry->visit()))
+VariableSymbol::VariableSymbol(SimpleNode::ValueTypes VariableType, SimpleNode *ValueNodeForEntry) :
+    valueNode(ValueNodeForEntry == NULL ? NULL : new ValueNode(ValueNodeForEntry->visit())),
+    VariableType(VariableType)
 //    isAssigned(ValueNodeForEntry == NULL ? false : true)
 {
 
@@ -86,25 +98,52 @@ ValueNode *VariableSymbol::getValueNode() const
 
 void VariableSymbol::assignValue(SimpleNode *AssignmentNode)
 {
-    if(valueNode != NULL)
-    {
-        qDebug() << "VariableSymbol reassignment\nWas: " << valueNode->visit().getValue();
-        delete valueNode;
-    }
+    ValueNode *newValueNode;// = valueNode; //Save the previous value because it could be referenced in the assignment!!!
 
     if(AssignmentNode == NULL)
     {
         qDebug() << "ERROR: Value to assign is NULL";
         return;
     }
+    switch(VariableType)
+    {
+    case SimpleNode::Integer:
+        newValueNode = new ValueNode(AssignmentNode->visit().getValue().value<int>());
+        break;
+    case SimpleNode::Double:
+        newValueNode = new ValueNode(AssignmentNode->visit().getValue().value<double>());
+        break;
+    case SimpleNode::Bool:
+        newValueNode = new ValueNode(AssignmentNode->visit().getValue().value<bool>());
+        break;
+    case SimpleNode::String:
+        newValueNode = new ValueNode(AssignmentNode->visit().getValue().value<QString>());
+        break;
+    case SimpleNode::Void:
+    case SimpleNode::ErrorType:
+    default:
+        newValueNode = new ValueNode();
+    }
 
-    valueNode = new ValueNode(AssignmentNode->visit());
+    if(valueNode != NULL)
+    {
+        qDebug() << "VariableSymbol reassignment\nWas: " << valueNode->visit().getValue();
+        delete valueNode;
+    }
+
+    valueNode = newValueNode;
+
     qDebug() << "Value Assigned: " << valueNode->visit().getValue();
 }
 
 SymbolTableEntry::SymbolTableEntryType VariableSymbol::getType() const
 {
     return SymbolTableEntry::Variable;
+}
+
+SimpleNode::ValueTypes VariableSymbol::getVariableType() const
+{
+    return VariableType;
 }
 
 FunctionSymbol::FunctionSymbol(FunctionNode *FunctionNodeForEntry) :

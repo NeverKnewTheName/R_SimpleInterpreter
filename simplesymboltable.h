@@ -5,11 +5,11 @@
 #include <QVariant>
 #include <QString>
 
-//#include "simpleast.h"
+#include "simpleast.h"
 
-class SimpleNode;
-class ValueNode;
-class FunctionNode;
+//class SimpleNode;
+//class ValueNode;
+//class FunctionNode;
 
 class SymbolTableEntry
 {
@@ -58,12 +58,14 @@ private:
 class VariableSymbol : public SymbolTableEntry
 {
 public:
-    VariableSymbol(SimpleNode *ValueNodeForEntry = NULL);
+    VariableSymbol(SimpleNode::ValueTypes VariableType = SimpleNode::Integer, SimpleNode *ValueNodeForEntry = NULL);
     ~VariableSymbol();
 
     ValueNode *getValueNode() const;
 
     void assignValue(SimpleNode *AssignmentNode);
+
+    SimpleNode::ValueTypes getVariableType() const;
 
     // SymbolTableEntry interface
 public:
@@ -71,6 +73,7 @@ public:
 
 private:
     ValueNode *valueNode;
+    SimpleNode::ValueTypes VariableType;
 };
 
 class FunctionSymbol : public SymbolTableEntry

@@ -2,7 +2,7 @@ Program                  :   (VarDefinition)* (FunctionDefinition)* (Expression 
 FunctionDefinition       :   FunctionDeclaration "{" (VarDefinition)* (Expression ";")* ReturnStatement "}" ";"
 FunctionDeclaration      :   ReturnType ID "("(VarDeclaration)*")"
 ReturnType               :   TypeName | "Void"
-VarDefinition            :   VarDeclaration "=" Expression ";"
+VarDefinition            :   VarDeclaration ("=" Expression)? ";"
 VarDeclaration           :   TypeName VariableID 
 ReturnStatement          :   "return"  Expression? ";"
 Expression               :   AssignmentExpression 

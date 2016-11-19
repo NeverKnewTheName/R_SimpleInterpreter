@@ -49,6 +49,12 @@ void SimpleLexer::setStringForLexer(const QString &InputString)
     this->PosInInputString = 0;
 }
 
+void SimpleLexer::ResetLexerToToken(SharedSimpleTokenPtr TokenToResetTo)
+{
+    PosInInputString = TokenToResetTo->getTokenPos() + TokenToResetTo->getTokenLen();
+    CurrentToken = TokenToResetTo;
+}
+
 SharedSimpleTokenPtr SimpleLexer::peekAtNextToken()
 {
     qDebug() << __PRETTY_FUNCTION__;
@@ -58,6 +64,12 @@ SharedSimpleTokenPtr SimpleLexer::peekAtNextToken()
 SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
 {
     SharedSimpleTokenPtr Token;
+//    for(int i = 0;;i++)
+//    {
+//        if(LexerString.at(PosInInputString+i).toLatin1() != ' ')
+//            break;
+//        PosInInputString++;
+//    }
     QRegularExpressionMatch regExMatch = regEx.match(LexerString,PosInInputString);
 
     if(regExMatch.hasMatch())
@@ -102,7 +114,7 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
         {
             //IsString
             QString string = regExMatch.captured(REGEX_STRING);
-            Token = SharedSimpleTokenPtr(new ValueToken<QString>(string, SimpleNode::String, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+            Token = SharedSimpleTokenPtr(new ValueToken(QVariant(string), SimpleNode::String, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
         }
         else if(!regExMatch.captured(REGEX_VALUE).isNull())
         {
@@ -113,18 +125,18 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
                 if(!regExMatch.captured(REGEX_NUMBER_AFTER_POINT).isNull())
                 {
                     //IsDouble
-                    Token = SharedSimpleTokenPtr(new ValueToken<double>(regExMatch.captured(REGEX_VALUE).toDouble(), SimpleNode::Double, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+                    Token = SharedSimpleTokenPtr(new ValueToken(QVariant(regExMatch.captured(REGEX_VALUE).toDouble()), SimpleNode::Double, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else
                 {
                     //IsInteger
-                    Token = SharedSimpleTokenPtr(new ValueToken<int>(regExMatch.captured(REGEX_VALUE).toInt(), SimpleNode::Integer, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+                    Token = SharedSimpleTokenPtr(new ValueToken(QVariant(regExMatch.captured(REGEX_VALUE).toInt()), SimpleNode::Integer, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
             }
             else if(!regExMatch.captured(REGEX_VALUE_BOOL).isNull())
             {
                 //Boolean
-                Token = SharedSimpleTokenPtr(new ValueToken<bool>((regExMatch.captured(REGEX_VALUE).compare(QString("true")) ? false : true), SimpleNode::Bool, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+                Token = SharedSimpleTokenPtr(new ValueToken(QVariant((regExMatch.captured(REGEX_VALUE).compare(QString("true")) ? false : true)), SimpleNode::Bool, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
             }
         }
         else if(!regExMatch.captured(REGEX_DATA).isNull())
@@ -272,19 +284,24 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
                     //RightShift
                     Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::RightShift, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
+                else if(!operatorString.compare(QString("=")))
+                {
+                    //Assignment
+                    Token = SharedSimpleTokenPtr(new OperationToken(SimpleToken::Assign, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+                }
                 else if(!operatorString.compare(QString("?")))
                 {
-                    //Conditional
+                    //QMark
                     Token = SharedSimpleTokenPtr(new QMarkToken(PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString(":")))
                 {
-                    //Conditional
+                    //Colon
                     Token = SharedSimpleTokenPtr(new ColonToken(PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString(";")))
                 {
-                    //Conditional
+                    //SemiColonDelim
                     Token = SharedSimpleTokenPtr(new SemiColonDelimToken(PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
         }
@@ -296,7 +313,10 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
         if(consume)
         {
             PosInInputString = regExMatch.capturedStart() + regExMatch.capturedLength();
-            //            LexerString.replace(regExMatch.capturedStart(),regExMatch.capturedLength(),QString(""));
+            while((LexerString.size() > PosInInputString) && (LexerString.at(PosInInputString).isSpace()))
+            {
+                PosInInputString++;
+            }
         }
     }
     else

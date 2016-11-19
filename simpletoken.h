@@ -91,10 +91,10 @@ public:
     QString printToken() const;
 };
 
-template<typename T> class ValueToken : public SimpleToken
+class ValueToken : public SimpleToken
 {
 public:
-    ValueToken(const T value, const SimpleNode::ValueTypes valueType, const int TokenPos, const int TokenLen) :
+    ValueToken(const QVariant value, const SimpleNode::ValueTypes valueType, const int TokenPos, const int TokenLen) :
         SimpleToken(SimpleToken::Value, TokenPos, TokenLen),
         value(value),
         valueType(valueType)
@@ -107,9 +107,21 @@ public:
         qDebug() << __PRETTY_FUNCTION__;
     }
 
-    T getValue() const
+    int getInt() const
     {
-        return value;
+        return value.value<int>();
+    }
+    double getDouble() const
+    {
+        return value.value<double>();
+    }
+    bool getBool() const
+    {
+        return value.value<bool>();
+    }
+    QString getString() const
+    {
+        return value.value<QString>();
     }
 
     SimpleNode::ValueTypes getValueType() const
@@ -121,7 +133,7 @@ public:
 public:
     QString printValue() const
     {
-        return QString("%1").arg(value);
+        return QString("%1").arg(value.value<QString>());
     }
     QString printToken() const
     {
@@ -129,7 +141,7 @@ public:
     }
 
 private:
-    const T value;
+    const QVariant value;
     const SimpleNode::ValueTypes valueType;
 };
 

@@ -146,6 +146,9 @@ QString SimpleToken::convertTokenTypeToString(SimpleToken::TokenType type)
     case RightShift:
         typeString = QString("RightShift");
         break;
+    case Assign:
+        typeString = QString("Assign");
+        break;
     case QMark:
         typeString = QString("QMark");
         break;

@@ -5,6 +5,8 @@
 #include <QVector>
 
 class SymbolTable;
+class FunctionSymbol;
+class VariableSymbol;
 class ValueNode;
 
 class SimpleNode
@@ -17,6 +19,8 @@ public:
         Variable,
         Operation,
         Function,
+        FunctionCall,
+        Assignment,
         EOFNode
     }NodeType;
     typedef enum _ValueTypes
@@ -75,35 +79,6 @@ private:
     QVariant value;
 };
 
-class FunctionNode : public SimpleNode
-{
-public:
-    FunctionNode(
-            QString FunctionName,
-            SimpleNode::ValueTypes returnType,
-            SymbolTable *SubSymbolTable
-            );
-    ~FunctionNode();
-
-    void addFuncExpressions(QVector<SimpleNode *> FuncExpressions);
-    void addReturnStatement(SimpleNode *returnNode);
-
-    // SimpleNode interface
-public:
-    NodeType getNodeType() const;
-    ValueTypes getReturnType() const;
-    QString printValue() const;
-    QString printNode() const;
-    ValueNode &visit();
-
-private:
-    ValueNode Result;
-    QString FunctionName;
-    SimpleNode::ValueTypes returnType;
-    QVector<SimpleNode *> FuncExpressions;
-    SimpleNode *returnNode;
-    SymbolTable *FuncSymbolTable;
-};
 
 class DataNode : public SimpleNode
 {
@@ -140,12 +115,91 @@ public:
 
     QString getVariableName() const;
 
+    VariableSymbol *getRelatedVariableSymbol() const;
+
 private:
     SimpleNode *Assignment;
     ValueNode Result;
     const QString VariableName;
-    SymbolTable * const SymblTbl;
+    VariableSymbol * const RelatedVariableSymbol;
     SimpleNode::ValueTypes type;
+};
+
+class FunctionNode : public SimpleNode
+{
+public:
+    FunctionNode(
+            QString FunctionName,
+            QVector<VariableNode *> ParametersInOrder,
+            SimpleNode::ValueTypes returnType,
+            SymbolTable *SubSymbolTable
+            );
+    ~FunctionNode();
+
+    void addFuncExpressions(QVector<SimpleNode *> FuncExpressions);
+    void addReturnStatement(SimpleNode *returnNode);
+
+    SymbolTable *getFuncSymbolTable() const;
+
+    QVector<VariableNode *> getParametersInOrder() const;
+
+    // SimpleNode interface
+public:
+    NodeType getNodeType() const;
+    ValueTypes getReturnType() const;
+    QString printValue() const;
+    QString printNode() const;
+    ValueNode &visit();
+
+private:
+    ValueNode Result;
+    QString FunctionName;
+    const QVector<VariableNode *> ParametersInOrder;
+    SimpleNode::ValueTypes returnType;
+    QVector<SimpleNode *> FuncExpressions;
+    SimpleNode *returnNode;
+    SymbolTable * const FuncSymbolTable;
+};
+
+class FunctionCallNode : public SimpleNode
+{
+public:
+    FunctionCallNode(const QString &FunctionName, SymbolTable *CurSymblTable, QVector<SimpleNode*> FunctionParameters = QVector<SimpleNode*>());
+    ~FunctionCallNode();
+
+    // SimpleNode interface
+public:
+    NodeType getNodeType() const;
+    ValueTypes getReturnType() const;
+    QString printValue() const;
+    QString printNode() const;
+    ValueNode &visit();
+
+private:
+    QString FunctionName;
+    QVector<SimpleNode*> FuncParams;
+    FunctionSymbol *RelatedSymbol;
+    ValueNode Result;
+    SimpleNode::ValueTypes returnType;
+};
+
+class AssignmentNode : public SimpleNode
+{
+public:
+    AssignmentNode(VariableNode *VariableToAssign, SimpleNode *ValueToAssign);
+    ~AssignmentNode();
+
+    // SimpleNode interface
+public:
+    NodeType getNodeType() const;
+    ValueTypes getReturnType() const;
+    QString printValue() const;
+    QString printNode() const;
+    ValueNode &visit();
+private:
+    ValueNode Result;
+    VariableNode *VariableToAssign;
+    SimpleNode *ValueToAssign;
 };
 
 class OperationNode : public SimpleNode

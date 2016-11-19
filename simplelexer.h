@@ -37,6 +37,8 @@ public:
     ~SimpleLexer();
     void setStringForLexer(const QString &InputString);
 
+    void ResetLexerToToken(SharedSimpleTokenPtr TokenToResetTo);
+
     SharedSimpleTokenPtr peekAtNextToken();
     SharedSimpleTokenPtr getNextToken(bool consume = true);
     void LexErrorAtToken(SharedSimpleTokenPtr ErrorAtToken, int type, QString details = QString());
