@@ -121,7 +121,7 @@ class VariableNode;
 class SimpleParser
 {
 public:
-    SimpleParser(SimpleLexer *lexer);
+    SimpleParser(SimpleLexer *lexer, SymbolTable &parentSymblTbl);
     SimpleNode *parse();
 
     SymbolTable &getSymblTbl();
@@ -130,7 +130,7 @@ private:
     void eat(SimpleToken::TokenType tokenType);
     SimpleNode *Program();
     SimpleNode *FunctionDefinition();
-    FunctionNode *FunctionDeclaration(SymbolTable *FuncSubSymblTbl);
+    FunctionNode *FunctionDeclaration();
     SimpleNode *VarDefinition(SymbolTable *SymbolTableToRegisterVariableTo);
     VariableNode *VarDeclaration(SymbolTable *SymbolTableToRegisterVariableTo);
     SimpleNode *ReturnStatement();

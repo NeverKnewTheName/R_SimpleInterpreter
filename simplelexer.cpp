@@ -21,7 +21,7 @@
 
 SimpleLexer::SimpleLexer(QObject *parent) :
     QObject(parent),
-    regEx(QString("((return)|(Integer|Double|Bool|String|Void)|(?:\"(.*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\{|\\)|\\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|\\+{1,2}|\\-{1,2}|[!~\\*\\/%\\?;:])|([_a-zA-Z]\\w*))")),
+    regEx(QString("((return)|(Integer|Double|Bool|String|Void)|(?:\"((?:\\\\\"|.)*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\{|\\)|\\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|\\+{1,2}|\\-{1,2}|[!~\\*\\/%\\?;:])|([_a-zA-Z]\\w*))")),
     CurrentToken(new EOFToken(0,0)),
     PosInInputString(0)
 {
@@ -29,7 +29,7 @@ SimpleLexer::SimpleLexer(QObject *parent) :
 
 SimpleLexer::SimpleLexer(const QString &InputString, QObject *parent) :
     QObject(parent),
-    regEx(QString("((return)|(Integer|Double|Bool|String|Void)|(?:\"(.*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\{|\\)|\\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|\\+{1,2}|\\-{1,2}|[!~\\*\\/%\\?;:])|([_a-zA-Z]\\w*))")),
+    regEx(QString("((return)|(Integer|Double|Bool|String|Void)|(?:\"((?:\\\\\"|.)*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\{|\\)|\\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|\\+{1,2}|\\-{1,2}|[!~\\*\\/%\\?;:])|([_a-zA-Z]\\w*))")),
     InputString(InputString),
     LexerString(InputString),
     CurrentToken(new EOFToken(0,0)),

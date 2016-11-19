@@ -210,7 +210,7 @@ SimpleNode::ValueTypes DataNode::getReturnType() const
 
 ValueNode &DataNode::visit()
 {
-    Result = ValueNode(dynamic_cast<VariableSymbol*>(const_cast<SymbolTable*>(SymblTbl)->lookup(QString("D%1").arg(dataIndex)))->getValueNode()->getValue().value<int>());
+    Result = ValueNode(dynamic_cast<VariableSymbol*>(const_cast<SymbolTable*>(SymblTbl)->lookup(QString("D%1").arg(dataIndex)))->getAssignedValue()->getValue().value<int>());
     return Result;
 }
 
@@ -257,7 +257,7 @@ void VariableNode::setAssignment(SimpleNode *assignment)
 
 ValueNode &VariableNode::visit()
 {
-    ValueNode *symblTblEntryValue = RelatedVariableSymbol->getValueNode();
+    ValueNode *symblTblEntryValue = RelatedVariableSymbol->getAssignedValue();
     if(symblTblEntryValue == NULL)
         Result = ValueNode();
     else
@@ -2733,6 +2733,11 @@ void FunctionNode::addReturnStatement(SimpleNode *returnNode)
     this->returnNode = returnNode;
 }
 
+void FunctionNode::addAssignment(AssignmentNode *paramAssignment)
+{
+    ParameterAssignments.append(paramAssignment);
+}
+
 SimpleNode::NodeType FunctionNode::getNodeType() const
 {
     return SimpleNode::Function;
@@ -2745,7 +2750,15 @@ SimpleNode::ValueTypes FunctionNode::getReturnType() const
 
 QString FunctionNode::printValue() const
 {
-    return QString("%1 %2").arg(SimpleNode::getHumanReadableTypeNameToValueType(returnType)).arg(FunctionName);
+    QString funcParams = QString("(");
+
+    for(VariableNode *param : this->ParametersInOrder)
+    {
+        funcParams.append(QString(" %1 %2").arg(SimpleNode::getHumanReadableTypeNameToValueType(param->getReturnType())).arg(param->getVariableName()));
+    }
+
+    funcParams.append(" )");
+    return QString("%1 %2 %3").arg(SimpleNode::getHumanReadableTypeNameToValueType(returnType)).arg(FunctionName).arg(funcParams);
 }
 
 QString FunctionNode::printNode() const
@@ -2755,6 +2768,11 @@ QString FunctionNode::printNode() const
 
 ValueNode &FunctionNode::visit()
 {
+    for(AssignmentNode *assignment : ParameterAssignments)
+    {
+        assignment->visit();
+    }
+
     for(SimpleNode *expr : FuncExpressions)
     {
         ValueNode exprRes = expr->visit();
@@ -2781,6 +2799,11 @@ ValueNode &FunctionNode::visit()
     }
 
     return Result;
+}
+
+QString FunctionNode::getFunctionName() const
+{
+    return FunctionName;
 }
 
 QVector<VariableNode *> FunctionNode::getParametersInOrder() const
@@ -2826,7 +2849,8 @@ FunctionCallNode::FunctionCallNode(const QString &FunctionName, SymbolTable *Cur
                 returnType = SimpleNode::ErrorType;
                 return;
             }
-            paramDecl->setAssignment(paramDef);
+            funcNode->addAssignment(new AssignmentNode(paramDecl,paramDef));
+//            paramDecl->setAssignment(paramDef);
         }
         returnType = funcNode->getReturnType();
     }

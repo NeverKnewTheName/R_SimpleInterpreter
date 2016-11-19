@@ -8,6 +8,7 @@ class SymbolTable;
 class FunctionSymbol;
 class VariableSymbol;
 class ValueNode;
+class AssignmentNode;
 
 class SimpleNode
 {
@@ -138,10 +139,13 @@ public:
 
     void addFuncExpressions(QVector<SimpleNode *> FuncExpressions);
     void addReturnStatement(SimpleNode *returnNode);
+    void addAssignment(AssignmentNode *paramAssignment);
 
     SymbolTable *getFuncSymbolTable() const;
 
     QVector<VariableNode *> getParametersInOrder() const;
+
+    QString getFunctionName() const;
 
     // SimpleNode interface
 public:
@@ -155,6 +159,7 @@ private:
     ValueNode Result;
     QString FunctionName;
     const QVector<VariableNode *> ParametersInOrder;
+    QVector<AssignmentNode*> ParameterAssignments;
     SimpleNode::ValueTypes returnType;
     QVector<SimpleNode *> FuncExpressions;
     SimpleNode *returnNode;

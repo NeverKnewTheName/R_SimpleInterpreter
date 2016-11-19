@@ -3,7 +3,14 @@
 
 #include <QMainWindow>
 
+#include <QStandardItem>
+
+#include <simplesymboltable.h>
+
 class SimpleLexer;
+class SimpleParser;
+class SimpleInterpreter;
+
 
 namespace Ui {
 class R_SimpleInterpreter;
@@ -21,9 +28,16 @@ private slots:
     void on_pushButton_clicked();
     void lexerPosChanged(int pos, int len);
     void receiveLexerHTMLFormattedErrMsg(QString HTMLFormattedErrMsg);
+
+private:
+    void populateSymbolTableView(SymbolTable *symbolTable, QStandardItem *SymbolTableModel);
+
 private:
     Ui::R_SimpleInterpreter *ui;
     SimpleLexer *lex;
+    SimpleParser *parse;
+    SimpleInterpreter *interpr;
+    SymbolTable GlobalSymbolTable;
 };
 
 #endif // R_SIMPLEINTERPRETER_H

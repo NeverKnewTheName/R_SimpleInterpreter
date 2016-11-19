@@ -27,6 +27,8 @@ public:
     virtual ~SymbolTableEntry();
 
     virtual SymbolTableEntryType getType() const = 0;
+    virtual QString PrintToSymbolToString() const = 0;
+    virtual QString PrintSymbolType() const = 0;
 protected:
     bool isAssigned;
 };
@@ -34,34 +36,41 @@ protected:
 class SymbolTable : public SymbolTableEntry
 {
 public:
-    SymbolTable(SymbolTable *parentSymbolTable = NULL);
+    SymbolTable(QString const& identifier, SymbolTable *parentSymbolTable = NULL);
     ~SymbolTable();
 
     SymbolTableEntry *lookup(QString const& identifier);
     bool addEntry(QString const& identifier, SymbolTableEntry *entry);
     bool removeEntry(QString const& identifier);
 
-//    QVector<SymbolTableEntry *> getWholeSymbolTableAsSequence();
+    QVector<SymbolTableEntry *> getSymbolTableAsSequence();
 
     void addParentSymbolTable(SymbolTable * const parent);
+
+    SymbolTable *getParentSymbolTable() const;
+
+    QString getIdentifier() const;
 
     // SymbolTableEntry interface
 public:
     SymbolTableEntryType getType() const;
+    virtual QString PrintToSymbolToString() const;
+    virtual QString PrintSymbolType() const;
 
 private:
+    QString identifier;
     QHash<QString,SymbolTableEntry*> symblTbl;
-//    static QVector<SymbolTableEntry *> WholeSymbolTableAsSequence;
+    QVector<SymbolTableEntry *> SymbolTableAsSequence;
     SymbolTable *parentSymbolTable;
 };
 
 class VariableSymbol : public SymbolTableEntry
 {
 public:
-    VariableSymbol(SimpleNode::ValueTypes VariableType = SimpleNode::Integer, SimpleNode *ValueNodeForEntry = NULL);
+    VariableSymbol(const QString &identifier, SimpleNode::ValueTypes VariableType = SimpleNode::Integer, SimpleNode *ValueNodeForEntry = NULL);
     ~VariableSymbol();
 
-    ValueNode *getValueNode() const;
+    ValueNode *getAssignedValue() const;
 
     void assignValue(SimpleNode *AssignmentNode);
 
@@ -70,8 +79,11 @@ public:
     // SymbolTableEntry interface
 public:
     SymbolTableEntryType getType() const;
+    virtual QString PrintToSymbolToString() const;
+    virtual QString PrintSymbolType() const;
 
 private:
+    QString identifier;
     ValueNode *valueNode;
     SimpleNode::ValueTypes VariableType;
 };
@@ -87,6 +99,8 @@ public:
     // SymbolTableEntry interface
 public:
     SymbolTableEntryType getType() const;
+    virtual QString PrintToSymbolToString() const;
+    virtual QString PrintSymbolType() const;
 
 private:
     FunctionNode *functionNode;

@@ -2,6 +2,7 @@
 #define SIMPLEINTERPRETER_H
 
 #include <QString>
+#include "simplesymboltable.h"
 
 class SimpleNode;
 class ValueNode;
@@ -11,7 +12,7 @@ class SimpleInterpreter
 {
 public:
     SimpleInterpreter(SimpleParser *parser);
-    SimpleInterpreter(const QString &StringToInterpret);
+    SimpleInterpreter(const QString &StringToInterpret, SymbolTable &GlobalSymbolTable);
     ~SimpleInterpreter();
 
     ValueNode *interpret();

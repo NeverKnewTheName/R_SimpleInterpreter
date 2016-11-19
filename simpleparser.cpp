@@ -2,11 +2,12 @@
 #include "simplesymboltable.h"
 #include <QDebug>
 
-SimpleParser::SimpleParser(SimpleLexer *lexer) :
+SimpleParser::SimpleParser(SimpleLexer *lexer, SymbolTable &parentSymblTbl) :
     lexer(lexer),
     CurrentToken(lexer->getNextToken()),
-    ErrorOccured(false),
-    CurSymblTbl(&SymblTbl)
+    SymblTbl(QString("ParserSubSymbolTable"), &parentSymblTbl),
+    CurSymblTbl(&SymblTbl),
+    ErrorOccured(false)
 {
 }
 
@@ -35,6 +36,7 @@ SimpleNode *SimpleParser::parse()
 
 SymbolTable &SimpleParser::getSymblTbl()
 {
+    SymblTbl.getParentSymbolTable()->removeEntry(SymblTbl.getIdentifier());
     return SymblTbl;
 }
 
@@ -90,27 +92,30 @@ SimpleNode *SimpleParser::Program()
 
 SimpleNode *SimpleParser::FunctionDefinition()
 {
-    SymbolTable *FuncSubSymblTbl = new SymbolTable();
-    CurSymblTbl = FuncSubSymblTbl;
-    FuncSubSymblTbl->addParentSymbolTable(&SymblTbl);
-    FunctionNode *node = FunctionDeclaration(FuncSubSymblTbl);
+    FunctionNode *node = FunctionDeclaration(/*FuncSubSymblTbl*/);
+
     if(node == NULL)
     {
-        CurSymblTbl = &SymblTbl;
-        delete FuncSubSymblTbl;
         return NULL;
     }
     SharedSimpleTokenPtr token = CurrentToken;
+    SymbolTable *FuncSubSymblTbl = node->getFuncSymbolTable();;
+    CurSymblTbl = FuncSubSymblTbl;
 
     if(CurrentToken->getTokenType() == SimpleToken::LCurlyParan)
     {
         eat(SimpleToken::LCurlyParan);
+        QVector<SimpleNode*> FuncExpressions;
+
         while(CurrentToken->getTokenType() == SimpleToken::TypeName)
         {
-            VarDefinition(FuncSubSymblTbl);
+            SimpleNode *varDef = VarDefinition(FuncSubSymblTbl);
+            if(varDef->getNodeType() == SimpleNode::Assignment)
+            {
+                FuncExpressions.append(varDef);
+            }
         }
 
-        QVector<SimpleNode*> FuncExpressions;
         SimpleNode * ExpressionNode = NULL;
         do
         {
@@ -152,7 +157,7 @@ SimpleNode *SimpleParser::FunctionDefinition()
     return node;
 }
 
-FunctionNode *SimpleParser::FunctionDeclaration(SymbolTable *FuncSubSymblTbl)
+FunctionNode *SimpleParser::FunctionDeclaration(/*SymbolTable *FuncSubSymblTbl*/)
 {
     FunctionNode *node = NULL;
     SharedSimpleTokenPtr token;
@@ -167,6 +172,7 @@ FunctionNode *SimpleParser::FunctionDeclaration(SymbolTable *FuncSubSymblTbl)
         eat(SimpleToken::VariableID);
         QString FuncName = qSharedPointerDynamicCast<VariableIDToken>(token)->getID();
 
+        SymbolTable *FuncSubSymblTbl = new SymbolTable(QString("FuncSymblTbl_%1").arg(FuncName),&SymblTbl);
         eat(SimpleToken::LParan);
         QVector<VariableNode*> parameters;
         while(CurrentToken->getTokenType() == SimpleToken::TypeName)
@@ -192,7 +198,7 @@ FunctionNode *SimpleParser::FunctionDeclaration(SymbolTable *FuncSubSymblTbl)
 
 SimpleNode *SimpleParser::VarDefinition(SymbolTable *SymbolTableToRegisterVariableTo)
 {
-    VariableNode *node = VarDeclaration(SymbolTableToRegisterVariableTo);
+    SimpleNode *node = VarDeclaration(SymbolTableToRegisterVariableTo);
     SimpleNode *nodeTwo = NULL;
     if(node == NULL)
     {
@@ -222,7 +228,8 @@ SimpleNode *SimpleParser::VarDefinition(SymbolTable *SymbolTableToRegisterVariab
             delete node;
             return NULL;
         }
-        dynamic_cast<VariableNode*>(node)->setAssignment(nodeTwo);
+        node = new AssignmentNode(dynamic_cast<VariableNode*>(node), nodeTwo);
+//        dynamic_cast<VariableNode*>(node)->setAssignment(nodeTwo);
     }
 
     eat(SimpleToken::SemiColonDelim);
@@ -251,7 +258,7 @@ VariableNode *SimpleParser::VarDeclaration(SymbolTable *SymbolTableToRegisterVar
             token = CurrentToken;
             eat(SimpleToken::VariableID);
             QString VariableID = qSharedPointerDynamicCast<VariableIDToken>(token)->getID();
-            SymbolTableToRegisterVariableTo->addEntry(VariableID, new VariableSymbol(type));
+            SymbolTableToRegisterVariableTo->addEntry(VariableID, new VariableSymbol(VariableID, type));
             node = new VariableNode(VariableID, SymbolTableToRegisterVariableTo, type);
         }
     }

@@ -4,15 +4,41 @@
 
 #include <QDebug>
 
-SymbolTable::SymbolTable(SymbolTable *parentSymbolTable) :
+
+SymbolTable::SymbolTable(QString const& identifier, SymbolTable *parentSymbolTable) :
+    identifier(identifier),
     parentSymbolTable(parentSymbolTable)
 {
-
+    if(parentSymbolTable != NULL)
+    {
+        parentSymbolTable->addEntry(identifier, this);
+    }
 }
 
 SymbolTable::~SymbolTable()
 {
-   qDebug() << __PRETTY_FUNCTION__;
+    for(SymbolTableEntry *entry : this->SymbolTableAsSequence)
+    {
+        if(entry == NULL)
+            continue;
+
+//        if(entry->getType() == SymbolTableEntry::SubSymbolTable)
+//        {
+//            SymbolTable *parentSymbolTable = dynamic_cast<SymbolTable*>(entry)->getParentSymbolTable();
+//            if(parentSymbolTable != NULL)
+//            {
+//                parentSymbolTable->removeEntry(dynamic_cast<SymbolTable*>(entry)->getIdentifier());
+//            }
+//        }
+        delete entry;
+    }
+    SymbolTableAsSequence.clear();
+    symblTbl.clear();
+    if(getParentSymbolTable() != NULL)
+    {
+        getParentSymbolTable()->removeEntry(identifier);
+    }
+    qDebug() << __PRETTY_FUNCTION__;
 }
 
 SymbolTableEntry *SymbolTable::lookup(const QString &identifier)
@@ -42,7 +68,7 @@ bool SymbolTable::addEntry(const QString &identifier, SymbolTableEntry *entry)
     }
 
     symblTbl[identifier] = entry;
-//    WholeSymbolTableAsSequence.append(entry);
+    SymbolTableAsSequence.append(entry);
     return true;
 }
 
@@ -53,15 +79,15 @@ bool SymbolTable::removeEntry(const QString &identifier)
     SymbolTableEntry *entry = lookup(identifier);
 
     symblTbl.remove(identifier);
-//    WholeSymbolTableAsSequence.removeAll(entry);
+    SymbolTableAsSequence.removeAll(entry);
 
     return true;
 }
 
-//QVector<SymbolTableEntry *> SymbolTable::getWholeSymbolTableAsSequence()
-//{
-//    return WholeSymbolTableAsSequence;
-//}
+QVector<SymbolTableEntry *> SymbolTable::getSymbolTableAsSequence()
+{
+    return SymbolTableAsSequence;
+}
 
 void SymbolTable::addParentSymbolTable(SymbolTable * const parent)
 {
@@ -78,10 +104,31 @@ SymbolTableEntry::SymbolTableEntryType SymbolTable::getType() const
     return SymbolTableEntry::SubSymbolTable;
 }
 
-VariableSymbol::VariableSymbol(SimpleNode::ValueTypes VariableType, SimpleNode *ValueNodeForEntry) :
+QString SymbolTable::PrintToSymbolToString() const
+{
+    return identifier;
+}
+
+QString SymbolTable::PrintSymbolType() const
+{
+    return QString("SubSymbolTable");
+}
+
+QString SymbolTable::getIdentifier() const
+{
+    return identifier;
+}
+
+SymbolTable *SymbolTable::getParentSymbolTable() const
+{
+    return parentSymbolTable;
+}
+
+VariableSymbol::VariableSymbol(const QString &identifier, SimpleNode::ValueTypes VariableType, SimpleNode *ValueNodeForEntry) :
+    identifier(identifier),
     valueNode(ValueNodeForEntry == NULL ? NULL : new ValueNode(ValueNodeForEntry->visit())),
     VariableType(VariableType)
-//    isAssigned(ValueNodeForEntry == NULL ? false : true)
+  //    isAssigned(ValueNodeForEntry == NULL ? false : true)
 {
 
 }
@@ -91,7 +138,7 @@ VariableSymbol::~VariableSymbol()
     qDebug() << __PRETTY_FUNCTION__;
 }
 
-ValueNode *VariableSymbol::getValueNode() const
+ValueNode *VariableSymbol::getAssignedValue() const
 {
     return valueNode;
 }
@@ -141,6 +188,16 @@ SymbolTableEntry::SymbolTableEntryType VariableSymbol::getType() const
     return SymbolTableEntry::Variable;
 }
 
+QString VariableSymbol::PrintToSymbolToString() const
+{
+    return QString("%1 %2").arg(SimpleNode::getHumanReadableTypeNameToValueType(getVariableType())).arg(identifier);
+}
+
+QString VariableSymbol::PrintSymbolType() const
+{
+    return QString("Variable");
+}
+
 SimpleNode::ValueTypes VariableSymbol::getVariableType() const
 {
     return VariableType;
@@ -165,6 +222,16 @@ FunctionNode *FunctionSymbol::GetFunctionNode() const
 SymbolTableEntry::SymbolTableEntryType FunctionSymbol::getType() const
 {
     return SymbolTableEntry::Function;
+}
+
+QString FunctionSymbol::PrintToSymbolToString() const
+{
+    return functionNode->printValue();
+}
+
+QString FunctionSymbol::PrintSymbolType() const
+{
+    return QString("Function");
 }
 
 

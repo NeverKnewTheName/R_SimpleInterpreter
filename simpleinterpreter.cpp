@@ -12,10 +12,10 @@ SimpleInterpreter::SimpleInterpreter(SimpleParser *parser) :
     tree = parser->parse();
 }
 
-SimpleInterpreter::SimpleInterpreter(const QString &StringToInterpret)
+SimpleInterpreter::SimpleInterpreter(const QString &StringToInterpret, SymbolTable &GlobalSymbolTable)
 {
     SimpleLexer *lexer = new SimpleLexer(StringToInterpret);
-    parser = new SimpleParser(lexer);
+    parser = new SimpleParser(lexer,GlobalSymbolTable);
     tree = parser->parse();
 }
 
