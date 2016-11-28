@@ -1,0 +1,77 @@
+digraph RSimpelInterpreter {
+    fontname = "Bitstream Vera Sans"
+    fontsize = 8
+    rankdir=TB
+    overlap=false
+    splines=true
+    
+    Node [
+        shape=box
+    ]
+    
+    Program [
+        label="Program"
+        ]
+    
+    Expression [
+        label="Expression"
+        ]
+    
+    FunctionCall [
+        label="FunctionCall"
+        ]
+    
+    ReturnStatement [
+        label="ReturnStatement"
+        ]
+    
+    FunctionDefinition [
+        label="FunctionDefinition"
+        ]
+    FunctionDeclaration [
+        label="FunctionDeclaration"
+        ]
+        
+    VariableDefinition [
+        label="VariableDefinition"
+        ]
+    VariableDeclaration [
+        label="VariableDeclaration"
+        ]
+        
+    {rank=min Program}
+    
+    Program -> { VariableDeclaration VariableDefinition FunctionDefinition Expression }[headlabel="0..*", labeldistance=2]
+    Program -> ReturnStatement[headlabel=1, labeldistance=2]
+    
+    VariableDefinition -> VariableDeclaration[headlabel=1, labeldistance=2]
+    VariableDeclaration -> Expression[headlabel=1, labeldistance=2]
+    
+    FunctionDefinition -> FunctionDeclaration[headlabel=1, labeldistance=2]
+    FunctionDefinition -> { VariableDefinition Expression }[headlabel="0..*", labeldistance=2]
+    FunctionDefinition -> ReturnStatement[headlabel=1, labeldistance=2]
+    FunctionDeclaration -> VariableDeclaration[headlabel="0..*", labeldistance=2]
+    
+    ReturnStatement -> Expression[headlabel=1, labeldistance=2]
+    
+    FunctionCall -> { VariableDefinition Expression FunctionCall }[headlabel="0..*", labeldistance=2]
+    FunctionCall -> ReturnStatement[headlabel=1, labeldistance=2]
+        
+    Expression -> Assignment[headlabel=1, labeldistance=2]
+    Assignment -> { VariableID Conditional }[headlabel=1, labeldistance=2]
+    Conditional -> Logical[headlabel=1, labeldistance=2]
+    Conditional -> Conditional[headlabel=2, labeldistance=2]
+    Logical -> Bitwise[headlabel=2, labeldistance=2]
+    Bitwise -> Equality[headlabel=2, labeldistance=2]
+    Equality -> Relational[headlabel=2, labeldistance=2]
+    Relational -> Shift[headlabel=2, labeldistance=2]
+    Shift -> Additive[headlabel=2, labeldistance=2]
+    Additive -> Multiplicative[headlabel=2, labeldistance=2]
+    Multiplicative -> Unary[headlabel=2, labeldistance=2]
+    Unary -> PostFix[headlabel=1, labeldistance=2]
+    PostFix -> Primary[headlabel=1, labeldistance=2]
+    Primary -> { Integer Double Bool String VariableID FunctionCall }[headlabel=1, labeldistance=2]
+    VariableID -> VariableDeclaration[style=dotted]
+    FunctionCall -> FunctionDefinition[style=dotted]
+    
+}

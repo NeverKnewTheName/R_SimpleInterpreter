@@ -1,4 +1,4 @@
-// ccompons -x R_SimpleInterpreter.dot | dot | gvpack -array_t | neato -Tpng -n2 -o graph.png
+// ccomps -x R_SimpleInterpreter.dot | dot | gvpack -array_t | neato -Tpng -n2 -o graph.png
         
 digraph RSimpelInterpreter {
         fontname = "Bitstream Vera Sans"
@@ -158,8 +158,8 @@ digraph RSimpelInterpreter {
                 >
             ]
             
-            SimpleParser -> SimpleInterpreter[arrowhead="odiamond", headlabel = "1"]
-            SimpleLexer -> SimpleParser[arrowhead="odiamond", headlabel = "1"]
+            SimpleParser -> SimpleInterpreter[arrowhead="odiamond", headlabel=1, labeldistance=2]
+            SimpleLexer -> SimpleParser[arrowhead="odiamond", headlabel=1, labeldistance=2]
         }
         subgraph clusterTokens {
             label="Tokens"
@@ -2096,6 +2096,10 @@ digraph RSimpelInterpreter {
             FunctionCallNode -> SimpleNode[arrowhead="empty", arrowtail="normal"]
             AssignmentNode -> SimpleNode[arrowhead="empty", arrowtail="normal"]
             OperationNode -> SimpleNode[arrowhead="empty", arrowtail="normal"]
+            
+            UnaryOperationNode -> SimpleNode[arrowhead="diamond", arrowtail="normal", headlabel=1, labeldistance=2]
+            BinaryOperationNode -> SimpleNode[arrowhead="diamond", arrowtail="normal", headlabel=2, labeldistance=2]
+            TernaryOperationNode -> SimpleNode[arrowhead="diamond", arrowtail="normal", headlabel=3, labeldistance=2]
         }
         subgraph clusteSymbolTable {
             label="Symbol Table"
@@ -2232,15 +2236,18 @@ digraph RSimpelInterpreter {
         
         QObject -> SimpleLexer[arrowhead="odiamond" arrowtail="none"]
         QString -> SimpleLexer[arrowhead="none" arrowtail="none"]
-        SimpleToken -> SimpleLexer[arrowhead="diamond", headlabel = "1"]
+        SimpleToken -> SimpleLexer[arrowhead="diamond", headlabel=1, labeldistance=2]
         
-        SimpleToken -> SimpleParser[arrowhead="odiamond", headlabel = "1"]
+        SimpleToken -> SimpleParser[arrowhead="odiamond", headlabel=1, labeldistance=2]
         SimpleNode -> SimpleParser[arrowhead="none"]
-        SymbolTable -> SimpleParser[arrowhead="diamond", headlabel = "1"]
+        SymbolTable -> SimpleParser[arrowhead="diamond", headlabel=1, labeldistance=2]
         
-        SimpleNode -> SimpleInterpreter[arrowhead="diamond", headlabel = "1"]
-        SymbolTable -> SimpleInterpreter[arrowhead="diamond", headlabel = "1"]
+        SimpleNode -> SimpleInterpreter[arrowhead="diamond", headlabel=1, labeldistance=2]
+        SymbolTable -> SimpleInterpreter[arrowhead="diamond", headlabel=1, labeldistance=2]
         
+        AssignmentNode -> VariableNode[arrowhead="diamond", headlabel=1, labeldistance=2]
+        VariableNode -> VariableSymbol[arrowhead="diamond", headlabel=1, labeldistance=2]
+        FunctionCallNode -> FunctionSymbol[arrowhead="diamond", headlabel=1, labeldistance=2]
         
         
         

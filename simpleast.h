@@ -22,6 +22,7 @@ public:
         Function,
         FunctionCall,
         Assignment,
+        Program,
         EOFNode
     }NodeType;
     typedef enum _ValueTypes
@@ -48,6 +49,29 @@ public:
     static QString getHumanReadableTypeNameToValueType(const ValueTypes type);
     static bool canConvertTypes(const ValueTypes OrigType, const ValueTypes NewType);
 };
+
+//class ProgramNode : public SimpleNode
+//{
+//public:
+//    ProgramNode(const SymbolTable * const SyblTbl);
+//    ~ProgramNode();
+
+//    // SimpleNode interface
+//public:
+//    NodeType getNodeType() const;
+//    ValueTypes getReturnType() const;
+//    QString printValue() const;
+//    QString printNode() const;
+//    ValueNode &visit();
+
+//private:
+//    SimpleNode::ValueTypes type;
+//    ValueNode Result;
+//    QVector<AssignmentNode> ProgramAssignments;
+//    QVector<SimpleNode> ProgramExpressions;
+//    SimpleNode ReturnStatement;
+//    const SymbolTable * const SymblTbl;
+//};
 
 class ValueNode : public SimpleNode
 {
@@ -79,7 +103,6 @@ private:
     ValueTypes valueType;
     QVariant value;
 };
-
 
 class DataNode : public SimpleNode
 {

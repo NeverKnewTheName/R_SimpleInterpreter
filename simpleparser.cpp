@@ -81,6 +81,12 @@ SimpleNode *SimpleParser::Program()
             break;
         }
     }
+
+    do
+    {
+        node = Expression();
+    }while(node != NULL);
+
     node = ReturnStatement();
     if(node == NULL)
     {

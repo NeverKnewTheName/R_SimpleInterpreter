@@ -2974,3 +2974,31 @@ OperationNode::OperationTypes TernaryBitwiseOperationNode::getOpType() const
 {
     return OperationNode::Bitwise;
 }
+
+//SimpleNode::NodeType ProgramNode::getNodeType() const
+//{
+//    return SimpleNode::Program;
+//}
+
+//SimpleNode::ValueTypes ProgramNode::getReturnType() const
+//{
+//    return type;
+//}
+
+//QString ProgramNode::printValue() const
+//{
+//    return QString("%1").arg(Result.visit().getValue().value<QString>());
+//}
+
+//QString ProgramNode::printNode() const
+//{
+//    return QString("{ProgramNode}:{%1}").arg(printValue());
+//}
+
+//ValueNode &ProgramNode::visit()
+//{
+//    for(AssignmentNode &&assign : ProgramAssignments)
+//    {
+////        assign.
+//    }
+//}
