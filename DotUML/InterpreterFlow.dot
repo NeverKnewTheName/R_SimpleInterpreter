@@ -41,7 +41,8 @@ digraph RSimpelInterpreter {
         
     {rank=min Program}
     
-    Program -> { VariableDeclaration VariableDefinition FunctionDefinition Expression }[headlabel="0..*", labeldistance=2]
+    Program -> { VariableDeclaration VariableDefinition FunctionDefinition  }[arrowhead="empty" headlabel="0..*", labeldistance=2]
+    Program -> Expression[headlabel="0..*", labeldistance=2]
     Program -> ReturnStatement[headlabel=1, labeldistance=2]
     
     VariableDefinition -> VariableDeclaration[headlabel=1, labeldistance=2]

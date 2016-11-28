@@ -2,11 +2,12 @@
 #include "simplesymboltable.h"
 #include <QDebug>
 
-SimpleParser::SimpleParser(SimpleLexer *lexer, SymbolTable &parentSymblTbl) :
+SimpleParser::SimpleParser(SimpleLexer *lexer, const SymbolTable &parentSymblTbl) :
     lexer(lexer),
     CurrentToken(lexer->getNextToken()),
-    SymblTbl(QString("ParserSubSymbolTable"), &parentSymblTbl),
-    CurSymblTbl(&SymblTbl),
+    ParentSymblTbl(parentSymblTbl),
+    ProgramSymbolTable(QString("ProgramSymbolTable"),ParentSymblTbl),
+    CurSymblTbl(NULL),
     ErrorOccured(false)
 {
 }
@@ -34,10 +35,9 @@ SimpleNode *SimpleParser::parse()
     return node;
 }
 
-SymbolTable &SimpleParser::getSymblTbl()
+const SymbolTable &SimpleParser::getProgramSymblTbl()
 {
-    SymblTbl.getParentSymbolTable()->removeEntry(SymblTbl.getIdentifier());
-    return SymblTbl;
+    return ProgramSymbolTable;
 }
 
 void SimpleParser::eat(SimpleToken::TokenType tokenType)
@@ -58,21 +58,26 @@ SimpleNode *SimpleParser::Program()
 {
     SimpleNode *node = NULL;
     SharedSimpleTokenPtr token = CurrentToken;
+    SymbolTable ProgramSymbolTable(QString("ProgramSymblTbl"),ParentSymblTbl);
 
+    ProgramNode program(QString("Program"), ProgramSymbolTable);
+
+    // // // Variable or Function Definitions // // //
     while(CurrentToken->getTokenType() == SimpleToken::TypeName)
     {
+        // // // Variable Definition // // //
         token = CurrentToken;
         node = VarDefinition(&SymblTbl);
-        if(node == NULL)
+        if(node != NULL)
+        {
+            continue;
+        }
+        else
         {
             lexer->ResetLexerToToken(token);
             CurrentToken = token;
-            break;
         }
-    }
-    while(CurrentToken->getTokenType() == SimpleToken::TypeName)
-    {
-        token = CurrentToken;
+        // // // Function Definition // // //
         node = FunctionDefinition();
         if(node == NULL)
         {
@@ -82,14 +87,21 @@ SimpleNode *SimpleParser::Program()
         }
     }
 
-    do
+    while(CurrentToken->getTokenType() != SimpleToken::ReturnKeyword)
     {
+        token = CurrentToken;
         node = Expression();
-    }while(node != NULL);
+        if(node == NULL)
+        {
+            SyntacticError(token, QString("Expected Expression!"));
+            return NULL;
+        }
+    }
 
     node = ReturnStatement();
     if(node == NULL)
     {
+        SyntacticError(token, QString("Expected Return Statement!"));
         return NULL;
     }
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();

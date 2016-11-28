@@ -5,49 +5,34 @@
 #include <QDebug>
 
 
-SymbolTable::SymbolTable(QString const& identifier, SymbolTable *parentSymbolTable) :
+SymbolTable::SymbolTable(QString const& identifier, SymbolTableEntryPtr parentSymbolTable) :
     identifier(identifier),
     parentSymbolTable(parentSymbolTable)
 {
     if(parentSymbolTable != NULL)
     {
-        parentSymbolTable->addEntry(identifier, this);
+        parentSymbolTable->addEntry(identifier, SymbolTableEntryPtr(this));
     }
 }
 
 SymbolTable::~SymbolTable()
 {
-    for(SymbolTableEntry *entry : this->SymbolTableAsSequence)
-    {
-        if(entry == NULL)
-            continue;
-
-//        if(entry->getType() == SymbolTableEntry::SubSymbolTable)
-//        {
-//            SymbolTable *parentSymbolTable = dynamic_cast<SymbolTable*>(entry)->getParentSymbolTable();
-//            if(parentSymbolTable != NULL)
-//            {
-//                parentSymbolTable->removeEntry(dynamic_cast<SymbolTable*>(entry)->getIdentifier());
-//            }
-//        }
-        delete entry;
-    }
     SymbolTableAsSequence.clear();
     symblTbl.clear();
-    if(getParentSymbolTable() != NULL)
+    if(parentSymbolTable != NULL)
     {
-        getParentSymbolTable()->removeEntry(identifier);
+        parentSymbolTable->removeEntry(identifier);
     }
     qDebug() << __PRETTY_FUNCTION__;
 }
 
-SymbolTableEntry *SymbolTable::lookup(const QString &identifier)
+SymbolTableEntryPtr SymbolTable::lookup(const QString &identifier)
 {
-    SymbolTableEntry *entry = NULL;
+    SymbolTableEntryPtr entry = NULL;
 
     if(symblTbl.contains(identifier))
     {
-        entry = symblTbl[identifier];
+        entry = SymbolTableEntries.at(SymbolTableIndices[identifier]);
     }
     else if(parentSymbolTable != NULL)
     {
@@ -57,46 +42,61 @@ SymbolTableEntry *SymbolTable::lookup(const QString &identifier)
     return entry;
 }
 
-bool SymbolTable::addEntry(const QString &identifier, SymbolTableEntry *entry)
+bool SymbolTable::addEntry(const QString &identifier, SymbolTableEntryPtr entry)
 {
     if(symblTbl.contains(identifier))
+    {
+        qDebug() << "Identifier already taken!";
         return false;
+    }
 
     if(entry->getType() == SymbolTableEntry::SubSymbolTable)
     {
-        dynamic_cast<SymbolTable*>(entry)->addParentSymbolTable(this);
+        bool SetAsParentSuccess;
+        SetAsParentSuccess = qSharedPointerDynamicCast<SymbolTable>(entry)->addParentSymbolTable(SymbolTableEntryPtr(this));
+        if(!SetAsParentSuccess)
+        {
+            qDebug() << "Set as parent failed!";
+            return false;
+        }
     }
 
-    symblTbl[identifier] = entry;
-    SymbolTableAsSequence.append(entry);
+    SymbolTableEntries.append(entry);
+    SymbolTableIndices[identifier] = SymbolTableEntries.size()-1;
+
     return true;
 }
 
 bool SymbolTable::removeEntry(const QString &identifier)
 {
-    if(!symblTbl.contains(identifier))
+    if(!SymbolTableIndices.contains(identifier))
+    {
+        qDebug() << "Identifier not found!";
         return false;
-    SymbolTableEntry *entry = lookup(identifier);
+    }
+
+    int SymbolIndexToRemove = SymbolTableIndices.value(identifier);
 
     symblTbl.remove(identifier);
-    SymbolTableAsSequence.removeAll(entry);
+    SymbolTableEntries.remove(SymbolIndexToRemove);
 
     return true;
 }
 
-QVector<SymbolTableEntry *> SymbolTable::getSymbolTableAsSequence()
+QVector<SymbolTableEntryPtr> SymbolTable::getSymbolTableEntries()
 {
-    return SymbolTableAsSequence;
+    return SymbolTableEntries;
 }
 
-void SymbolTable::addParentSymbolTable(SymbolTable * const parent)
+bool SymbolTable::addParentSymbolTable(const SymbolTableEntryPtr parent)
 {
     if(parentSymbolTable != NULL)
     {
         qDebug() << "SymbolTable ALREADY HAS A PARENT!";
-        return;
+        return false;
     }
     parentSymbolTable = parent;
+    return true;
 }
 
 SymbolTableEntry::SymbolTableEntryType SymbolTable::getType() const
@@ -119,16 +119,19 @@ QString SymbolTable::getIdentifier() const
     return identifier;
 }
 
-SymbolTable *SymbolTable::getParentSymbolTable() const
+SymbolTableEntryPtr SymbolTable::getParentSymbolTable() const
 {
     return parentSymbolTable;
 }
 
-VariableSymbol::VariableSymbol(const QString &identifier, SimpleNode::ValueTypes VariableType, SimpleNode *ValueNodeForEntry) :
+VariableSymbol::VariableSymbol(
+        const QString &identifier,
+        SimpleNode::ValueTypes VariableType
+        ) :
     identifier(identifier),
-    valueNode(ValueNodeForEntry == NULL ? NULL : new ValueNode(ValueNodeForEntry->visit())),
-    VariableType(VariableType)
-  //    isAssigned(ValueNodeForEntry == NULL ? false : true)
+    AssignedNode(ValueNode()),
+    VariableType(VariableType),
+    isAssigned(false)
 {
 
 }
@@ -138,49 +141,48 @@ VariableSymbol::~VariableSymbol()
     qDebug() << __PRETTY_FUNCTION__;
 }
 
-ValueNode *VariableSymbol::getAssignedValue() const
+const ValueNode &VariableSymbol::getAssignedValue() const
 {
     return valueNode;
 }
 
-void VariableSymbol::assignValue(SimpleNode *NodeToAssign)
+bool VariableSymbol::assignValue(const SimpleNode &NodeToAssign)
 {
-    ValueNode *newValueNode;// = valueNode; //Save the previous value because it could be referenced in the assignment!!!
+    ValueNode newValueNode;// = valueNode; //Save the previous value because it could be referenced in the assignment!!!
 
-    if(NodeToAssign == NULL)
+    if(!SimpleNode::canConvertTypes(VariableType, NodeToAssign.getReturnType()))
     {
-        qDebug() << "ERROR: Value to assign is NULL";
-        return;
+        qDebug() << "ERROR: TypeMismatch";
+        return false;
     }
+
     switch(VariableType)
     {
     case SimpleNode::Integer:
-        newValueNode = new ValueNode(NodeToAssign->visit().getValue().value<int>());
+        newValueNode = std::move(ValueNode(std::move(NodeToAssign->visit().getValue().value<int>()));
         break;
     case SimpleNode::Double:
-        newValueNode = new ValueNode(NodeToAssign->visit().getValue().value<double>());
+        newValueNode = std::move(ValueNode(std::move(NodeToAssign->visit().getValue().value<double>()));
         break;
     case SimpleNode::Bool:
-        newValueNode = new ValueNode(NodeToAssign->visit().getValue().value<bool>());
+        newValueNode = std::move(ValueNode(std::move(NodeToAssign->visit().getValue().value<bool>()));
         break;
     case SimpleNode::String:
-        newValueNode = new ValueNode(NodeToAssign->visit().getValue().value<QString>());
+        newValueNode = std::move(ValueNode(std::move(NodeToAssign->visit().getValue().value<QString>()));
         break;
     case SimpleNode::Void:
     case SimpleNode::ErrorType:
     default:
-        newValueNode = new ValueNode();
+        newValueNode = std::move(ValueNode());
     }
 
-    if(valueNode != NULL)
-    {
-        qDebug() << "VariableSymbol reassignment\nWas: " << valueNode->visit().getValue();
-        delete valueNode;
-    }
+    qDebug() << "Previous Value: " << AssignedNode.visit().getValue();
 
-    valueNode = newValueNode;
+    AssignedNode = std::move(newValueNode);
 
-    qDebug() << "Value Assigned: " << valueNode->visit().getValue();
+    qDebug() << "Value Assigned: " << AssignedNode.visit().getValue();
+
+    return true;
 }
 
 SymbolTableEntry::SymbolTableEntryType VariableSymbol::getType() const
@@ -203,10 +205,23 @@ SimpleNode::ValueTypes VariableSymbol::getVariableType() const
     return VariableType;
 }
 
-FunctionSymbol::FunctionSymbol(FunctionNode *FunctionNodeForEntry) :
-    functionNode(FunctionNodeForEntry)
+FunctionSymbol::FunctionSymbol(
+        QString &identifier,
+        QVector<VariableNode> &FunctionParameters,
+        SimpleNode::ValueTypes ReturnType
+        ) :
+    identifier(std::move(identifier)),
+    FunctionParameters(std::move(FunctionParameters)),
+    ReturnType(ReturnType),
+    FunctionSymbolTable(QString("%1_SymbolTable").arg(identifier)),
+    FunctionReturnNode(ValueNode()),
+    isAssigned(false)
 {
-
+    for(VariableNode &&param : FunctionParameters)
+    {
+        QString paramIdentifier = param.getVariableName();
+        FunctionSymbolTable.addEntry(paramIdentifier,SymbolTableEntryPtr(new VariableSymbol(paramIdentifier, param.getReturnType())));
+    }
 }
 
 FunctionSymbol::~FunctionSymbol()
@@ -214,9 +229,72 @@ FunctionSymbol::~FunctionSymbol()
     qDebug() << __PRETTY_FUNCTION__;
 }
 
-FunctionNode *FunctionSymbol::GetFunctionNode() const
+void FunctionSymbol::addFunctionExpressions(QVector<SimpleNode> &&FuncExpressions)
 {
-    return functionNode;
+    FunctionExpressions = std::move(FuncExpressions);
+}
+
+void FunctionSymbol::addFunctionReturnStatement(const SimpleNode &returnNode)
+{
+    FunctionReturnNode = returnNode;
+}
+
+ValueNode FunctionSymbol::CallFunction(
+        const QVector<SimpleNode> &FunctionArguments,
+        SymbolTableEntryPtr CurrentSymbolTable
+        )
+{
+    const int NrOfParameters = FunctionParameters.size();
+    if(NrOfParameters != FunctionArguments.size())
+    {
+        qDebug() << "Number of passed arguments does not match function parameters!";
+        return ValueNode();
+    }
+
+    //Is this really needed?!
+    qSharedPointerDynamicCast<SymbolTable>(CurrentSymbolTable)->addEntry(FunctionSymbolTable.getIdentifier(), SymbolTablePtr(&FunctionSymbolTable));
+
+    for(int i = 0; i < NrOfParameters; i++)
+    {
+        const VariableNode &param = FunctionParameters.at(i);
+        const SimpleNode &argument = FunctionArguments.at(i);
+        qSharedPointerDynamicCast<VariableSymbol>(FunctionSymbolTable.lookup(param.getVariableName()))->assignValue(argument.visit());
+    }
+
+    FunctionSymbolTable.addParentSymbolTable(CurrentSymbolTable);
+
+    for(SimpleNode &expression : FunctionExpressions)
+    {
+        expression.visit();
+    }
+
+    return FunctionReturnNode.visit();
+}
+
+bool FunctionSymbol::checkFunctionArguments(const QVector<VariableNode> &FunctionArguments) const
+{
+    const int NrOfParameters = FunctionParameters.size();
+    if(NrOfParameters != FunctionArguments.size())
+    {
+        qDebug() << "Number of passed arguments does not match function parameters!";
+        return false;
+    }
+
+    for(int i = 0; i < NrOfParameters; i++)
+    {
+        const VariableNode &param = FunctionParameters.at(i);
+        const SimpleNode &argument = FunctionArguments.at(i);
+        if(!SimpleNode::canConvertTypes(param.getReturnType(), argument.getReturnType()))
+        {
+            qDebug() << "Type mismatch at paramter: " << i << " Expected: "
+                     << SimpleNode::getHumanReadableTypeNameToValueType(param.getReturnType())
+                     << " but got: "
+                     << SimpleNode::getHumanReadableTypeNameToValueType(argument.getReturnType());
+            return false;
+        }
+    }
+
+    return true;
 }
 
 SymbolTableEntry::SymbolTableEntryType FunctionSymbol::getType() const
@@ -240,8 +318,12 @@ SymbolTableEntry::SymbolTableEntry()
 
 }
 
-
 SymbolTableEntry::~SymbolTableEntry()
 {
     qDebug() << __PRETTY_FUNCTION__;
+}
+
+SimpleNode::ValueTypes Symbol::getReturnType() const
+{
+    return SimpleNode::ErrorType;
 }

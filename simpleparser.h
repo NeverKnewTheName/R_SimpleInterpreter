@@ -121,46 +121,47 @@ class VariableNode;
 class SimpleParser
 {
 public:
-    SimpleParser(SimpleLexer *lexer, SymbolTable &parentSymblTbl);
+    SimpleParser(SimpleLexer *lexer, const SymbolTable &parentSymblTbl);
     SimpleNode *parse();
 
-    SymbolTable &getSymblTbl();
+    const SymbolTable &getProgramSymblTbl();
 
 private:
     void eat(SimpleToken::TokenType tokenType);
-    SimpleNode *Program();
-    SimpleNode *FunctionDefinition();
-    FunctionNode *FunctionDeclaration();
-    SimpleNode *VarDefinition(SymbolTable *SymbolTableToRegisterVariableTo);
-    VariableNode *VarDeclaration(SymbolTable *SymbolTableToRegisterVariableTo);
-    SimpleNode *ReturnStatement();
-    SimpleNode *Expression();
-    SimpleNode *AssignmentExpression();
-    SimpleNode *ConditionalExpression();
-    SimpleNode *LogicalORExpression();
-    SimpleNode *LogicalXORExpression();
-    SimpleNode *LogicalANDExpression();
-    SimpleNode *BitwiseORExpression();
-    SimpleNode *BitwiseXORExpression();
-    SimpleNode *BitwiseANDExpression();
-    SimpleNode *EqualityExpression();
-    SimpleNode *RelationalExpression();
-    SimpleNode *ShiftExpression();
-    SimpleNode *AdditiveExpression();
-    SimpleNode *MultiplicativeExpression();
-    SimpleNode *UnaryExpression();
-    SimpleNode *PostFixExpression();
-    SimpleNode *PrimaryExpression();
-    SimpleNode *Symbol();
+    SimpleNode Program();
+    SimpleNode FunctionDefinition();
+    FunctionNode FunctionDeclaration();
+    SimpleNode VarDefinition(SymbolTable &SymbolTableToRegisterVariableTo);
+    VariableNode VarDeclaration(SymbolTable &SymbolTableToRegisterVariableTo);
+    SimpleNode ReturnStatement();
+    SimpleNode Expression();
+    SimpleNode AssignmentExpression();
+    SimpleNode ConditionalExpression();
+    SimpleNode LogicalORExpression();
+    SimpleNode LogicalXORExpression();
+    SimpleNode LogicalANDExpression();
+    SimpleNode BitwiseORExpression();
+    SimpleNode BitwiseXORExpression();
+    SimpleNode BitwiseANDExpression();
+    SimpleNode EqualityExpression();
+    SimpleNode RelationalExpression();
+    SimpleNode ShiftExpression();
+    SimpleNode AdditiveExpression();
+    SimpleNode MultiplicativeExpression();
+    SimpleNode UnaryExpression();
+    SimpleNode PostFixExpression();
+    SimpleNode PrimaryExpression();
+    SimpleNode Symbol();
 
     void SyntacticError(SharedSimpleTokenPtr Token, QString details = QString());
     void TypeError(SharedSimpleTokenPtr Token, QString details = QString());
     void EOFUnexpectedError(SharedSimpleTokenPtr Token, QString details = QString());
     void EOFExpectedError(SharedSimpleTokenPtr Token, QString details = QString());
 
-    SimpleLexer *lexer;
+    SimpleLexer &lexer;
     SharedSimpleTokenPtr CurrentToken;
-    SymbolTable SymblTbl;
+    const SymbolTable &ParentSymblTbl;
+    SymbolTable ProgramSymbolTable;
     SymbolTable * CurSymblTbl;
     bool ErrorOccured;
 };

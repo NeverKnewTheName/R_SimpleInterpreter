@@ -19,7 +19,12 @@ SOURCES += main.cpp\
     simpleparser.cpp \
     simpleast.cpp \
     simplesymboltable.cpp \
-    simpleinterpreter.cpp
+    simpleinterpreter.cpp \
+    operationnodes.cpp \
+    unaryoperationnodes.cpp \
+    binaryoperationnodes.cpp \
+    ternaryoperationnodes.cpp \
+    symbolnodes.cpp
 
 HEADERS  += r_simpleinterpreter.h \
     simplelexer.h \
@@ -27,6 +32,11 @@ HEADERS  += r_simpleinterpreter.h \
     simpleparser.h \
     simpleast.h \
     simplesymboltable.h \
-    simpleinterpreter.h
+    simpleinterpreter.h \
+    operationnodes.h \
+    unaryoperationnodes.h \
+    binaryoperationnodes.h \
+    ternaryoperationnodes.h \
+    symbolnodes.h
 
 FORMS    += r_simpleinterpreter.ui

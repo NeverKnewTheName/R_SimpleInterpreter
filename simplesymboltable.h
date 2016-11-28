@@ -5,7 +5,9 @@
 #include <QVariant>
 #include <QString>
 
-#include "simpleast.h"
+#include <QSharedPointer>
+
+#include "symbolnodes.h"
 
 //class SimpleNode;
 //class ValueNode;
@@ -30,24 +32,27 @@ public:
     virtual QString PrintToSymbolToString() const = 0;
     virtual QString PrintSymbolType() const = 0;
 protected:
+    QString identifier;
     bool isAssigned;
 };
+
+typedef QSharedPointer<SymbolTableEntry> SymbolTableEntryPtr;
 
 class SymbolTable : public SymbolTableEntry
 {
 public:
-    SymbolTable(QString const& identifier, SymbolTable *parentSymbolTable = NULL);
+    SymbolTable(QString const& identifier, SymbolTableEntryPtr parentSymbolTable = SymbolTableEntryPtr());
     ~SymbolTable();
 
-    SymbolTableEntry *lookup(QString const& identifier);
-    bool addEntry(QString const& identifier, SymbolTableEntry *entry);
+    SymbolTableEntryPtr lookup(QString const& identifier);
+    bool addEntry(QString const& identifier, SymbolTableEntryPtr entry);
     bool removeEntry(QString const& identifier);
 
-    QVector<SymbolTableEntry *> getSymbolTableAsSequence();
+    QVector<SymbolTableEntryPtr> getSymbolTableEntries() const;
 
-    void addParentSymbolTable(SymbolTable * const parent);
+    bool addParentSymbolTable(const SymbolTableEntryPtr parent);
 
-    SymbolTable *getParentSymbolTable() const;
+    SymbolTableEntryPtr getParentSymbolTable() const;
 
     QString getIdentifier() const;
 
@@ -58,21 +63,43 @@ public:
     virtual QString PrintSymbolType() const;
 
 private:
-    QString identifier;
-    QHash<QString,SymbolTableEntry*> symblTbl;
-    QVector<SymbolTableEntry *> SymbolTableAsSequence;
-    SymbolTable *parentSymbolTable;
+    QHash<QString,int> SymbolTableIndices;
+    QVector<SymbolTableEntryPtr> SymbolTableEntries;
+    SymbolTableEntryPtr parentSymbolTable; // DO NOT TOUCH PARENT SYMBOL TABLE
 };
 
-class VariableSymbol : public SymbolTableEntry
+typedef QSharedPointer<SymbolTable> SymbolTablePtr;
+
+class Symbol : public SymbolTableEntry
 {
 public:
-    VariableSymbol(const QString &identifier, SimpleNode::ValueTypes VariableType = SimpleNode::Integer, SimpleNode *ValueNodeForEntry = NULL);
+    Symbol();
+    ~Symbol();
+
+    virtual SimpleNode::ValueTypes getReturnType() const;
+    virtual const ValueNode &visit() = 0;
+
+    // SymbolTableEntry interface
+public:
+    virtual SymbolTableEntryType getType() const = 0;
+    virtual QString PrintToSymbolToString() const = 0;
+    virtual QString PrintSymbolType() const = 0;
+};
+
+typedef QSharedPointer<Symbol> SymbolPtr;
+
+class VariableSymbol : public Symbol
+{
+public:
+    VariableSymbol(
+            const QString &identifier,
+            SimpleNode::ValueTypes VariableType = SimpleNode::Integer
+            );
     ~VariableSymbol();
 
-    ValueNode *getAssignedValue() const;
+    const ValueNode &getAssignedValue() const;
 
-    void assignValue(SimpleNode *NodeToAssign);
+    bool assignValue(const SimpleNode &NodeToAssign);
 
     SimpleNode::ValueTypes getVariableType() const;
 
@@ -82,19 +109,35 @@ public:
     virtual QString PrintToSymbolToString() const;
     virtual QString PrintSymbolType() const;
 
+    // Symbol interface
+public:
+    SimpleNode::ValueTypes getReturnType() const;
+
 private:
-    QString identifier;
-    ValueNode *valueNode;
-    SimpleNode::ValueTypes VariableType;
+    ValueNode AssignedNode; // value...
+    SimpleNode::ValueTypes VariableType; // FIXED -> test for ability to cast when assigned
 };
 
-class FunctionSymbol : public SymbolTableEntry
+typedef QSharedPointer<VariableSymbol> VariableSymbolPtr;
+
+class FunctionSymbol : public Symbol
 {
 public:
-    FunctionSymbol(FunctionNode *FunctionNodeForEntry = NULL);
+    FunctionSymbol(QString &identifier,
+            QVector<VariableNode> &FunctionParameters,
+            SimpleNode::ValueTypes ReturnType = SimpleNode::Void
+            );
     ~FunctionSymbol();
 
-    FunctionNode *GetFunctionNode() const;
+    void addFunctionExpressions(const QVector<SimpleNode> &FuncExpressions);
+    void addFunctionReturnStatement(const SimpleNode &returnNode);
+
+    ValueNode CallFunction(
+            const QVector<SimpleNode> &FunctionArguments,
+            SymbolTableEntryPtr CurrentSymbolTable
+            );
+
+    bool checkFunctionArguments(const QVector<VariableNode> &FunctionArguments) const;
 
     // SymbolTableEntry interface
 public:
@@ -102,8 +145,18 @@ public:
     virtual QString PrintToSymbolToString() const;
     virtual QString PrintSymbolType() const;
 
+    // Symbol interface
+public:
+    SimpleNode::ValueTypes getReturnType() const;
+
 private:
-    FunctionNode *functionNode;
+    SimpleNode::ValueTypes ReturnType;
+    QVector<VariableNode> FunctionParameters;
+    SymbolTable FunctionSymbolTable;
+    QVector<SimpleNode> FunctionExpressions;
+    SimpleNode FunctionReturnNode;
 };
+
+typedef QSharedPointer<FunctionSymbol> FunctionSymbolPtr;
 
 #endif // SIMPLESYMBOLTABLE_H
