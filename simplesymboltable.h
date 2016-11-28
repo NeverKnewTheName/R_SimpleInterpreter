@@ -72,7 +72,7 @@ public:
 
     ValueNode *getAssignedValue() const;
 
-    void assignValue(SimpleNode *AssignmentNode);
+    void assignValue(SimpleNode *NodeToAssign);
 
     SimpleNode::ValueTypes getVariableType() const;
 

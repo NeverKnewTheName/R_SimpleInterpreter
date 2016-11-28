@@ -143,11 +143,11 @@ ValueNode *VariableSymbol::getAssignedValue() const
     return valueNode;
 }
 
-void VariableSymbol::assignValue(SimpleNode *AssignmentNode)
+void VariableSymbol::assignValue(SimpleNode *NodeToAssign)
 {
     ValueNode *newValueNode;// = valueNode; //Save the previous value because it could be referenced in the assignment!!!
 
-    if(AssignmentNode == NULL)
+    if(NodeToAssign == NULL)
     {
         qDebug() << "ERROR: Value to assign is NULL";
         return;
@@ -155,16 +155,16 @@ void VariableSymbol::assignValue(SimpleNode *AssignmentNode)
     switch(VariableType)
     {
     case SimpleNode::Integer:
-        newValueNode = new ValueNode(AssignmentNode->visit().getValue().value<int>());
+        newValueNode = new ValueNode(NodeToAssign->visit().getValue().value<int>());
         break;
     case SimpleNode::Double:
-        newValueNode = new ValueNode(AssignmentNode->visit().getValue().value<double>());
+        newValueNode = new ValueNode(NodeToAssign->visit().getValue().value<double>());
         break;
     case SimpleNode::Bool:
-        newValueNode = new ValueNode(AssignmentNode->visit().getValue().value<bool>());
+        newValueNode = new ValueNode(NodeToAssign->visit().getValue().value<bool>());
         break;
     case SimpleNode::String:
-        newValueNode = new ValueNode(AssignmentNode->visit().getValue().value<QString>());
+        newValueNode = new ValueNode(NodeToAssign->visit().getValue().value<QString>());
         break;
     case SimpleNode::Void:
     case SimpleNode::ErrorType:

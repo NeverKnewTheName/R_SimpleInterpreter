@@ -1,0 +1,2266 @@
+// ccompons -x R_SimpleInterpreter.dot | dot | gvpack -array_t | neato -Tpng -n2 -o graph.png
+        
+digraph RSimpelInterpreter {
+        fontname = "Bitstream Vera Sans"
+        fontsize = 8
+        rankdir=LR
+        overlap=false
+        splines=true
+        
+        node [
+            fontname = "Bitstream Vera Sans"
+            fontsize = 8
+            shape=none
+            margin=0
+        ]
+
+        edge [
+            fontname = "Bitstream Vera Sans"
+            fontsize = 8
+        ]
+        
+        QObject 
+        [
+            shape="box"
+            label = "QObject"
+        ]
+        QVector 
+        [
+            shape="box"
+            label = "QVector"
+        ]
+        QHash [
+            shape="box"
+            label = "QHash"
+        ]
+        QString [
+            shape="box"
+            label = "QString"
+        ]
+        
+        subgraph clusterMainClasses {
+            style=filled
+            bgcolor=lightgrey
+            label="Main classes"
+          
+            SimpleLexer [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    SimpleLexer
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    - regEx : QRegularExpression<br/>
+                    - LexerString : QString<br/>
+                    - CurrentToken : SharedSimpleTokenPtr<br/>
+                    - PosInInputString : int
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + SimpleLexer(parent : QObject *) : void<br/>
+                    + SimpleLexer(InputString : const QString &amp;, parent : QObject *) : void<br/>
+                    + ~SimpleLexer() : void<br/>
+                    + setStringForLexer(inputString : const QString &amp;) : void<br/>
+                    + ResetLexerToToken(TokenToResetTo : SharedSimpleTokenPtr) : void<br/>
+                    + peekAtNextToken() : SharedSimpleTokenPtr<br/>
+                    + getNextToken( consume : bool ) : SharedSimpleTokenPtr<br/>
+                    + LexErrorAtToken( ErrorAtToken : SharedSimpleTokenPtr, type : int, details : QString) : void
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            SimpleParser [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    SimpleParser
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    - lexer : SimpleLexer*<br/>
+                    - CurrentToken : SharedSimpleTokenPtr<br/>
+                    - SymblTbl : SymbolTable<br/>
+                    - CurSymblTbl : SymbolTable *<br/> 
+                    - ErrorOccured : bool
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + SimpleParser(lexer : SimpleLexer *, parentSymblTbl : SymbolTable &amp;) : void<br/>
+                    + parse() : SimpleNode *<br/>
+                    + getSymblTbl() : SymbolTable &amp;<br/>
+                    - eat( tokenType : TokenType) void<br/>
+                    - Program() : SimpleNode *<br/>
+                    - FunctionDefinition() : FunctionNode *<br/>
+                    - VardDefinition(SymbolTableToRegisterVariableTo : SymbolTable *) : SimpleNode *<br/>
+                    - VarDeclaration(SymbolTableToRegisterVariableTo : SymbolTable *) : VariableNode *<br/>
+                    - ReturnStatement() : SimpleNode *<br/>
+                    - Expression() : SimpleNode *<br/>
+                    - AssignmentExpression() : SimpleNode *<br/>
+                    - ConditionalExpression() : SimpleNode *<br/>
+                    - LogicalORExpression() : SimpleNode *<br/>
+                    - LogicalXORExpression() : SimpleNode *<br/>
+                    - LogicalANDExpression() : SimpleNode *<br/>
+                    - BitwiseORExpression() : SimpleNode *<br/>
+                    - BitwiseXORExpression() : SimpleNode *<br/>
+                    - BitwiseANDExpression() : SimpleNode *<br/>
+                    - EqualityExpression() : SimpleNode *<br/>
+                    - RelationalExpression() : SimpleNode *<br/>
+                    - ShiftExpression() : SimpleNode *<br/>
+                    - AdditiveExpression() : SimpleNode *<br/>
+                    - MultiplicativeExpression() : SimpleNode *<br/>
+                    - UnaryExpression() : SimpleNode *<br/>
+                    - PostFixExpression() : SimpleNode *<br/>
+                    - PrimaryExpression() : SimpleNode *<br/>
+                    - Symbol() : SimpleNode *<br/>
+                    - SyntaxError( Token : SharedSimpleTokenPtr, details : QString ) : void<br/>
+                    - TypeError( Token : SharedSimpleTokenPtr, details : QString) : void<br/>
+                    - EOFUnexpectedError( Token : SharedSimpleTokenPtr, details : QString) : void<br/>
+                    - EOFExpectedError( Token : SharedSimpleTokenPtr, details : QString) : void
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+                
+            SimpleInterpreter [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    SimpleInterpreter
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    - parser : SimpleParser *<br/>
+                    - tree : SimpleNode *
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + SimpleInterpreter(parser : SimpleParser *) : void<br/>
+                    + SimpleInterpreter(StringToInterpret : const QString &amp;, GlobalSymbolTable : SymbolTable &amp;) : void<br/>
+                    + ~SimpleInterpreter() : void<br/>
+                    + interpret() : ValueNode *
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            SimpleParser -> SimpleInterpreter[arrowhead="odiamond", headlabel = "1"]
+            SimpleLexer -> SimpleParser[arrowhead="odiamond", headlabel = "1"]
+        }
+        subgraph clusterTokens {
+            label="Tokens"
+        
+            SimpleToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    SimpleToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    # type : const TokenType<BR/>
+                    - TokenPos : const int<BR/>
+                    - TokenLen : const int
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + SimpleToken(TokenPos : const int, TokenLen : const int ) : void<BR/>
+                    + SimpleToken(type : const TokenType , TokenPos : const int, TokenLen : const int ) : void<BR/>
+                    + ~SimpleToken() : void <BR/>
+                    + getTokenType() const : TokenType<BR/>
+                    + getTokenPos() const : int<BR/>
+                    + getTokenlen() const : int<BR/>
+                    + <I>printValue() const : QString</I><BR/>
+                    + <I>printToken() const : QString</I><BR/>
+                    + <U>convertTOkenTypeToString( type : TokenType) : QString</U>
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            EOFToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    EOFToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + EOFToken(TokenPos : const int, TokenLen : const int) : void<BR/>
+                    + ~EOFToken() : void<BR/>
+                    + printValue() const : QString<BR/>
+                    + printToken() const : QString
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            ValueToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    ValueToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    - value : const QVariant<BR/>
+                    - valueType : cosnt SimpleNode::ValueTypes
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + ValueToken( value : const QVariant, valueType : const ValueTypes, TokenPos : const int, TokenLen : const int) : void<BR/>
+                    + ~ValueToken() : void<BR/>
+                    + printValue() const : QString<BR/>
+                    + printToken() const : QString<BR/>
+                    + getInt() : int<BR/>
+                    + getDouble() : double<BR/>
+                    + getBool() : bool<BR/>
+                    + getString() : QString<BR/>
+                    + getValueType() : SimpleNode::ValueTypes
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            IntegerToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    IntegerToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    - value : const int
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + IntegerToken( value : const int, TokenPos : const int, TokenLen : const int) : void<BR/>
+                    + ~IntegerToken() : void<BR/>
+                    + printValue() const : QString<BR/>
+                    + printToken() const : QString<BR/>
+                    + getValue() const : int
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            DoubleToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    DoubleToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    - value : const double
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + DoubleToken(value : const double, TokenPos : const int, TokenLen : const int) : void<BR/>
+                    + ~DoubleToken() : void<BR/>
+                    + printValue() const : QString<BR/>
+                    + printToken() const : QString<BR/>
+                    + getValue() const : double
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            BoolToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    BoolToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    - value : const bool
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + BoolToken(value : const bool, TokenPos : const int, TokenLen : const int) : void<BR/>
+                    + ~BoolToken() : void<BR/>
+                    + printValue() const : QString<BR/>
+                    + printToken() const : QString<BR/>
+                    + getValue() const : bool
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            StringToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    StringToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    - value : const QString&amp;
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + StringToken(value : const QString &amp;, TokenPos : const int, TokenLen : const int) : void<BR/>
+                    + ~StringToken() : void<BR/>
+                    + printValue() const : QString<BR/>
+                    + printToken() const : QString<BR/>
+                    + getValue() const : QString
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            DataToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    DataToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    - dataIndex : const unsinged int
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + DataToken( dataIndex : const unsigned int, TokenPos : const int, TokenLen : const int) : void<BR/>
+                    + ~DataToken() : void<BR/>
+                    + printValue() const : QString<BR/>
+                    + printToken() const : QString<BR/>
+                    + getDataIndex() const : unsigned int
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            VariableIDToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    VariableIDToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    - ID : const QString
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + VariableIDToken( ID : const QString &amp;, TokenPos : const int, TokenLen : const int ) : void<BR/>
+                    + ~VariableIDToken() : void<BR/>
+                    + printValue() const : QString<BR/>
+                    + printToken() const : QString<BR/>
+                    + getID() const : QString
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            OperationToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    OperationToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + OperationToken( op : const TokenType, TokenPos : const int, TokenLen : const int ) : void<BR/>
+                    + ~OperationToken() : void<BR/>
+                    + printValue() const : QString<BR/>
+                    + printToken() const : QString
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            LParanToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    LParanToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + LParanToken( TokenPos : const int, TokenLen : const int ) : void<BR/>
+                    + ~LParanToken() : void<BR/>
+                    + printValue() const : QString<BR/>
+                    + printToken() const : QString
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            LCurlyParanToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    LCurlyParanToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + LCurlyParanToken( TokenPos : const int, TokenLen : const int ) : void<BR/>
+                    + ~LCurlyParanToken() : void<BR/>
+                    + printValue() const : QString<BR/>
+                    + printToken() const : QString
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            RParanToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    RParanToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + RParanToken( TokenPos : const int, TokenLen : const int ) : void<BR/>
+                    + ~RParanToken() : void<BR/>
+                    + printValue() const : QString<BR/>
+                    + printToken() const : QString
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            RCurlyParanToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    RCurlyParanToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + RCurlyParanToken( TokenPos : const int, TokenLen : const int ) : void<BR/>
+                    + ~RCurlyParanToken() : void<BR/>
+                    + printValue() const : QString<BR/>
+                    + printToken() const : QString
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            TypeNameToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    TypeNameToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    - const SimpleNode::ValueTypes type 
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + TypeNameToken( type : ValueTypes, TokenPos : const int, TokenLen : const int ) : void<BR/>
+                    + ~TypeNameToken() : void<BR/>
+                    + printValue() const : QString<BR/>
+                    + printToken() const : QString<BR/>
+                    + getType() const : SimpleNode::ValueTypes
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            SemiColonDelimToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    SemiColonDelimToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + SemiColonDelimToken( TokenPos : const int, TokenLen : const int ) : void<BR/>
+                    + ~SemiColonDelimToken() : void<BR/>
+                    + printValue() const : QString<BR/>
+                    + printToken() const : QString
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            ReturnKeywordToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    ReturnKeywordToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + ReturnKeywordToken( TokenPos : const int, TokenLen : const int ) : void<BR/>
+                    + ~ReturnKeywordToken() : void<BR/>
+                    + printValue() const : QString<BR/>
+                    + printToken() const : QString
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            QMarkToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    QMarkToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + QMarkToken( TokenPos : const int, TokenLen : const int ) : void<BR/>
+                    + ~QMarkToken() : void<BR/>
+                    + printValue() const : QString<BR/>
+                    + printToken() const : QString
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            ColonToken [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    ColonToken
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + ColonToken( TokenPos : const int, TokenLen : const int ) : void<BR/>
+                    + ~ColonToken() : void<BR/>
+                    + printValue() const : QString<BR/>
+                    + printToken() const : QString
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            EOFToken -> SimpleToken[arrowhead="empty", arrowtail="normal"]
+            ValueToken -> SimpleToken[arrowhead="empty", arrowtail="normal"]
+            IntegerToken -> SimpleToken[arrowhead="empty", arrowtail="normal"]
+            DoubleToken -> SimpleToken[arrowhead="empty", arrowtail="normal"]
+            BoolToken -> SimpleToken[arrowhead="empty", arrowtail="normal"]
+            StringToken -> SimpleToken[arrowhead="empty", arrowtail="normal"]
+            DataToken -> SimpleToken[arrowhead="empty", arrowtail="normal"]
+            VariableIDToken -> SimpleToken[arrowhead="empty", arrowtail="normal"]
+            OperationToken -> SimpleToken[arrowhead="empty", arrowtail="normal"]
+            
+            LParanToken -> OperationToken[arrowhead="empty", arrowtail="normal"]
+            LCurlyParanToken -> OperationToken[arrowhead="empty", arrowtail="normal"]
+            RParanToken -> OperationToken[arrowhead="empty", arrowtail="normal"]
+            RCurlyParanToken -> OperationToken[arrowhead="empty", arrowtail="normal"]
+            TypeNameToken -> OperationToken[arrowhead="empty", arrowtail="normal"]
+            SemiColonDelimToken -> OperationToken[arrowhead="empty", arrowtail="normal"]
+            ReturnKeywordToken -> OperationToken[arrowhead="empty", arrowtail="normal"]
+            QMarkToken -> OperationToken[arrowhead="empty", arrowtail="normal"]
+            ColonToken -> OperationToken[arrowhead="empty", arrowtail="normal"]
+        }
+        
+        subgraph clusterNodes {
+            label="Nodes"
+        
+            
+        SimpleNode [
+            label = <
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                SimpleNode
+                </TD>
+                </TR>
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                </TD>
+                </TR>
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                + SimpleNode() : void<BR/>
+                + <I>getNodeType() : NodeType</I><BR/>
+                + <I>getReturnType() : ValueTypes</I><BR/>
+                + <I>printValue() const : QString</I><BR/>
+                + <I>printNode() const : QString</I><BR/>
+                + <I>visit(): ValueNode&amp;</I><BR/>
+                + <U>getHumanReadableTypeNameToValueType( type : const ValueTypes) : QString</U><BR/>
+                + <U>canConvertTypes( OrigType : const ValueTypes, newType : const ValueTypes) : bool</U>
+                </TD>
+                </TR>
+            </TABLE>
+            >
+        ]
+        
+        ValueNode [
+            label = <
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                ValueNode
+                </TD>
+                </TR>
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                - valueType : ValueTypes<BR/>
+                - value : QVariant
+                </TD>
+                </TR>
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                + ValueNode() : void<BR/>
+                + ValueNode(valueNodeToCopy : const ValueNode &amp;) : void<BR/>
+                + ValueNode(valueNodeToMove : ValueNode &amp;&amp;) : void<BR/>
+                + ValueNode(value : const int) : void<BR/>
+                + ValueNode(value : const double) : void<BR/>
+                + ValueNode(value : const bool) : void<BR/>
+                + ValueNode(value : const QString &amp;) : void<BR/>
+                + ~ValueNode() : void<BR/>
+                + getNodeType() : NodeType<BR/>
+                + getReturnType() : ValueTypes<BR/>
+                + printValue() const : QString<BR/>
+                + printNode() const : QString<BR/>
+                + visit(): ValueNode&amp;<BR/>
+                + getValue() : const QVariant<BR/>
+                + getValueType() : const ValueTypes<BR/>
+                + operator=(value : const ValueNode &amp;) : ValueNode &amp;
+                </TD>
+                </TR>
+            </TABLE>
+            >
+        ]
+        
+        DataNode [
+            label = <
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                DataNode
+                </TD>
+                </TR>
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                - Result : ValueNode<BR/>
+                - dataIndex : const unsigned int<BR/>
+                - SymblTbl : const SymbolTable * const
+                </TD>
+                </TR>
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                + DataNode(dataIndex : const unsigned int, SymblTbl : const SymbolTable *) : void<BR/>
+                + ~DataNode() : void<BR/>
+                + getNodeType() : NodeType<BR/>
+                + getReturnType() : ValueTypes<BR/>
+                + printValue() const : QString<BR/>
+                + printNode() const : QString<BR/>
+                + visit(): ValueNode&amp;
+                </TD>
+                </TR>
+            </TABLE>
+            >
+        ]
+        
+        VariableNode [
+            label = <
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                VariableNode
+                </TD>
+                </TR>
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                - RelatedAssignmentNode : SimpleNode*<BR/>
+                - Result : ValueNode<BR/>
+                - VariableName : const QString<BR/>
+                - RelatedVariableSymbol : VariableSymbol * const<BR/>
+                - type : ValueTypes
+                </TD>
+                </TR>
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                + VariableNode(VariableName : const QString &amp;, SymblTbl : SymbolTable *const, type : ValueTypes) : void<BR/>
+                + ~VariableNode() : void<BR/>
+                + getNodeType() : NodeType<BR/>
+                + getReturnType() : ValueTypes<BR/>
+                + printValue() const : QString<BR/>
+                + printNode() const : QString<BR/>
+                + visit(): ValueNode&amp;<BR/>
+                + getVariableName() const : QString<BR/>
+                + getRelatedVariableSymbol() const : VariableSymbol *
+                </TD>
+                </TR>
+            </TABLE>
+            >
+        ]
+        
+        FunctionNode [
+            label = <
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                FunctionNode
+                </TD>
+                </TR>
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                - Result : ValueNode<BR/>
+                - FunctionName : const QString<BR/>
+                - ParametersInOrder : const QVector&lt;VariableNode*&gt;<BR/>
+                - ParameterAssignments : QVector&lt;AssignmentNode *&gt;<BR/>
+                - FuncExpressions : QVector&lt;SimpleNode *&gt; <BR/>
+                - returnNode : SimpleNode *<BR/>
+                - FuncSymbolTable : SymbolTable *<BR/>
+                - returnType : ValueTypes
+                </TD>
+                </TR>
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                + FunctionNode(FunctionName : QString, ParametersInOrder : QVector&lt;VariableNode *&gt;, returnType : ValueTypes, SubSymbolTable : SymbolTable * ) : void<BR/>
+                + ~FunctionNode() : void<BR/>
+                + getNodeType() : NodeType<BR/>
+                + getReturnType() : ValueTypes<BR/>
+                + printValue() const : QString<BR/>
+                + printNode() const : QString<BR/>
+                + visit(): ValueNode&amp;<BR/>
+                + addFuncExpressions( FuncExpressions : QVector&lt;SimpleNode*&gt;) : void<BR/>
+                + addReturnStatement( returnNode : SimpleNode * ) : void<BR/>
+                + addAssignment( paramAssignment : AssignmentNode * ) : void<BR/>
+                + getFuncSymbolTable() const : SymbolTable *<BR/>
+                + getParametersInOrder() const : QVector&lt;VariableNode*&gt;<BR/>
+                + getFuncName() const : QString
+                </TD>
+                </TR>
+            </TABLE>
+            >
+        ]
+        
+        FunctionCallNode [
+            label = <
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                FunctionCallNode
+                </TD>
+                </TR>
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                - Result : ValueNode<BR/>
+                - FunctionName : const QString<BR/>
+                - FuncParams : const QVector&lt;SimpleNode*&gt;<BR/>
+                - RelatedSymbol : FunctionSymbol *
+                - returnType : ValueTypes
+                </TD>
+                </TR>
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                + FunctionCallNode(FunctionName : const QString &amp;, CurSymblTbl : SymbolTable *, FunctionParameters : QVector&lt;SimpleNode *&gt;) : void<BR/>
+                + ~FunctionCallNode() : void<BR/>
+                + getNodeType() : NodeType<BR/>
+                + getReturnType() : ValueTypes<BR/>
+                + printValue() const : QString<BR/>
+                + printNode() const : QString<BR/>
+                + visit(): ValueNode&amp;
+                </TD>
+                </TR>
+            </TABLE>
+            >
+        ]
+        
+        AssignmentNode [
+            label = <
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                AssignmentNode
+                </TD>
+                </TR>
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                - Result : ValueNode<BR/>
+                - VariableToAssign : VariableNode *<BR/>
+                - ValueToAssing : SimpleNode *
+                </TD>
+                </TR>
+                <TR>
+                <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                + AssignmentNode( VariableToAssign : VariableNode *, ValueToAssign : Simplenode * ) : void<BR/>
+                + ~AssignmentNode() : void<BR/>
+                + getNodeType() : NodeType<BR/>
+                + getReturnType() : ValueTypes<BR/>
+                + printValue() const : QString<BR/>
+                + printNode() const : QString<BR/>
+                + visit(): ValueNode&amp;
+                </TD>
+                </TR>
+            </TABLE>
+            >
+        ]
+            subgraph clusterOperationNodes {
+                label="Operations"
+                   
+                OperationNode [
+                    label = <
+                    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                        <TR>
+                        <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                        OperationNode
+                        </TD>
+                        </TR>
+                        <TR>
+                        <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                        # Result : ValueNode<BR/>
+                        # returnType : ValueTypes
+                        </TD>
+                        </TR>
+                        <TR>
+                        <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                        + OperationNode() : void<BR/>
+                        + <I>~OperationNode() : void</I><BR/>
+                        + getNodeType() : NodeType<BR/>
+                        + getReturnType() : ValueTypes<BR/>
+                        + <I>printValue() const : QString</I><BR/>
+                        + <I>printNode() const : QString</I><BR/>
+                        + visit(): ValueNode&amp;<BR/>
+                        + <I>getArityType(): ArityTypes</I><BR/>
+                        + <I>getOpType(): OperationTypes</I><BR/>
+                        + <I>getOp(): Operation</I><BR/>
+                        + <I>getAssociativity(): Associativity</I><BR/>
+                        + <I>getPrecedence(): Precedence</I><BR/>
+                        + <I>DoOperation(): ValueNode &amp;</I>
+                        </TD>
+                        </TR>
+                    </TABLE>
+                    >
+                ]
+                
+                subgraph clusterUnnaryOperationNodes {
+                    label="Unnary Operations"
+                 
+                    UnaryOperationNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            UnaryOperationNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            # rightChild : SimpleNode *<BR/>
+                            # implicitCastRightChild : ValueTypes
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + UnaryOperationNode( rightChild : SimpleNode * ) : void<BR/>
+                            + ~UnaryOperationNode() : void<BR/>
+                            + <I>printValue() const : QString</I><BR/>
+                            + <I>printNode() const : QString</I><BR/>
+                            + getArityType(): ArityTypes<BR/>
+                            + <I>getOpType(): OperationTypes</I><BR/>
+                            + <I>getOp(): Operation</I><BR/>
+                            + <I>getAssociativity(): Associativity</I><BR/>
+                            + <I>getPrecedence(): Precedence</I><BR/>
+                            + <I>DoOperation(): ValueNode &amp;</I>
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    UnaryArithmeticOperationNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            UnaryArithmeticOperationNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + UnaryArithmeticOperationNode( rightChild : SimpleNode * ) : void<BR/>
+                            + <I>printValue() const : QString</I><BR/>
+                            + <I>printNode() const : QString</I><BR/>
+                            + getOpType(): OperationTypes<BR/>
+                            + <I>getOp(): Operation</I><BR/>
+                            + <I>getAssociativity(): Associativity</I><BR/>
+                            + <I>getPrecedence(): Precedence</I><BR/>
+                            + <I>DoOperation(): ValueNode &amp;</I>
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    TypeCastNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            TypeCastNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            - typeToCastTo : ValueTypes
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + TypeCastNode( rightChild : SimpleNode *, typeToCastTo : ValueTypes ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    IncrementNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            IncrementNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + IncrementNode( rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    DecrementNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            DecrementNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + DecrementNode( rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    PositiveNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            PositiveNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + PositiveNode( rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    NegativeNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            NegativeNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + NegativeNode( rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    UnaryLogicalOperationNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            UnaryLogicalOperationNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + UnaryLogicalOperationNode( rightChild : SimpleNode * ) : void<BR/>
+                            + <I>printValue() const : QString</I><BR/>
+                            + <I>printNode() const : QString</I><BR/>
+                            + getOpType(): OperationTypes<BR/>
+                            + <I>getOp(): Operation</I><BR/>
+                            + <I>getAssociativity(): Associativity</I><BR/>
+                            + <I>getPrecedence(): Precedence</I><BR/>
+                            + <I>DoOperation(): ValueNode &amp;</I>
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    LogicalNegationNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            LogicalNegationNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + LogicalNegationNode( rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    UnaryBitwiseOperationNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            UnaryBitwiseOperationNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + UnaryBitwiseOperationNode( rightChild : SimpleNode * ) : void<BR/>
+                            + <I>printValue() const : QString</I><BR/>
+                            + <I>printNode() const : QString</I><BR/>
+                            + getOpType(): OperationTypes<BR/>
+                            + <I>getOp(): Operation</I><BR/>
+                            + <I>getAssociativity(): Associativity</I><BR/>
+                            + <I>getPrecedence(): Precedence</I><BR/>
+                            + <I>DoOperation(): ValueNode &amp;</I>
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    OnesComplementNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            OnesComplementNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + OnesComplementNode( rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    TypeCastNode -> UnaryArithmeticOperationNode[arrowhead="empty", arrowtail="normal"]
+                    IncrementNode -> UnaryArithmeticOperationNode[arrowhead="empty", arrowtail="normal"]
+                    DecrementNode -> UnaryArithmeticOperationNode[arrowhead="empty", arrowtail="normal"]
+                    PositiveNode -> UnaryArithmeticOperationNode[arrowhead="empty", arrowtail="normal"]
+                    NegativeNode -> UnaryArithmeticOperationNode[arrowhead="empty", arrowtail="normal"]
+                    
+                    LogicalNegationNode -> UnaryLogicalOperationNode[arrowhead="empty", arrowtail="normal"]
+                    
+                    OnesComplementNode -> UnaryBitwiseOperationNode[arrowhead="empty", arrowtail="normal"]
+                }
+                
+                subgraph clusterBinnaryOperationNodes {
+                    label="Binary Operations"
+                 
+                    BinaryOperationNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            BinaryOperationNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            # rightChild : SimpleNode *<BR/>
+                            # leftChild : SimpleNode *<BR/>
+                            # implicitCastRightChild : ValueTypes<BR/>
+                            # implicitCastLeftChild : ValueTypes
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + BinaryOperationNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + ~BinaryOperationNode() : void<BR/>
+                            + <I>printValue() const : QString</I><BR/>
+                            + <I>printNode() const : QString</I><BR/>
+                            + getArityType(): ArityTypes<BR/>
+                            + <I>getOpType(): OperationTypes</I><BR/>
+                            + <I>getOp(): Operation</I><BR/>
+                            + <I>getAssociativity(): Associativity</I><BR/>
+                            + <I>getPrecedence(): Precedence</I><BR/>
+                            + <I>DoOperation(): ValueNode &amp;</I>
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    BinaryArithmeticOperationNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            BinaryArithmeticOperationNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + BinaryArithmeticOperationNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + <I>printValue() const : QString</I><BR/>
+                            + <I>printNode() const : QString</I><BR/>
+                            + getOpType(): OperationTypes<BR/>
+                            + <I>getOp(): Operation</I><BR/>
+                            + <I>getAssociativity(): Associativity</I><BR/>
+                            + <I>getPrecedence(): Precedence</I><BR/>
+                            + <I>DoOperation(): ValueNode &amp;</I>
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    AdditionNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            AdditionNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + AdditionNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    SubtractionNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            SubtractionNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + SubtractionNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    MultiplicationNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            MultiplicationNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + MultiplicationNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    DivisionNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            DivisionNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + DivisionNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    ModuloNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            ModuloNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + ModuloNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    BinaryLogicalOperationNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            BinaryLogicalOperationNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + BinaryLogicalOperationNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + <I>printValue() const : QString</I><BR/>
+                            + <I>printNode() const : QString</I><BR/>
+                            + getOpType(): OperationTypes<BR/>
+                            + <I>getOp(): Operation</I><BR/>
+                            + <I>getAssociativity(): Associativity</I><BR/>
+                            + <I>getPrecedence(): Precedence</I><BR/>
+                            + <I>DoOperation(): ValueNode &amp;</I>
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    LogicalANDNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            LogicalANDNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + LogicalANDNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    LogicalORNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            LogicalORNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + LogicalORNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    LogicalXORNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            LogicalXORNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + LogicalXORNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    GreaterNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            GreaterNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + GreaterNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    LowerNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            LowerNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + LowerNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    EqualNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            EqualNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + EqualNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    EqualOrGreaterNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            EqualOrGreaterNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + EqualOrGreaterNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    EqualOrLowerNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            EqualOrLowerNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + EqualOrLowerNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    UnequalNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            UnequalNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + UnequalNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    BinaryBitwiseOperationNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            BinaryBitwiseOperationNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + BinaryBitwiseOperationNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + <I>printValue() const : QString</I><BR/>
+                            + <I>printNode() const : QString</I><BR/>
+                            + getOpType(): OperationTypes<BR/>
+                            + <I>getOp(): Operation</I><BR/>
+                            + <I>getAssociativity(): Associativity</I><BR/>
+                            + <I>getPrecedence(): Precedence</I><BR/>
+                            + <I>DoOperation(): ValueNode &amp;</I>
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    ANDNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            ANDNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + ANDNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    ORNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            ORNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + ORNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    XORNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            XORNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + XORNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    LeftShiftNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            LeftShiftNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + LeftShiftNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    RightShiftNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            RightShiftNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + RightShiftNode( leftChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    AdditionNode -> BinaryArithmeticOperationNode[arrowhead="empty", arrowtail="normal"]
+                    SubtractionNode -> BinaryArithmeticOperationNode[arrowhead="empty", arrowtail="normal"]
+                    MultiplicationNode -> BinaryArithmeticOperationNode[arrowhead="empty", arrowtail="normal"]
+                    DivisionNode -> BinaryArithmeticOperationNode[arrowhead="empty", arrowtail="normal"]
+                    ModuloNode -> BinaryArithmeticOperationNode[arrowhead="empty", arrowtail="normal"]
+                    
+                    LogicalANDNode -> BinaryLogicalOperationNode[arrowhead="empty", arrowtail="normal"]
+                    LogicalORNode -> BinaryLogicalOperationNode[arrowhead="empty", arrowtail="normal"]
+                    LogicalXORNode -> BinaryLogicalOperationNode[arrowhead="empty", arrowtail="normal"]
+                    GreaterNode -> BinaryLogicalOperationNode[arrowhead="empty", arrowtail="normal"]
+                    LowerNode -> BinaryLogicalOperationNode[arrowhead="empty", arrowtail="normal"]
+                    EqualNode -> BinaryLogicalOperationNode[arrowhead="empty", arrowtail="normal"]
+                    EqualOrGreaterNode -> BinaryLogicalOperationNode[arrowhead="empty", arrowtail="normal"]
+                    EqualOrLowerNode -> BinaryLogicalOperationNode[arrowhead="empty", arrowtail="normal"]
+                    UnequalNode -> BinaryLogicalOperationNode[arrowhead="empty", arrowtail="normal"]
+                    
+                    ANDNode -> BinaryBitwiseOperationNode[arrowhead="empty", arrowtail="normal"]
+                    ORNode -> BinaryBitwiseOperationNode[arrowhead="empty", arrowtail="normal"]
+                    XORNode -> BinaryBitwiseOperationNode[arrowhead="empty", arrowtail="normal"]
+                    LeftShiftNode -> BinaryBitwiseOperationNode[arrowhead="empty", arrowtail="normal"]
+                    RightShiftNode -> BinaryBitwiseOperationNode[arrowhead="empty", arrowtail="normal"]
+                }
+                
+                subgraph clusterTernaryOperationNodes {
+                    label="Ternary Operations"
+                                
+                    TernaryOperationNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            TernaryOperationNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            # rightChild : SimpleNode *<BR/>
+                            # midChild : SimpleNode *<BR/>
+                            # leftChild : SimpleNode *<BR/>
+                            # implicitCastRightChild : ValueTypes<BR/>
+                            # implicitCastMidChild : ValueTypes<BR/>
+                            # implicitCastLeftChild : ValueTypes
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + TernaryOperationNode( leftChild : SimpleNode *, midChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + ~TernaryOperationNode() : void<BR/>
+                            + <I>printValue() const : QString</I><BR/>
+                            + <I>printNode() const : QString</I><BR/>
+                            + getArityType(): ArityTypes<BR/>
+                            + <I>getOpType(): OperationTypes</I><BR/>
+                            + <I>getOp(): Operation</I><BR/>
+                            + <I>getAssociativity(): Associativity</I><BR/>
+                            + <I>getPrecedence(): Precedence</I><BR/>
+                            + <I>DoOperation(): ValueNode &amp;</I>
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    TernaryArithmeticOperationNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            TernaryArithmeticOperationNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + TernaryArithmeticOperationNode( leftChild : SimpleNode *, midChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + <I>printValue() const : QString</I><BR/>
+                            + <I>printNode() const : QString</I><BR/>
+                            + getOpType(): OperationTypes<BR/>
+                            + <I>getOp(): Operation</I><BR/>
+                            + <I>getAssociativity(): Associativity</I><BR/>
+                            + <I>getPrecedence(): Precedence</I><BR/>
+                            + <I>DoOperation(): ValueNode &amp;</I>
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    TernaryLogicalOperationNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            TernaryLogicalOperationNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + TernaryLogicalOperationNode( leftChild : SimpleNode *,  midChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + <I>printValue() const : QString</I><BR/>
+                            + <I>printNode() const : QString</I><BR/>
+                            + getOpType(): OperationTypes<BR/>
+                            + <I>getOp(): Operation</I><BR/>
+                            + <I>getAssociativity(): Associativity</I><BR/>
+                            + <I>getPrecedence(): Precedence</I><BR/>
+                            + <I>DoOperation(): ValueNode &amp;</I>
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    ConditionalNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            ConditionalNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + ConditionalNode( leftChild : SimpleNode *, midChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + printValue() const : QString<BR/>
+                            + printNode() const : QString<BR/>
+                            + getOp(): Operation<BR/>
+                            + getAssociativity(): Associativity<BR/>
+                            + getPrecedence(): Precedence<BR/>
+                            + DoOperation(): ValueNode &amp;
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+                    
+                    TernaryBitwiseOperationNode [
+                        label = <
+                        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                            TernaryBitwiseOperationNode
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            </TD>
+                            </TR>
+                            <TR>
+                            <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                            + TernaryBitwiseOperationNode( leftChild : SimpleNode *,  midChild : SimpleNode *, rightChild : SimpleNode * ) : void<BR/>
+                            + <I>printValue() const : QString</I><BR/>
+                            + <I>printNode() const : QString</I><BR/>
+                            + getOpType(): OperationTypes<BR/>
+                            + <I>getOp(): Operation</I><BR/>
+                            + <I>getAssociativity(): Associativity</I><BR/>
+                            + <I>getPrecedence(): Precedence</I><BR/>
+                            + <I>DoOperation(): ValueNode &amp;</I>
+                            </TD>
+                            </TR>
+                        </TABLE>
+                        >
+                    ]
+        
+                    ConditionalNode -> TernaryLogicalOperationNode[arrowhead="empty", arrowtail="normal"]
+                }
+                
+                UnaryOperationNode -> OperationNode[arrowhead="empty", arrowtail="normal"]
+                BinaryOperationNode -> OperationNode[arrowhead="empty", arrowtail="normal"]
+                TernaryOperationNode -> OperationNode[arrowhead="empty", arrowtail="normal"]
+                
+                UnaryArithmeticOperationNode -> UnaryOperationNode[arrowhead="empty", arrowtail="normal"]
+                UnaryLogicalOperationNode -> UnaryOperationNode[arrowhead="empty", arrowtail="normal"]
+                UnaryBitwiseOperationNode -> UnaryOperationNode[arrowhead="empty", arrowtail="normal"]
+                
+                BinaryArithmeticOperationNode -> BinaryOperationNode[arrowhead="empty", arrowtail="normal"]
+                BinaryLogicalOperationNode -> BinaryOperationNode[arrowhead="empty", arrowtail="normal"]
+                BinaryBitwiseOperationNode -> BinaryOperationNode[arrowhead="empty", arrowtail="normal"]
+                
+                TernaryArithmeticOperationNode -> TernaryOperationNode[arrowhead="empty", arrowtail="normal"]
+                TernaryLogicalOperationNode -> TernaryOperationNode[arrowhead="empty", arrowtail="normal"]
+                TernaryBitwiseOperationNode -> TernaryOperationNode[arrowhead="empty", arrowtail="normal"]
+            }
+            
+            ValueNode -> SimpleNode[arrowhead="empty", arrowtail="normal"]
+            DataNode -> SimpleNode[arrowhead="empty", arrowtail="normal"]
+            VariableNode -> SimpleNode[arrowhead="empty", arrowtail="normal"]
+            FunctionNode -> SimpleNode[arrowhead="empty", arrowtail="normal"]
+            FunctionCallNode -> SimpleNode[arrowhead="empty", arrowtail="normal"]
+            AssignmentNode -> SimpleNode[arrowhead="empty", arrowtail="normal"]
+            OperationNode -> SimpleNode[arrowhead="empty", arrowtail="normal"]
+        }
+        subgraph clusteSymbolTable {
+            label="Symbol Table"
+            
+            SymbolTableEntry [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    SymbolTableEntry
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    # isAssigned : bool
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + SymbolTableEntry() : void<BR/>
+                    + <I>~SymbolTableEntry() : void</I><BR />
+                    + <I>getType(): SymbolTableEntryType</I><BR/>
+                    + <I>PrintToSymbolToString(): QString</I><BR/>
+                    + <I>PrintSymbolType(): QString</I>
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            SymbolTable [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    SymbolTable
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    - identifier : QString<BR/>
+                    - symblTbl : QHash&lt;QString,SymbolTableEntry*&gt;<BR/>
+                    - SymbolTableAsSequence : QVector&lt;SymbolTableEntry *&gt;<BR/>
+                    - parentSymbolTable : SymbolTable *
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + SymbolTable( identifier : const QString &amp;, parentSymbolTable : SymbolTable * ) : void<BR/>
+                    + ~SymbolTable() : void<BR />
+                    + getType(): SymbolTableEntryType<BR/>
+                    + PrintToSymbolToString(): QString<BR/>
+                    + PrintSymbolType(): QString<BR/>
+                    + getIdentifier() :  QString<BR/>
+                    + lookup( identifier : const QString &amp; ) : SymbolTableEntry *<BR/>
+                    + addEntry( identifier : const QString &amp;,entry : SymbolTableEntry * ) : bool<BR/>
+                    + removeEntry( identifier : const QString &amp; ) : bool<BR/>
+                    + getSymbolTableAsSequence() : QVector&lt;SymbolTableEntry *&gt;<BR/>
+                    + addParentSymbolTable( parent : SymbolTable * const )<BR/>
+                    + getParentSymbolTable() : SymbolTable *<BR/>
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            VariableSymbol [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    VariableSymbol
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    - identifier : QString<BR/>
+                    - valueNode : ValueNode *<BR/>
+                    - VariableType : ValueTypes<BR/>
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + VariableSymbol( identifier : const QString &amp;, VariableType : ValueTypes, ValueNodeForEntry : SimpleNode *) : void<BR/>
+                    + ~VariableSymbol() : void<BR />
+                    + getType(): SymbolTableEntryType<BR/>
+                    + PrintToSymbolToString(): QString<BR/>
+                    + PrintSymbolType(): QString<BR/>
+                    + getIdentifier() :  QString<BR/>
+                    + getAssignedValue() : ValueNode *<BR/>
+                    + assignValue( NodeToAssign : SimpleNode * ) : void<BR/>
+                    + getVariableType() : ValueTypes
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+            
+            FunctionSymbol [
+                label = <
+                <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" ALIGN="LEFT" VALIGN="MIDDLE">
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="CENTER" VALIGN="MIDDLE">
+                    FunctionSymbol
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    - identifier : QString<BR/>
+                    - functionNode : FunctionNode *
+                    </TD>
+                    </TR>
+                    <TR>
+                    <TD ALIGN="TEXT" BALIGN="LEFT" VALIGN="MIDDLE">
+                    + FunctionSymbol( identifier : const QString &amp;, FunctionNodeForEntry : FunctionNode *) : void<BR/>
+                    + ~FunctionSymbol() : void<BR />
+                    + getType(): SymbolTableEntryType<BR/>
+                    + PrintToSymbolToString(): QString<BR/>
+                    + PrintSymbolType(): QString<BR/>
+                    + getIdentifier() :  QString<BR/>
+                    + GetFunctionNode() : FunctionNode *
+                    </TD>
+                    </TR>
+                </TABLE>
+                >
+            ]
+        
+            SymbolTable -> SymbolTableEntry[arrowhead="empty", arrowtail="normal"]
+            VariableSymbol -> SymbolTableEntry[arrowhead="empty", arrowtail="normal"]
+            FunctionSymbol -> SymbolTableEntry[arrowhead="empty", arrowtail="normal"]
+        }
+        
+        
+        
+        QObject -> SimpleLexer[arrowhead="odiamond" arrowtail="none"]
+        QString -> SimpleLexer[arrowhead="none" arrowtail="none"]
+        SimpleToken -> SimpleLexer[arrowhead="diamond", headlabel = "1"]
+        
+        SimpleToken -> SimpleParser[arrowhead="odiamond", headlabel = "1"]
+        SimpleNode -> SimpleParser[arrowhead="none"]
+        SymbolTable -> SimpleParser[arrowhead="diamond", headlabel = "1"]
+        
+        SimpleNode -> SimpleInterpreter[arrowhead="diamond", headlabel = "1"]
+        SymbolTable -> SimpleInterpreter[arrowhead="diamond", headlabel = "1"]
+        
+        
+        
+        
+        
+        
+        // { rank=min QObject QString QVector QHash }
+        // { rank=same SimpleLexer SimpleParser SimpleInterpreter };
+        // { rank=same SymbolTableEntry SimpleNode SimpleToken }
+        // { rank=same FunctionSymbol VariableSymbol SymbolTable }
+        // { rank=same OperationNode VariableNode FunctionNode DataNode AssignmentNode FunctionCallNode }
+        // { rank=same UnaryOperationNode BinaryOperationNode TernaryOperationNode }
+        // { rank=same UnaryArithmeticOperationNode UnaryLogicalOperationNode UnaryBitwiseOperationNode }
+        // { rank=same IncrementNode DecrementNode PositiveNode NegativeNode }
+        // { rank=same LogicalNegationNode }
+        // { rank=same OnesComplementNode }
+        // { rank=same BinaryArithmeticOperationNode BinaryLogicalOperationNode BinaryBitwiseOperationNode }
+        // { rank=same AdditionNode SubtractionNode MultiplicationNode DivisionNode ModuloNode }
+        // { rank=same LogicalANDNode LogicalORNode LogicalXORNode EqualNode EqualOrGreaterNode EqualOrLowerNode GreaterNode LowerNode UnequalNode }
+        // { rank=same ANDNode XORNode ORNode LeftShiftNode RightShiftNode }
+        // { rank=same TernaryArithmeticOperationNode TernaryLogicalOperationNode TernaryBitwiseOperationNode }
+        // { rank=same ConditionalNode }
+        
+}

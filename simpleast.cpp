@@ -251,7 +251,7 @@ SimpleNode::ValueTypes VariableNode::getReturnType() const
 
 void VariableNode::setAssignment(SimpleNode *assignment)
 {
-    Assignment = assignment;
+    RelatedAssignmentNode = assignment;
     RelatedVariableSymbol->assignValue(assignment);
 }
 
@@ -2532,7 +2532,7 @@ OperationNode::ArityTypes TernaryOperationNode::getArityType() const
 }
 
 ConditionalNode::ConditionalNode(SimpleNode *leftChild, SimpleNode *midChild, SimpleNode *rightChild) :
-    TernaryOperationNode(leftChild, midChild, rightChild)
+    TernaryLogicalOperationNode(leftChild, midChild, rightChild)
 {
     SimpleNode::ValueTypes returnTypeLChild = leftChild->getReturnType();
     SimpleNode::ValueTypes returnTypeMChild = midChild->getReturnType();
@@ -2540,56 +2540,65 @@ ConditionalNode::ConditionalNode(SimpleNode *leftChild, SimpleNode *midChild, Si
 
     returnType = ValueNode::ErrorType;
 
-    if( ( returnTypeLChild == ValueNode::Bool ) &&
-            ( returnTypeLChild == ValueNode::Integer ) &&
+    if( ( returnTypeLChild == ValueNode::Bool ) ||
+            ( returnTypeLChild == ValueNode::Integer ) ||
             ( returnTypeLChild == ValueNode::Double ) )
     {
+        implicitCastLeftChild = ValueNode::Bool;
         switch(returnTypeMChild)
         {
         case ValueNode::Integer:
             if(returnTypeRChild == ValueNode::Double)
             {
+                implicitCastMidChild = ValueNode::Double;
+                implicitCastRightChild = ValueNode::Double;
                 returnType = ValueNode::Double;
             }
             else if( returnTypeRChild == ValueNode::Bool )
             {
+                implicitCastMidChild = ValueNode::Bool;
+                implicitCastRightChild = ValueNode::Bool;
                 returnType = ValueNode::Bool;
             }
             else if( returnTypeRChild != ValueNode::String )
             {
+                implicitCastMidChild = ValueNode::Integer;
+                implicitCastRightChild = ValueNode::Integer;
                 returnType = ValueNode::Integer;
             }
             break;
         case ValueNode::Double:
             if( returnTypeRChild == ValueNode::Bool )
             {
+                implicitCastMidChild = ValueNode::Bool;
+                implicitCastRightChild = ValueNode::Bool;
                 returnType = ValueNode::Bool;
             }
             else if( returnTypeRChild != ValueNode::String )
             {
+                implicitCastMidChild = ValueNode::Double;
+                implicitCastRightChild = ValueNode::Double;
                 returnType = ValueNode::Double; // Implicitly casts Integer to Double
             }
             break;
         case ValueNode::Bool:
             if( returnTypeRChild != ValueNode::String )
             {
+                implicitCastMidChild = ValueNode::Bool;
+                implicitCastRightChild = ValueNode::Bool;
                 returnType = ValueNode::Bool; // Implicitly casts Integer and Double to Bool
             }
             break;
         case ValueNode::String: // if one return ChildNode is a String, the other node must also be a String
             if( returnTypeRChild == ValueNode::String )
             {
+                implicitCastMidChild = ValueNode::String;
+                implicitCastRightChild = ValueNode::String;
                 returnType = ValueNode::String;
             }
             break;
         }
     }
-}
-
-
-OperationNode::OperationTypes ConditionalNode::getOpType() const
-{
-    return OperationNode::Logical;
 }
 
 OperationNode::Operation ConditionalNode::getOp() const
@@ -2609,9 +2618,9 @@ OperationNode::Precedence ConditionalNode::getPrecedence() const
 
 ValueNode &ConditionalNode::DoOperation()
 {
-    ValueNode &value1 = rightChild->visit();
+    ValueNode &value1 = leftChild->visit();
     ValueNode value2 = midChild->visit();
-    ValueNode &value3 = leftChild->visit();
+    ValueNode &value3 = rightChild->visit();
 
     bool IsTrue = value1.getValue().value<bool>();
 
@@ -2931,4 +2940,37 @@ ValueNode &AssignmentNode::visit()
     Result = VariableToAssign->visit();
 
     return Result;
+}
+
+TernaryArithmeticOperationNode::TernaryArithmeticOperationNode(SimpleNode *leftChild, SimpleNode *midChild, SimpleNode *rightChild) :
+    TernaryOperationNode(leftChild, midChild, rightChild)
+{
+
+}
+
+OperationNode::OperationTypes TernaryArithmeticOperationNode::getOpType() const
+{
+    return OperationNode::Arithmetic;
+}
+
+TernaryLogicalOperationNode::TernaryLogicalOperationNode(SimpleNode *leftChild, SimpleNode *midChild, SimpleNode *rightChild) :
+    TernaryOperationNode(leftChild, midChild, rightChild)
+{
+
+}
+
+OperationNode::OperationTypes TernaryLogicalOperationNode::getOpType() const
+{
+    return OperationNode::Logical;
+}
+
+TernaryBitwiseOperationNode::TernaryBitwiseOperationNode(SimpleNode *leftChild, SimpleNode *midChild, SimpleNode *rightChild) :
+    TernaryOperationNode(leftChild, midChild, rightChild)
+{
+
+}
+
+OperationNode::OperationTypes TernaryBitwiseOperationNode::getOpType() const
+{
+    return OperationNode::Bitwise;
 }

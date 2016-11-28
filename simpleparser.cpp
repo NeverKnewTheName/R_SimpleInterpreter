@@ -364,8 +364,42 @@ SimpleNode *SimpleParser::ConditionalExpression()
     {
         return NULL;
     }
+    SimpleNode *nodeTwo;
+    SimpleNode *nodeThree;
     SharedSimpleTokenPtr token = CurrentToken;
 
+
+    if( CurrentToken->getTokenType() == SimpleToken::QMark )
+    {
+        token = CurrentToken;
+        eat(SimpleToken::QMark);
+        nodeTwo = ConditionalExpression();
+        if(nodeTwo == NULL)
+        {
+            SyntacticError(token);
+            delete node;
+            return NULL;
+        }
+        token = CurrentToken;
+        eat(SimpleToken::Colon);
+        nodeThree = ConditionalExpression();
+        if(nodeThree == NULL)
+        {
+            SyntacticError(token);
+            delete node;
+            delete nodeTwo;
+            return NULL;
+        }
+        node = new ConditionalNode(node, nodeTwo, nodeThree);
+        if(node->getReturnType() == ValueNode::ErrorType)
+        {
+            TypeError(token, QString("Expected: bool ? Integer|Double|Bool|String : Integer|Double|Bool|String ..."));
+            delete node;
+            delete nodeTwo;
+            delete nodeThree;
+            return NULL;
+        }
+    }
 
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
     return node;

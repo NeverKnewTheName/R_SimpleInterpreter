@@ -119,7 +119,7 @@ public:
     VariableSymbol *getRelatedVariableSymbol() const;
 
 private:
-    SimpleNode *Assignment;
+    SimpleNode *RelatedAssignmentNode;
     ValueNode Result;
     const QString VariableName;
     VariableSymbol * const RelatedVariableSymbol;
@@ -278,7 +278,7 @@ public:
 
     OperationNode();
     virtual ~OperationNode();
-    virtual NodeType getNodeType() const;
+    NodeType getNodeType() const;
     SimpleNode::ValueTypes getReturnType() const;
     virtual ArityTypes getArityType() const = 0;
     virtual OperationTypes getOpType() const = 0;
@@ -291,7 +291,7 @@ public:
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
 
-    virtual ValueNode &visit();
+    ValueNode &visit();
 protected:
     ValueNode Result;
     SimpleNode::ValueTypes returnType;
@@ -922,11 +922,40 @@ protected:
     SimpleNode::ValueTypes implicitCastRightChild;
 };
 
-class ConditionalNode : public TernaryOperationNode
+class TernaryArithmeticOperationNode : public TernaryOperationNode
+{
+public:
+    TernaryArithmeticOperationNode(SimpleNode *leftChild, SimpleNode *midChild ,SimpleNode *rightChild);
+    OperationTypes getOpType() const;
+    virtual Operation getOp() const = 0;
+    virtual Associativity getAssociativity() const = 0;
+    virtual Precedence getPrecedence() const = 0;
+
+    virtual ValueNode &DoOperation() = 0;
+
+    virtual QString printValue() const = 0;
+    virtual QString printNode() const = 0;
+};
+
+class TernaryLogicalOperationNode : public TernaryOperationNode
+{
+public:
+    TernaryLogicalOperationNode(SimpleNode *leftChild, SimpleNode *midChild ,SimpleNode *rightChild);
+    OperationTypes getOpType() const;
+    virtual Operation getOp() const = 0;
+    virtual Associativity getAssociativity() const = 0;
+    virtual Precedence getPrecedence() const = 0;
+
+    virtual ValueNode &DoOperation() = 0;
+
+    virtual QString printValue() const = 0;
+    virtual QString printNode() const = 0;
+};
+
+class ConditionalNode : public TernaryLogicalOperationNode
 {
 public:
     ConditionalNode(SimpleNode *leftChild, SimpleNode *midChild ,SimpleNode *rightChild);
-    OperationTypes getOpType() const;
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
@@ -935,6 +964,21 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+};
+
+class TernaryBitwiseOperationNode : public TernaryOperationNode
+{
+public:
+    TernaryBitwiseOperationNode(SimpleNode *leftChild, SimpleNode *midChild ,SimpleNode *rightChild);
+    OperationTypes getOpType() const;
+    virtual Operation getOp() const = 0;
+    virtual Associativity getAssociativity() const = 0;
+    virtual Precedence getPrecedence() const = 0;
+
+    virtual ValueNode &DoOperation() = 0;
+
+    virtual QString printValue() const = 0;
+    virtual QString printNode() const = 0;
 };
 
 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
