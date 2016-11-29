@@ -35,17 +35,9 @@ QString DataNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
-VariableNode::VariableNode() :
-    VariableName(VariableName),
-    ScopedSymbolTable(ScopedSymbolTable)
-{
-
-}
-
-VariableNode::VariableNode(const QString &VariableName, SymbolTablePtr ScopedSymbolTable) :
-    VariableName(VariableName),
-    ScopedSymbolTable(ScopedSymbolTable),
-    valueType(qSharedPointerDynamicCast<VariableSymbol>(ScopedSymbolTable.lookup(VariableName))->getReturnType())
+VariableNode::VariableNode(VariableSymbolPtr relatedVariableSymbol) :
+    RelatedVariableSymbol(relatedVariableSymbol),
+    valueType(relatedVariableSymbol->getVariableType())
 {
 }
 
@@ -67,12 +59,12 @@ SimpleNode::ValueTypes VariableNode::getReturnType() const
 
 ValueNodeScopedPtr VariableNode::visit()
 {
-    return ValueNodeScopedPtr(new ValueNode(*(qSharedPointerDynamicCast<VariableSymbol>(ScopedSymbolTable.lookup(VariableName))->getAssignedValue())));
+    RelatedVariableSymbol->getAssignedValue();
 }
 
 QString VariableNode::printValue() const
 {
-    return QString(VariableName);
+    return RelatedVariableSymbol->getIdentifier();
 }
 
 QString VariableNode::printNode() const
@@ -85,10 +77,10 @@ QString VariableNode::printNode() const
 
 QString VariableNode::getVariableName() const
 {
-    return VariableName;
+    return RelatedVariableSymbol->getIdentifier();
 }
 
-VariableSymbol *VariableNode::getRelatedVariableSymbol() const
+VariableSymbolPtr VariableNode::getRelatedVariableSymbol() const
 {
     return RelatedVariableSymbol;
 }
@@ -284,15 +276,13 @@ ValueNodeScopedPtr FunctionCallNode::visit()
     }
 }
 
-AssignmentNode::AssignmentNode()
+AssignmentNode::AssignmentNode(VariableNodeScopedPtr VariableToAssign, SimpleNodeScopedPtr ValueToAssign) :
+    VariableToAssign(VariableToAssign.take()),
+    ValueToAssign(ValueToAssign.take()),
+    valueType(this->VariableToAssign->getReturnType())
 {
-
-}
-
-AssignmentNode::AssignmentNode(const VariableNode &VariableToAssign, const SimpleNode &ValueToAssign) :
-    VariableToAssign(VariableToAssign),
-    //    ValueToAssign(SimpleNodePtr(new SimpleNode(ValueToAssign))
-{
+    if(this->VariableToAssign->getReturnType() == SimpleNode::ErrorType) valueType = ErrorType;
+    if(this->ValueToAssign->getReturnType() == SimpleNode::ErrorType) valueType = ErrorType;
 }
 
 AssignmentNode::~AssignmentNode()
@@ -322,12 +312,10 @@ QString AssignmentNode::printNode() const
 
 ValueNodeScopedPtr AssignmentNode::visit()
 {
-    VariableToAssign->setAssignment(ValueToAssign);
+    VariableToAssign->getRelatedVariableSymbol()->assignValue(*ValueToAssign);
 
-    return ValueNodeScopedPtr( new ValueNode(*VariableToAssign->visit()));
+    return VariableToAssign->visit();
 }
-
-
 
 ProgramNode::ProgramNode(const QString &ProgramName, const SymbolTable &ParentSymbolTable)
 {

@@ -7,8 +7,7 @@
 class VariableNode : public SimpleNode
 {
 public:
-    VariableNode();
-    VariableNode(const QString &VariableName, const SymbolTablePtr ScopedSymbolTable);
+    VariableNode(VariableSymbolPtr relatedVariableSymbol);
     ~VariableNode();
     virtual NodeType getNodeType() const;
     virtual SimpleNode::ValueTypes getReturnType() const;
@@ -20,9 +19,10 @@ public:
 
     QString getVariableName() const;
 
+    VariableSymbolPtr getRelatedVariableSymbol() const;
+
 private:
-    const QString VariableName;
-    const SymbolTablePtr ScopedSymbolTable;
+    VariableSymbolPtr RelatedVariableSymbol;
 };
 
 typedef QScopedPointer<VariableNode> VariableNodeScopedPtr;
@@ -105,8 +105,8 @@ private:
 class AssignmentNode : public SimpleNode
 {
 public:
-    AssignmentNode();
-    AssignmentNode(const VariableNode &VariableToAssign, const SimpleNode &ValueToAssign);
+//    AssignmentNode();
+    AssignmentNode(VariableNodeScopedPtr VariableToAssign, SimpleNodeScopedPtr ValueToAssign);
     ~AssignmentNode();
 
     // SimpleNode interface
@@ -118,8 +118,8 @@ public:
     ValueNodeScopedPtr visit();
 
 private:
-    VariableNode VariableToAssign;
-    SimpleNodePtr ValueToAssign;
+    VariableNodeScopedPtr VariableToAssign;
+    SimpleNodeScopedPtr ValueToAssign;
 };
 
 
@@ -146,12 +146,11 @@ public:
     ValueNodeScopedPtr visit();
 
 private:
-    ValueNode Result;
     SimpleNode::ValueTypes type;
-    QVector<SimpleNode> ProgramExpressions;
-    SimpleNode ReturnStatement;
-    const SymbolTable &ParentSymbolTable;
-    SymbolTable ProgramSymbolTable;
+    QVector<SimpleNodeScopedPtr> ProgramExpressions;
+    SimpleNodeScopedPtr ReturnStatement;
+    const SymbolTablePtr ParentSymbolTable;
+    SymbolTablePtr ProgramSymbolTable;
 };
 
 #endif // SYMBOLNODES_H

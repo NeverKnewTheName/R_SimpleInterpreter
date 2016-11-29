@@ -6,13 +6,13 @@
 class BinaryArithmeticOperationNode : public BinaryOperationNode
 {
 public:
-    BinaryArithmeticOperationNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    BinaryArithmeticOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     OperationTypes getOpType() const;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual const ValueNode &DoOperation() = 0;
+    virtual ValueNodeScopedPtr DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -21,12 +21,12 @@ public:
 class AdditionNode : public BinaryArithmeticOperationNode
 {
 public:
-    AdditionNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    AdditionNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    const ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -35,12 +35,12 @@ public:
 class SubtractionNode : public BinaryArithmeticOperationNode
 {
 public:
-    SubtractionNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    SubtractionNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    const ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -49,12 +49,12 @@ public:
 class MultiplicationNode : public BinaryArithmeticOperationNode
 {
 public:
-    MultiplicationNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    MultiplicationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    const ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -63,12 +63,12 @@ public:
 class DivisionNode : public BinaryArithmeticOperationNode
 {
 public:
-    DivisionNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    DivisionNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    const ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -77,12 +77,12 @@ public:
 class ModuloNode : public BinaryArithmeticOperationNode
 {
 public:
-    ModuloNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    ModuloNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    const ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -91,13 +91,13 @@ public:
 class BinaryLogicalOperationNode : public BinaryOperationNode
 {
 public:
-    BinaryLogicalOperationNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    BinaryLogicalOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     OperationTypes getOpType() const;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual const ValueNode &DoOperation() = 0;
+    virtual ValueNodeScopedPtr DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -106,7 +106,7 @@ public:
 class LogicalANDNode : public BinaryLogicalOperationNode
 {
 public:
-    LogicalANDNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    LogicalANDNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
@@ -123,7 +123,7 @@ public:
      * \warning Do not use on type String
      * \note Integer and Double ValueNodes are converted to bool before the operation takes place (0 or 0.0 is false whereas everything else  is true)
      */
-    const ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -132,7 +132,7 @@ public:
 class LogicalORNode : public BinaryLogicalOperationNode
 {
 public:
-    LogicalORNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    LogicalORNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
@@ -149,7 +149,7 @@ public:
      * \warning Do not use on type String
      * \note Integer and Double ValueNodes are converted to bool before the operation takes place (0 or 0.0 is false whereas everything else  is true)
      */
-    const ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -158,12 +158,12 @@ public:
 class LogicalXORNode : public BinaryLogicalOperationNode
 {
 public:
-    LogicalXORNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    LogicalXORNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    const ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -172,12 +172,12 @@ public:
 class GreaterNode : public BinaryLogicalOperationNode
 {
 public:
-    GreaterNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    GreaterNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    const ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -186,12 +186,12 @@ public:
 class LowerNode : public BinaryLogicalOperationNode
 {
 public:
-    LowerNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    LowerNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    const ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -200,12 +200,12 @@ public:
 class EqualNode : public BinaryLogicalOperationNode
 {
 public:
-    EqualNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    EqualNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    const ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -214,12 +214,12 @@ public:
 class EqualOrGreaterNode : public BinaryLogicalOperationNode
 {
 public:
-    EqualOrGreaterNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    EqualOrGreaterNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    const ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -228,12 +228,12 @@ public:
 class EqualOrLowerNode : public BinaryLogicalOperationNode
 {
 public:
-    EqualOrLowerNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    EqualOrLowerNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    const ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -242,12 +242,12 @@ public:
 class UnequalNode : public BinaryLogicalOperationNode
 {
 public:
-    UnequalNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    UnequalNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    const ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -257,13 +257,13 @@ class BinaryBitwiseOperationNode : public BinaryOperationNode
 {
 public:
 
-    BinaryBitwiseOperationNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    BinaryBitwiseOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     OperationTypes getOpType() const;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual const ValueNode &DoOperation() = 0;
+    virtual ValueNodeScopedPtr DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -272,12 +272,12 @@ public:
 class ANDNode : public BinaryBitwiseOperationNode
 {
 public:
-    ANDNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    ANDNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    const ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -286,12 +286,12 @@ public:
 class ORNode : public BinaryBitwiseOperationNode
 {
 public:
-    ORNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    ORNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    const ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -300,12 +300,12 @@ public:
 class XORNode : public BinaryBitwiseOperationNode
 {
 public:
-    XORNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    XORNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    const ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -314,12 +314,12 @@ public:
 class LeftShiftNode : public BinaryBitwiseOperationNode
 {
 public:
-    LeftShiftNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    LeftShiftNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    const  ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -328,12 +328,12 @@ public:
 class RightShiftNode : public BinaryBitwiseOperationNode
 {
 public:
-    RightShiftNode(const SimpleNode &leftChild, const SimpleNode &rightChild);
+    RightShiftNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    const ValueNode &DoOperation();
+    ValueNodeScopedPtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;

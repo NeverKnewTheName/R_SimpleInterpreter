@@ -5,6 +5,11 @@
 #include <QDebug>
 
 
+QString SymbolTableEntry::getIdentifier() const
+{
+    return identifier;
+}
+
 SymbolTable::SymbolTable(QString const& identifier, SymbolTableEntryPtr parentSymbolTable) :
     identifier(identifier),
     parentSymbolTable(parentSymbolTable)
@@ -114,18 +119,12 @@ QString SymbolTable::PrintSymbolType() const
     return QString("SubSymbolTable");
 }
 
-QString SymbolTable::getIdentifier() const
-{
-    return identifier;
-}
-
 SymbolTableEntryPtr SymbolTable::getParentSymbolTable() const
 {
     return parentSymbolTable;
 }
 
-VariableSymbol::VariableSymbol(
-        const QString &identifier,
+VariableSymbol::VariableSymbol(const QString &identifier,
         SimpleNode::ValueTypes VariableType
         ) :
     identifier(identifier),
@@ -141,9 +140,9 @@ VariableSymbol::~VariableSymbol()
     qDebug() << __PRETTY_FUNCTION__;
 }
 
-const ValueNode &VariableSymbol::getAssignedValue() const
+ValueNodeScopedPtr VariableSymbol::getAssignedValue() const
 {
-    return valueNode;
+    return ValueNodeScopedPtr( new ValueNode( AssignedNode ) );
 }
 
 bool VariableSymbol::assignValue(const SimpleNode &NodeToAssign)
@@ -205,22 +204,19 @@ SimpleNode::ValueTypes VariableSymbol::getVariableType() const
     return VariableType;
 }
 
-FunctionSymbol::FunctionSymbol(
-        QString &identifier,
-        QVector<VariableNode> &FunctionParameters,
-        SimpleNode::ValueTypes ReturnType
-        ) :
-    identifier(std::move(identifier)),
-    FunctionParameters(std::move(FunctionParameters)),
+FunctionSymbol::FunctionSymbol(const QString &identifier, QVector<VariableSymbolPtr> &&functionParameters, SimpleNode::ValueTypes ReturnType) :
+    identifier(identifier),
+    FunctionParameters(std::move(functionParameters)),
     ReturnType(ReturnType),
     FunctionSymbolTable(QString("%1_SymbolTable").arg(identifier)),
     FunctionReturnNode(ValueNode()),
     isAssigned(false)
 {
-    for(VariableNode &&param : FunctionParameters)
+    const int NrOfFunctionParameters = FunctionParameters.size();
+    for(int i = 0; i < NrOfFunctionParameters; i++)
     {
-        QString paramIdentifier = param.getVariableName();
-        FunctionSymbolTable.addEntry(paramIdentifier,SymbolTableEntryPtr(new VariableSymbol(paramIdentifier, param.getReturnType())));
+        QString paramIdentifier = FunctionParameters.at(i).getVariableName();
+        FunctionSymbolTable.addEntry(paramIdentifier,qSharedPointerCast<SymbolTableEntry>(FunctionParameters.value(i));
     }
 }
 
@@ -229,18 +225,18 @@ FunctionSymbol::~FunctionSymbol()
     qDebug() << __PRETTY_FUNCTION__;
 }
 
-void FunctionSymbol::addFunctionExpressions(QVector<SimpleNode> &&FuncExpressions)
+void FunctionSymbol::addFunctionExpressions(QVector<SimpleNodeScopedPtr> FuncExpressions)
 {
     FunctionExpressions = std::move(FuncExpressions);
 }
 
-void FunctionSymbol::addFunctionReturnStatement(const SimpleNode &returnNode)
+void FunctionSymbol::addFunctionReturnStatement(SimpleNodeScopedPtr returnNode)
 {
-    FunctionReturnNode = returnNode;
+    FunctionReturnNode = std::move(returnNode);
 }
 
-ValueNode FunctionSymbol::CallFunction(
-        const QVector<SimpleNode> &FunctionArguments,
+ValueNodeScopedPtr FunctionSymbol::CallFunction(
+        QVector<SimpleNodeScopedPtr> FunctionArguments,
         SymbolTableEntryPtr CurrentSymbolTable
         )
 {
@@ -252,26 +248,31 @@ ValueNode FunctionSymbol::CallFunction(
     }
 
     //Is this really needed?!
-    qSharedPointerDynamicCast<SymbolTable>(CurrentSymbolTable)->addEntry(FunctionSymbolTable.getIdentifier(), SymbolTablePtr(&FunctionSymbolTable));
+    //qSharedPointerDynamicCast<SymbolTable>(CurrentSymbolTable)->addEntry(FunctionSymbolTable.getIdentifier(), SymbolTablePtr(&FunctionSymbolTable));
 
     for(int i = 0; i < NrOfParameters; i++)
     {
         const VariableNode &param = FunctionParameters.at(i);
-        const SimpleNode &argument = FunctionArguments.at(i);
-        qSharedPointerDynamicCast<VariableSymbol>(FunctionSymbolTable.lookup(param.getVariableName()))->assignValue(argument.visit());
+        SimpleNodeScopedPtr argument = std::move(FunctionArguments.value(i));
+        qSharedPointerDynamicCast<VariableSymbol>(FunctionSymbolTable.lookup(param.getVariableName()))->assignValue(argument->visit());
     }
 
     FunctionSymbolTable.addParentSymbolTable(CurrentSymbolTable);
 
-    for(SimpleNode &expression : FunctionExpressions)
+    for(SimpleNodeScopedPtr &expression : FunctionExpressions)
     {
-        expression.visit();
+        expression->visit();
     }
 
-    return FunctionReturnNode.visit();
+    return ValueNodeScopedPtr(new ValueNode( *(FunctionReturnNode->visit())));
 }
 
-bool FunctionSymbol::checkFunctionArguments(const QVector<VariableNode> &FunctionArguments) const
+SymbolTable &FunctionSymbol::getFunctionSymbolTable() const
+{
+    return FunctionSymbolTable;
+}
+
+bool FunctionSymbol::checkFunctionArguments(const QVector<SimpleNodeScopedPtr> &FunctionArguments) const
 {
     const int NrOfParameters = FunctionParameters.size();
     if(NrOfParameters != FunctionArguments.size())
@@ -283,13 +284,13 @@ bool FunctionSymbol::checkFunctionArguments(const QVector<VariableNode> &Functio
     for(int i = 0; i < NrOfParameters; i++)
     {
         const VariableNode &param = FunctionParameters.at(i);
-        const SimpleNode &argument = FunctionArguments.at(i);
-        if(!SimpleNode::canConvertTypes(param.getReturnType(), argument.getReturnType()))
+        const SimpleNodeScopedPtr &argument = FunctionArguments.at(i);
+        if(!SimpleNode::canConvertTypes(param.getReturnType(), argument->getReturnType()))
         {
             qDebug() << "Type mismatch at paramter: " << i << " Expected: "
                      << SimpleNode::getHumanReadableTypeNameToValueType(param.getReturnType())
                      << " but got: "
-                     << SimpleNode::getHumanReadableTypeNameToValueType(argument.getReturnType());
+                     << SimpleNode::getHumanReadableTypeNameToValueType(argument->getReturnType());
             return false;
         }
     }
@@ -311,6 +312,7 @@ QString FunctionSymbol::PrintSymbolType() const
 {
     return QString("Function");
 }
+
 
 
 SymbolTableEntry::SymbolTableEntry()

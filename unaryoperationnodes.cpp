@@ -1,4 +1,5 @@
 #include "unaryoperationnodes.h"
+#include "symbolnodes.h"
 
 UnaryArithmeticOperationNode::UnaryArithmeticOperationNode(const SimpleNode &rightChild) :
     UnaryOperationNode(rightChild)
@@ -66,30 +67,28 @@ OperationNode::Precedence TypeCastNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-ValueNode &TypeCastNode::DoOperation()
+ValueNodeScopedPtr TypeCastNode::DoOperation()
 {
-    ValueNode &value = rightChild->visit();
+    ValueNodeScopedPtr value(rightChild->visit().take());
 
     switch(typeToCastTo)
     {
     case SimpleNode::Integer:
-        Result = ValueNode(value.getValue().value<int>());
+        return ValueNodeScopedPtr( new ValueNode(value.getValue().value<int>()));
         break;
     case SimpleNode::Double:
-        Result = ValueNode(value.getValue().value<double>());
+        return ValueNodeScopedPtr( new ValueNode(value.getValue().value<double>()));
         break;
     case SimpleNode::Bool:
-        Result = ValueNode(value.getValue().value<bool>());
+        return ValueNodeScopedPtr( new ValueNode(value.getValue().value<bool>()));
         break;
     case SimpleNode::String:
-        Result = ValueNode(value.getValue().value<QString>());
+        return ValueNodeScopedPtr( new ValueNode(value.getValue().value<QString>()));
         break;
     case SimpleNode::ErrorType:
-        Result = ValueNode();
-        break;
+    default:
+        return ValueNodeScopedPtr( new ValueNode());
     }
-
-    return Result;
 }
 
 QString TypeCastNode::printValue() const
@@ -151,16 +150,15 @@ OperationNode::Precedence IncrementNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-ValueNode &IncrementNode::DoOperation()
+ValueNodeScopedPtr IncrementNode::DoOperation()
 {
-    bool IsVariable = false;
-    ValueNode &value = rightChild->visit();
+    ValueNodeScopedPtr value(rightChild->visit().take());
 
-    Result = ValueNode(value.getValue().value<int>() + 1);
+    ValueNode Result = ValueNode(value->getValue().value<int>() + 1);
 
-    dynamic_cast<VariableNode*>(rightChild)->setAssignment(new ValueNode(Result));
+    dynamic_cast<VariableNode*>(rightChild.data())->getRelatedVariableSymbol()->assignValue(Result);
 
-    return Result;
+    return ValueNodeScopedPtr( new ValueNode(Result));
 }
 
 QString IncrementNode::printValue() const
@@ -205,15 +203,15 @@ OperationNode::Precedence DecrementNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-ValueNode &DecrementNode::DoOperation()
+ValueNodeScopedPtr DecrementNode::DoOperation()
 {
-    ValueNode &value = rightChild->visit();
+    ValueNodeScopedPtr value(rightChild->visit().take());
 
-    Result = ValueNode(value.getValue().value<int>() - 1);
+    ValueNode Result = ValueNode(value->getValue().value<int>() - 1);
 
-    dynamic_cast<VariableNode*>(rightChild)->setAssignment(new ValueNode(Result));
+    dynamic_cast<VariableNode*>(rightChild.data())->getRelatedVariableSymbol()->assignValue(Result);
 
-    return Result;
+    return ValueNodeScopedPtr( new ValueNode(Result));
 }
 
 QString DecrementNode::printValue() const
@@ -262,21 +260,21 @@ OperationNode::Precedence PositiveNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-ValueNode &PositiveNode::DoOperation()
+ValueNodeScopedPtr PositiveNode::DoOperation()
 {
-    ValueNode &value = rightChild->visit();
+    ValueNodeScopedPtr value(rightChild->visit().take());
+
     switch(implicitCastRightChild)
     {
     case ValueNode::Integer:
-        Result = ValueNode(value.getValue().value<int>());
+        return ValueNodeScopedPtr( new ValueNode(value.getValue().value<int>()));
         break;
     case ValueNode::Double:
-        Result = ValueNode(value.getValue().value<double>());
+        return ValueNodeScopedPtr( new ValueNode(value.getValue().value<double>()));
         break;
     default:
-        Result =  ValueNode();
+        return ValueNodeScopedPtr( new ValueNode());
     }
-    return Result;
 }
 
 QString PositiveNode::printValue() const
@@ -325,21 +323,21 @@ OperationNode::Precedence NegativeNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-ValueNode &NegativeNode::DoOperation()
+ValueNodeScopedPtr NegativeNode::DoOperation()
 {
-    ValueNode &value = rightChild->visit();
+    ValueNodeScopedPtr value(rightChild->visit().take());
+
     switch(implicitCastRightChild)
     {
     case ValueNode::Integer:
-        Result = ValueNode(value.getValue().value<int>() * -1);
+        return ValueNodeScopedPtr( new ValueNode(value.getValue().value<int>() * -1));
         break;
     case ValueNode::Double:
-        Result = ValueNode(value.getValue().value<double>() * -1);
+        return ValueNodeScopedPtr( new ValueNode(value.getValue().value<double>() * -1));
         break;
     default:
-        Result =  ValueNode();
+        return ValueNodeScopedPtr( new ValueNode());
     }
-    return Result;
 }
 
 QString NegativeNode::printValue() const
@@ -388,25 +386,26 @@ OperationNode::Precedence LogicalNegationNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-ValueNode &LogicalNegationNode::DoOperation()
+ValueNodeScopedPtr LogicalNegationNode::DoOperation()
 {
-    ValueNode &value = rightChild->visit();
-    bool IsTrue = value.getValue().value<bool>();
+    ValueNodeScopedPtr value(rightChild->visit().take());
+
+    bool IsTrue = value->getValue().value<bool>();
+
     switch(implicitCastRightChild)
     {
     case ValueNode::Integer:
-        Result = ValueNode(IsTrue ? 0 : 1);
+        return ValueNodeScopedPtr( new ValueNode(IsTrue ? 0 : 1));
         break;
     case ValueNode::Double:
-        Result = ValueNode(IsTrue ? 0.0 : 1.0);
+        return ValueNodeScopedPtr( new ValueNode(IsTrue ? 0.0 : 1.0));
         break;
     case ValueNode::Bool:
-        Result =  ValueNode(IsTrue ? false : true);
+        return ValueNodeScopedPtr( new ValueNode(IsTrue ? false : true));
         break;
     default:
-        Result =  ValueNode();
+        return ValueNodeScopedPtr( new ValueNode());
     }
-    return Result;
 }
 
 QString LogicalNegationNode::printValue() const
@@ -437,7 +436,9 @@ OnesComplementNode::OnesComplementNode(const SimpleNode &rightChild) :
 {
     returnType = rightChild->getReturnType();
     if( ( returnType != ValueNode::Integer ) )
+    {
         returnType = ValueNode::ErrorType;
+    }
 }
 
 OperationNode::Operation OnesComplementNode::getOp() const
@@ -455,13 +456,11 @@ OperationNode::Precedence OnesComplementNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-ValueNode &OnesComplementNode::DoOperation()
+ValueNodeScopedPtr OnesComplementNode::DoOperation()
 {
-    ValueNode &value = rightChild->visit();
+    ValueNodeScopedPtr value(rightChild->visit().take());
 
-    Result =  ValueNode(~(value.getValue().value<int>()));
-
-    return Result;
+    return ValueNodeScopedPtr( new ValueNode(~(value->getValue().value<int>())));
 }
 
 QString OnesComplementNode::printValue() const

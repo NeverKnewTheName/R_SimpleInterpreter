@@ -1,6 +1,6 @@
 #include "ternaryoperationnodes.h"
 
-TernaryArithmeticOperationNode::TernaryArithmeticOperationNode(const SimpleNodeScopedPtr leftChild, const SimpleNodeScopedPtr midChild, const SimpleNodeScopedPtr rightChild) :
+TernaryArithmeticOperationNode::TernaryArithmeticOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr midChild, SimpleNodeScopedPtr rightChild) :
     TernaryOperationNode(leftChild, midChild, rightChild)
 {
 
@@ -11,7 +11,7 @@ OperationNode::OperationTypes TernaryArithmeticOperationNode::getOpType() const
     return OperationNode::Arithmetic;
 }
 
-TernaryLogicalOperationNode::TernaryLogicalOperationNode(const SimpleNodeScopedPtr leftChild, const SimpleNodeScopedPtr midChild, const SimpleNodeScopedPtr rightChild) :
+TernaryLogicalOperationNode::TernaryLogicalOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr midChild, SimpleNodeScopedPtr rightChild) :
     TernaryOperationNode(leftChild, midChild, rightChild)
 {
 
@@ -22,7 +22,7 @@ OperationNode::OperationTypes TernaryLogicalOperationNode::getOpType() const
     return OperationNode::Logical;
 }
 
-ConditionalNode::ConditionalNode(const SimpleNodeScopedPtr leftChild, const SimpleNodeScopedPtr midChild, const SimpleNodeScopedPtr rightChild) :
+ConditionalNode::ConditionalNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr midChild, SimpleNodeScopedPtr rightChild) :
     TernaryLogicalOperationNode(leftChild, midChild, rightChild)
 {
     SimpleNode::ValueTypes returnTypeLChild = leftChild->getReturnType();
@@ -109,12 +109,9 @@ OperationNode::Precedence ConditionalNode::getPrecedence() const
 
 const ValueNodeScopedPtr ConditionalNode::DoOperation()
 {
-    ValueNodeScopedPtr value1;
-    value1->swap(leftChild->visit());
-    ValueNodeScopedPtr value2;
-    value2->swap(midChild->visit());
-    ValueNodeScopedPtr value3;
-    value3->swap(rightChild->visit());
+    ValueNodeScopedPtr value1(leftChild->visit().take());
+    ValueNodeScopedPtr value2(midChild->visit().take());
+    ValueNodeScopedPtr value3(rightChild->visit().take());
 
     bool IsTrue = value1->getValue().value<bool>();
 
@@ -169,7 +166,7 @@ QString ConditionalNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
-TernaryBitwiseOperationNode::TernaryBitwiseOperationNode(const SimpleNodeScopedPtr leftChild, const SimpleNodeScopedPtr midChild, const SimpleNodeScopedPtr rightChild) :
+TernaryBitwiseOperationNode::TernaryBitwiseOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr midChild, SimpleNodeScopedPtr rightChild) :
     TernaryOperationNode(leftChild, midChild, rightChild)
 {
 

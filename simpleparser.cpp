@@ -2,37 +2,43 @@
 #include "simplesymboltable.h"
 #include <QDebug>
 
-SimpleParser::SimpleParser(SimpleLexer *lexer, const SymbolTable &parentSymblTbl) :
+#include "symbolnodes.h"
+
+#include "unaryoperationnodes.h"
+#include "binaryoperationnodes.h"
+#include "ternaryoperationnodes.h"
+
+SimpleParser::SimpleParser(SimpleLexer *lexer, SymbolTablePtr parentSymblTbl) :
     lexer(lexer),
     CurrentToken(lexer->getNextToken()),
     ParentSymblTbl(parentSymblTbl),
-    ProgramSymbolTable(QString("ProgramSymbolTable"),ParentSymblTbl),
+    ProgramSymbolTable(QString("ProgramSymbolTable"), ParentSymblTbl),
     CurSymblTbl(NULL),
     ErrorOccured(false)
 {
 }
 
-SimpleNode *SimpleParser::parse()
+SimpleNodeScopedPtr SimpleParser::parse()
 {
-    SimpleNode *node = NULL;
-    if(CurrentToken->getTokenType() != SimpleToken::EOFToken)
-    {
-        node = Program();
+//    ProgramNode node;
+//    if(CurrentToken->getTokenType() != SimpleToken::EOFToken)
+//    {
+//        node = Program();
 
-        if(CurrentToken->getTokenType() != SimpleToken::EOFToken)
-        {
-            qDebug() << __PRETTY_FUNCTION__ << ": NOT EOF";
-            if(node != NULL)
-            {
-                delete node;
-                EOFExpectedError(CurrentToken, QString("EOF was expected but not there was still input..."));
-                return NULL;
-            }
-        }
+//        if(CurrentToken->getTokenType() != SimpleToken::EOFToken)
+//        {
+//            qDebug() << __PRETTY_FUNCTION__ << ": NOT EOF";
+//            if(node != NULL)
+//            {
 
-    }
-    qDebug() << __PRETTY_FUNCTION__ << ": EOF";
-    return node;
+//                EOFExpectedError(CurrentToken, QString("EOF was expected but not there was still input..."));
+//                return NULL;
+//            }
+//        }
+
+//    }
+//    qDebug() << __PRETTY_FUNCTION__ << ": EOF";
+//    return node;
 }
 
 const SymbolTable &SimpleParser::getProgramSymblTbl()
@@ -54,9 +60,9 @@ void SimpleParser::eat(SimpleToken::TokenType tokenType)
     }
 }
 
-SimpleNode *SimpleParser::Program()
+SimpleNodeScopedPtr SimpleParser::Program()
 {
-    SimpleNode *node = NULL;
+    SimpleNodeScopedPtr node;
     SharedSimpleTokenPtr token = CurrentToken;
     SymbolTable ProgramSymbolTable(QString("ProgramSymblTbl"),ParentSymblTbl);
 
@@ -67,8 +73,8 @@ SimpleNode *SimpleParser::Program()
     {
         // // // Variable Definition // // //
         token = CurrentToken;
-        node = VarDefinition(&SymblTbl);
-        if(node != NULL)
+        node.reset(VarDefinition());
+        if(!node.isNull())
         {
             continue;
         }
@@ -78,8 +84,8 @@ SimpleNode *SimpleParser::Program()
             CurrentToken = token;
         }
         // // // Function Definition // // //
-        node = FunctionDefinition();
-        if(node == NULL)
+        node.reset(FunctionDefinition());
+        if(node.isNull())
         {
             lexer->ResetLexerToToken(token);
             CurrentToken = token;
@@ -90,62 +96,65 @@ SimpleNode *SimpleParser::Program()
     while(CurrentToken->getTokenType() != SimpleToken::ReturnKeyword)
     {
         token = CurrentToken;
-        node = Expression();
-        if(node == NULL)
+        node.reset(Expression());
+        if(node.isNull())
         {
             SyntacticError(token, QString("Expected Expression!"));
-            return NULL;
+            SimpleNodeScopedPtr();
         }
     }
 
-    node = ReturnStatement();
-    if(node == NULL)
+    node.reset(ReturnStatement());
+    if(node.isNull())
     {
         SyntacticError(token, QString("Expected Return Statement!"));
-        return NULL;
+        SimpleNodeScopedPtr();
     }
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
     return node;
 }
 
-SimpleNode *SimpleParser::FunctionDefinition()
+FunctionSymbolPtr SimpleParser::FunctionDefinition()
 {
-    FunctionNode *node = FunctionDeclaration(/*FuncSubSymblTbl*/);
+    FunctionSymbolPtr DeclaredFuncSymbol = FunctionDeclaration();
 
-    if(node == NULL)
+    if(DeclaredFuncSymbol.isNull())
     {
-        return NULL;
+        return FunctionSymbolPtr();
     }
     SharedSimpleTokenPtr token = CurrentToken;
-    SymbolTable *FuncSubSymblTbl = node->getFuncSymbolTable();;
-    CurSymblTbl = FuncSubSymblTbl;
+//    SymbolTable *FuncSubSymblTbl = node->getFuncSymbolTable();;
+//    CurSymblTbl = FuncSubSymblTbl;
 
     if(CurrentToken->getTokenType() == SimpleToken::LCurlyParan)
     {
         eat(SimpleToken::LCurlyParan);
-        QVector<SimpleNode*> FuncExpressions;
+        QVector<SimpleNodeScopedPtr> FuncExpressions;
 
         while(CurrentToken->getTokenType() == SimpleToken::TypeName)
         {
-            SimpleNode *varDef = VarDefinition(FuncSubSymblTbl);
+            VariableSymbolPtr varDef = VarDefinition();
+            //Add to function symbol table
             if(varDef->getNodeType() == SimpleNode::Assignment)
             {
-                FuncExpressions.append(varDef);
+                SimpleNodeScopedPtr Assignment;
+                FuncExpressions.append(SimpleNodeScopedPtr(new AssignmentNode(VariableNodeScopedPtr(new VariableNode(varDef)),Assignment)));
             }
         }
 
-        SimpleNode * ExpressionNode = NULL;
+        SimpleNodeScopedPtr ExpressionNode;
         do
         {
-            ExpressionNode = Expression();
-            if(ExpressionNode != NULL)
+            ExpressionNode.reset(Expression());
+            if(!ExpressionNode.isNull())
             {
                 eat(SimpleToken::SemiColonDelim);
-                FuncExpressions.append(ExpressionNode);
+                FuncExpressions.append(std::move(ExpressionNode));
             }
             CurSymblTbl = FuncSubSymblTbl;
-        }while(ExpressionNode != NULL);
-        SimpleNode *ReturnStatementNode = ReturnStatement();
+        }while(!ExpressionNode.isNull());
+
+        SimpleNodeScopedPtr ReturnStatementNode(ReturnStatement().take());
 
         eat(SimpleToken::RCurlyParan);
 
@@ -153,31 +162,29 @@ SimpleNode *SimpleParser::FunctionDefinition()
         node->addReturnStatement(ReturnStatementNode);
         if(node->getReturnType() == ValueNode::ErrorType)
         {
-            CurSymblTbl = &SymblTbl;
-            delete node;
-            delete FuncSubSymblTbl;
-            return NULL;
+//            CurSymblTbl = &SymblTbl;
+
+            return FunctionSymbolPtr();
         }
 
         eat(SimpleToken::SemiColonDelim);
     }
     else
     {
-        CurSymblTbl = &SymblTbl;
-        delete node;
-        delete FuncSubSymblTbl;
+//        CurSymblTbl = &SymblTbl;
+
         SyntacticError(CurrentToken, QString("Expected FunctionDeclaration!"));
-        return NULL;
+        return FunctionSymbolPtr();
     }
 
-    qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
-    CurSymblTbl = &SymblTbl;
-    return node;
+    qDebug() << __PRETTY_FUNCTION__ << ": " << DeclaredFuncSymbol->PrintToSymbolToString();
+//    CurSymblTbl = &SymblTbl;
+    return DeclaredFuncSymbol;
 }
 
-FunctionNode *SimpleParser::FunctionDeclaration(/*SymbolTable *FuncSubSymblTbl*/)
+FunctionSymbolPtr SimpleParser::FunctionDeclaration(/*SymbolTable *FuncSubSymblTbl*/)
 {
-    FunctionNode *node = NULL;
+    FunctionSymbolPtr FuncSymbol;
     SharedSimpleTokenPtr token;
 
     if(CurrentToken->getTokenType() == SimpleToken::TypeName)
@@ -190,48 +197,47 @@ FunctionNode *SimpleParser::FunctionDeclaration(/*SymbolTable *FuncSubSymblTbl*/
         eat(SimpleToken::VariableID);
         QString FuncName = qSharedPointerDynamicCast<VariableIDToken>(token)->getID();
 
-        SymbolTable *FuncSubSymblTbl = new SymbolTable(QString("FuncSymblTbl_%1").arg(FuncName),&SymblTbl);
+//        SymbolTable *FuncSubSymblTbl = new SymbolTable(QString("FuncSymblTbl_%1").arg(FuncName),&SymblTbl);
         eat(SimpleToken::LParan);
-        QVector<VariableNode*> parameters;
+        QVector<VariableSymbolPtr> parameters;
         while(CurrentToken->getTokenType() == SimpleToken::TypeName)
         {
-            VariableNode *varNode = VarDeclaration(FuncSubSymblTbl);
-            parameters.append(varNode);
+            VariableSymbolPtr varSymbolDeclaration = VarDeclaration();
+            parameters.append(varSymbolDeclaration);
         }
 
         eat(SimpleToken::RParan);
 
-        node = new FunctionNode(FuncName, parameters, returnType, FuncSubSymblTbl);
-        SymblTbl.addEntry(FuncName,new FunctionSymbol(node));
+        FuncSymbol = FunctionSymbolPtr(new FunctionSymbol(FuncName, std::move(parameters), returnType);
+        SymblTbl.addEntry(FuncName,SymbolTableEntryPtr(new FunctionSymbol(node)));
     }
 
-    if(node == NULL)
+    if(FuncSymbol.isNull())
     {
         SyntacticError(CurrentToken,QString("Expected Function Declaration"));
-        return NULL;
+        return FunctionSymbolPtr();
     }
-    qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
-    return node;
+    qDebug() << __PRETTY_FUNCTION__ << ": " << FuncSymbol->PrintToSymbolToString();
+    return FuncSymbol;
 }
 
-SimpleNode *SimpleParser::VarDefinition(SymbolTable *SymbolTableToRegisterVariableTo)
+VariableSymbolPtr SimpleParser::VarDefinition()
 {
-    SimpleNode *node = VarDeclaration(SymbolTableToRegisterVariableTo);
-    SimpleNode *nodeTwo = NULL;
-    if(node == NULL)
+    VariableSymbolPtr VarDeclarationSymbol = VarDeclaration();
+    SimpleNodeScopedPtr nodeTwo;
+    if(VarDeclarationSymbol.isNull())
     {
-        return NULL;
+        return VariableSymbolPtr();
     }
 
     SharedSimpleTokenPtr token = CurrentToken;
     if(CurrentToken->getTokenType() == SimpleToken::Assign)
     {
         eat(SimpleToken::Assign);
-        nodeTwo = Expression();
-        if(nodeTwo == NULL)
+        nodeTwo.reset(Expression());
+        if(nodeTwo.isNull())
         {
-            delete node;
-            return NULL;
+            return VariableSymbolPtr();
         }
         SimpleNode::ValueTypes exprReturnType = nodeTwo->getReturnType();
         if( ( exprReturnType == ValueNode::ErrorType ) || ( !SimpleNode::canConvertTypes(exprReturnType, node->getReturnType()) ) )
@@ -242,23 +248,22 @@ SimpleNode *SimpleParser::VarDefinition(SymbolTable *SymbolTableToRegisterVariab
                         .arg(SimpleNode::getHumanReadableTypeNameToValueType(node->getReturnType()))
                         .arg(SimpleNode::getHumanReadableTypeNameToValueType(nodeTwo->getReturnType()))
                         );
-            delete nodeTwo;
-            delete node;
-            return NULL;
+            return VariableSymbolPtr();
         }
-        node = new AssignmentNode(dynamic_cast<VariableNode*>(node), nodeTwo);
+        VarDeclarationSymbol->assignValue(nodeTwo);
+//        node = new AssignmentNode(dynamic_cast<VariableNode*>(node), nodeTwo);
 //        dynamic_cast<VariableNode*>(node)->setAssignment(nodeTwo);
     }
 
     eat(SimpleToken::SemiColonDelim);
 
-    qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
-    return node;
+    qDebug() << __PRETTY_FUNCTION__ << ": " << VarDeclarationSymbol->PrintToSymbolToString();
+    return VarDeclarationSymbol;
 }
 
-VariableNode *SimpleParser::VarDeclaration(SymbolTable *SymbolTableToRegisterVariableTo)
+VariableSymbolPtr SimpleParser::VarDeclaration()
 {
-    VariableNode *node = NULL;
+    VariableSymbolPtr varDeclarationSymbol;
     SharedSimpleTokenPtr InitialToken = CurrentToken;
     SharedSimpleTokenPtr token;
 
@@ -270,91 +275,91 @@ VariableNode *SimpleParser::VarDeclaration(SymbolTable *SymbolTableToRegisterVar
         {
             if(lexer->peekAtNextToken()->getTokenType() == SimpleToken::LParan)
             {
-                return NULL;
+                return VariableSymbolPtr();
             }
             SimpleNode::ValueTypes type = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
             token = CurrentToken;
             eat(SimpleToken::VariableID);
             QString VariableID = qSharedPointerDynamicCast<VariableIDToken>(token)->getID();
-            SymbolTableToRegisterVariableTo->addEntry(VariableID, new VariableSymbol(VariableID, type));
-            node = new VariableNode(VariableID, SymbolTableToRegisterVariableTo, type);
+//            SymbolTableToRegisterVariableTo->addEntry(VariableID, new VariableSymbol(VariableID, type));
+            varDeclarationSymbol = VariableSymbolPtr(new VariableSymbol(VariableID, type));
         }
     }
 
-    if(node == NULL)
+    if(varDeclarationSymbol.isNull())
     {
-        return NULL;
+        return VariableSymbolPtr();
     }
 
-    qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
-    return node;
+    qDebug() << __PRETTY_FUNCTION__ << ": " << varDeclarationSymbol->PrintToSymbolToString();
+    return varDeclarationSymbol;
 }
 
-SimpleNode *SimpleParser::ReturnStatement()
+SimpleNodeScopedPtr SimpleParser::ReturnStatement()
 {
-    SimpleNode *node = NULL;
+    SimpleNodeScopedPtr node;
     SharedSimpleTokenPtr token = CurrentToken;
 
     if(CurrentToken->getTokenType() == SimpleToken::ReturnKeyword)
     {
         eat(SimpleToken::ReturnKeyword);
-        node = Expression();
-        eat(SimpleToken::SemiColonDelim);
-        if(node == NULL)
+        node.reset(Expression().take());
+        if(node.isNull())
         {
-            return NULL;
+            return SimpleNodeScopedPtr();
         }
+        eat(SimpleToken::SemiColonDelim);
     }
 
-    if(node == NULL)
+    if(node.isNull())
     {
-        return NULL;
+        return SimpleNodeScopedPtr();
     }
 
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
     return node;
 }
 
-SimpleNode *SimpleParser::Expression()
+SimpleNodeScopedPtr SimpleParser::Expression()
 {
-    SimpleNode *node = AssignmentExpression();
-    if(node == NULL)
+    SimpleNodeScopedPtr node(AssignmentExpression().take());
+    if(node.isNull())
     {
-        return NULL;
+        return SimpleNodeScopedPtr();
     }
     SharedSimpleTokenPtr token = CurrentToken;
 
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
-    return node;
+    return std::move(node);
 }
 
-SimpleNode *SimpleParser::AssignmentExpression()
+SimpleNodeScopedPtr SimpleParser::AssignmentExpression()
 {
-    SimpleNode *node = ConditionalExpression();
-    if(node == NULL)
+    SimpleNodeScopedPtr node(ConditionalExpression().take());
+    if(node.isNull())
     {
-        return NULL;
+        return SimpleNodeScopedPtr();
     }
     SharedSimpleTokenPtr token = CurrentToken;
 
     while(node->getNodeType() == SimpleNode::Variable)
     {
-        VariableNode *varNode = dynamic_cast<VariableNode*>(node);
+        QScopedPointer<VariableNode> varNode(node.take());
 
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::Assign:
             eat(SimpleToken::Assign);
             token = CurrentToken;
-            node = AssignmentExpression();
-            if(node == NULL)
+            node.reset(AssignmentExpression());
+            if(node.isNull())
             {
                 SyntacticError(CurrentToken, QString("Assignable Value expected!"));
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(SimpleNode::canConvertTypes(varNode->getReturnType(), node->getReturnType()))
             {
-                node = new AssignmentNode(varNode, node);
+                node.reset(SimpleNodeScopedPtr(new AssignmentNode(varNode, node));
             }
             else
             {
@@ -364,7 +369,7 @@ SimpleNode *SimpleParser::AssignmentExpression()
                             .arg(SimpleNode::getHumanReadableTypeNameToValueType(varNode->getReturnType()))
                             .arg(SimpleNode::getHumanReadableTypeNameToValueType(node->getReturnType()))
                             );
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         default:
@@ -375,15 +380,16 @@ SimpleNode *SimpleParser::AssignmentExpression()
     return node;
 }
 
-SimpleNode *SimpleParser::ConditionalExpression()
+SimpleNodeScopedPtr SimpleParser::ConditionalExpression()
 {
-    SimpleNode *node = LogicalORExpression();
-    if(node == NULL)
+    SimpleNodeScopedPtr node;
+    node.reset(LogicalORExpression());
+    if(node.isNull())
     {
-        return NULL;
+        return SimpleNodeScopedPtr();
     }
-    SimpleNode *nodeTwo;
-    SimpleNode *nodeThree;
+    SimpleNodeScopedPtr nodeTwo;
+    SimpleNodeScopedPtr nodeThree;
     SharedSimpleTokenPtr token = CurrentToken;
 
 
@@ -391,31 +397,25 @@ SimpleNode *SimpleParser::ConditionalExpression()
     {
         token = CurrentToken;
         eat(SimpleToken::QMark);
-        nodeTwo = ConditionalExpression();
-        if(nodeTwo == NULL)
+        nodeTwo.reset(ConditionalExpression());
+        if(nodeTwo.isNull())
         {
             SyntacticError(token);
-            delete node;
-            return NULL;
+            return SimpleNodeScopedPtr();
         }
         token = CurrentToken;
         eat(SimpleToken::Colon);
-        nodeThree = ConditionalExpression();
-        if(nodeThree == NULL)
+        nodeThree.reset(ConditionalExpression());
+        if(nodeThree.isNull())
         {
             SyntacticError(token);
-            delete node;
-            delete nodeTwo;
-            return NULL;
+            return SimpleNodeScopedPtr();
         }
-        node = new ConditionalNode(node, nodeTwo, nodeThree);
+        node.reset(SimpleNodeScopedPtr(new ConditionalNode(node, nodeTwo, nodeThree)));
         if(node->getReturnType() == ValueNode::ErrorType)
         {
             TypeError(token, QString("Expected: bool ? Integer|Double|Bool|String : Integer|Double|Bool|String ..."));
-            delete node;
-            delete nodeTwo;
-            delete nodeThree;
-            return NULL;
+            return SimpleNodeScopedPtr();
         }
     }
 
@@ -423,14 +423,15 @@ SimpleNode *SimpleParser::ConditionalExpression()
     return node;
 }
 
-SimpleNode *SimpleParser::LogicalORExpression()
+SimpleNodeScopedPtr SimpleParser::LogicalORExpression()
 {
-    SimpleNode *node = LogicalXORExpression();
-    if(node == NULL)
+    SimpleNodeScopedPtr node;
+    node.reset(LogicalXORExpression());
+    if(node.isNull())
     {
-        return NULL;
+        return SimpleNodeScopedPtr();
     }
-    SimpleNode *nodeTwo;
+    SimpleNodeScopedPtr nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -440,24 +441,21 @@ SimpleNode *SimpleParser::LogicalORExpression()
         {
         case SimpleToken::LogicalOR:
             eat(SimpleToken::LogicalOR);
-            nodeTwo = LogicalXORExpression();
-            if(nodeTwo == NULL)
+            nodeTwo.reset(LogicalXORExpression());
+            if(nodeTwo.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new LogicalORNode(node, nodeTwo);
-            if(node == NULL)
+            node.reset(SimpleNodeScopedPtr(new LogicalORNode(node, nodeTwo));
+            if(node.isNull())
             {
-                delete nodeTwo;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer || (Integer|Double|Bool) | Double || (Integer|Double|Bool) | Bool || (Integer|Double|Bool) ..."));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         default:
@@ -469,14 +467,15 @@ SimpleNode *SimpleParser::LogicalORExpression()
     return node;
 }
 
-SimpleNode *SimpleParser::LogicalXORExpression()
+SimpleNodeScopedPtr SimpleParser::LogicalXORExpression()
 {
-    SimpleNode *node = LogicalANDExpression();
-    if(node == NULL)
+    SimpleNodeScopedPtr node;
+    node.reset(LogicalANDExpression());
+    if(node.isNull())
     {
-        return NULL;
+        return SimpleNodeScopedPtr();
     }
-    SimpleNode *nodeTwo;
+    SimpleNodeScopedPtr nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -486,24 +485,21 @@ SimpleNode *SimpleParser::LogicalXORExpression()
         {
         case SimpleToken::LogicalXOR:
             eat(SimpleToken::LogicalXOR);
-            nodeTwo = LogicalANDExpression();
-            if(nodeTwo == NULL)
+            nodeTwo.reset(LogicalANDExpression());
+            if(nodeTwo.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new LogicalXORNode(node, nodeTwo);
-            if(node == NULL)
+            node.reset(SimpleNodeScopedPtr(new LogicalXORNode(node, nodeTwo));
+            if(node.isNull())
             {
-                delete nodeTwo;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer ^^ (Integer|Double|Bool) | Double ^^ (Integer|Double|Bool) | Bool ^^ (Integer|Double|Bool)..."));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         default:
@@ -515,14 +511,15 @@ SimpleNode *SimpleParser::LogicalXORExpression()
     return node;
 }
 
-SimpleNode *SimpleParser::LogicalANDExpression()
+SimpleNodeScopedPtr SimpleParser::LogicalANDExpression()
 {
-    SimpleNode *node = BitwiseORExpression();
-    if(node == NULL)
+    SimpleNodeScopedPtr node;
+    node.reset(BitwiseORExpression());
+    if(node.isNull())
     {
-        return NULL;
+        return SimpleNodeScopedPtr();
     }
-    SimpleNode *nodeTwo;
+    SimpleNodeScopedPtr nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -532,24 +529,21 @@ SimpleNode *SimpleParser::LogicalANDExpression()
         {
         case SimpleToken::LogicalAND:
             eat(SimpleToken::LogicalAND);
-            nodeTwo = BitwiseORExpression();
-            if(nodeTwo == NULL)
+            nodeTwo.reset(BitwiseORExpression());
+            if(nodeTwo.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new LogicalANDNode(node, nodeTwo);
-            if(node == NULL)
+            node.reset(SimpleNodeScopedPtr(new LogicalANDNode(node, nodeTwo));
+            if(node.isNull())
             {
-                delete nodeTwo;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer && (Integer|Double|Bool) | Double && (Integer|Double|Bool) | Bool && (Integer|Double|Bool) ..."));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         default:
@@ -561,14 +555,15 @@ SimpleNode *SimpleParser::LogicalANDExpression()
     return node;
 }
 
-SimpleNode *SimpleParser::BitwiseORExpression()
+SimpleNodeScopedPtr SimpleParser::BitwiseORExpression()
 {
-    SimpleNode *node = BitwiseXORExpression();
-    if(node == NULL)
+    SimpleNodeScopedPtr node;
+    node.reset(BitwiseXORExpression());
+    if(node.isNull())
     {
-        return NULL;
+        return SimpleNodeScopedPtr();
     }
-    SimpleNode *nodeTwo;
+    SimpleNodeScopedPtr nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -578,24 +573,21 @@ SimpleNode *SimpleParser::BitwiseORExpression()
         {
         case SimpleToken::BitwiseOR:
             eat(SimpleToken::BitwiseOR);
-            nodeTwo = BitwiseXORExpression();
-            if(nodeTwo == NULL)
+            nodeTwo.reset(BitwiseXORExpression());
+            if(nodeTwo.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new ORNode(node, nodeTwo);
-            if(node == NULL)
+            node.reset(SimpleNodeScopedPtr(new ORNode(node, nodeTwo));
+            if(node.isNull())
             {
-                delete nodeTwo;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer | Integer"));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         default:
@@ -607,14 +599,15 @@ SimpleNode *SimpleParser::BitwiseORExpression()
     return node;
 }
 
-SimpleNode *SimpleParser::BitwiseXORExpression()
+SimpleNodeScopedPtr SimpleParser::BitwiseXORExpression()
 {
-    SimpleNode *node = BitwiseANDExpression();
-    if(node == NULL)
+    SimpleNodeScopedPtr node;
+    node.reset(BitwiseANDExpression());
+    if(node.isNull())
     {
-        return NULL;
+        return SimpleNodeScopedPtr();
     }
-    SimpleNode *nodeTwo;
+    SimpleNodeScopedPtr nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -624,24 +617,21 @@ SimpleNode *SimpleParser::BitwiseXORExpression()
         {
         case SimpleToken::BitwiseXOR:
             eat(SimpleToken::BitwiseXOR);
-            nodeTwo = BitwiseANDExpression();
-            if(nodeTwo == NULL)
+            nodeTwo.reset(BitwiseANDExpression());
+            if(nodeTwo.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new XORNode(node, nodeTwo);
-            if(node == NULL)
+            node.reset(SimpleNodeScopedPtr(new XORNode(node, nodeTwo));
+            if(node.isNull())
             {
-                delete nodeTwo;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer ^ Integer"));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         default:
@@ -653,14 +643,15 @@ SimpleNode *SimpleParser::BitwiseXORExpression()
     return node;
 }
 
-SimpleNode *SimpleParser::BitwiseANDExpression()
+SimpleNodeScopedPtr SimpleParser::BitwiseANDExpression()
 {
-    SimpleNode *node = EqualityExpression();
-    if(node == NULL)
+    SimpleNodeScopedPtr node;
+    node.reset(EqualityExpression());
+    if(node.isNull())
     {
-        return NULL;
+        return SimpleNodeScopedPtr();
     }
-    SimpleNode *nodeTwo;
+    SimpleNodeScopedPtr nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -670,24 +661,21 @@ SimpleNode *SimpleParser::BitwiseANDExpression()
         {
         case SimpleToken::BitwiseAND:
             eat(SimpleToken::BitwiseAND);
-            nodeTwo = EqualityExpression();
-            if(nodeTwo == NULL)
+            nodeTwo.reset(EqualityExpression());
+            if(nodeTwo.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new ANDNode(node, nodeTwo);
-            if(node == NULL)
+            node.reset(SimpleNodeScopedPtr(new ANDNode(node, nodeTwo));
+            if(node.isNull())
             {
-                delete nodeTwo;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer & Integer"));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         default:
@@ -699,14 +687,15 @@ SimpleNode *SimpleParser::BitwiseANDExpression()
     return node;
 }
 
-SimpleNode *SimpleParser::EqualityExpression()
+SimpleNodeScopedPtr SimpleParser::EqualityExpression()
 {
-    SimpleNode *node = RelationalExpression();
-    if(node == NULL)
+    SimpleNodeScopedPtr node;
+    node.reset(RelationalExpression());
+    if(node.isNull())
     {
-        return NULL;
+        return SimpleNodeScopedPtr();
     }
-    SimpleNode *nodeTwo;
+    SimpleNodeScopedPtr nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -716,46 +705,40 @@ SimpleNode *SimpleParser::EqualityExpression()
         {
         case SimpleToken::Equal:
             eat(SimpleToken::Equal);
-            nodeTwo = RelationalExpression();
-            if(nodeTwo == NULL)
+            nodeTwo.reset(RelationalExpression());
+            if(nodeTwo.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new EqualNode(node, nodeTwo);
-            if(node == NULL)
+            node.reset(SimpleNodeScopedPtr(new EqualNode(node, nodeTwo));
+            if(node.isNull())
             {
-                delete nodeTwo;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer == (Integer|Double)| Double == (Double|Integer) | Bool == (Integer|Double|Bool) | String == string"));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         case SimpleToken::Unequal:
             eat(SimpleToken::Unequal);
-            nodeTwo = RelationalExpression();
-            if(nodeTwo == NULL)
+            nodeTwo.reset(RelationalExpression());
+            if(nodeTwo.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new UnequalNode(node, nodeTwo);
-            if(node == NULL)
+            node.reset(SimpleNodeScopedPtr(new UnequalNode(node, nodeTwo));
+            if(node.isNull())
             {
-                delete nodeTwo;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer != (Integer|Double|Bool)| Double != (Double|Integer|Bool) | Bool != (Integer|Double|Bool) | String != string"));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         default:
@@ -767,14 +750,14 @@ SimpleNode *SimpleParser::EqualityExpression()
     return node;
 }
 
-SimpleNode *SimpleParser::RelationalExpression()
+SimpleNodeScopedPtr SimpleParser::RelationalExpression()
 {
-    SimpleNode *node = ShiftExpression();
-    if(node == NULL)
+    SimpleNodeScopedPtr node = ShiftExpression();
+    if(node.isNull())
     {
-        return NULL;
+        return SimpleNodeScopedPtr();
     }
-    SimpleNode *nodeTwo;
+    SimpleNodeScopedPtr nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -784,90 +767,78 @@ SimpleNode *SimpleParser::RelationalExpression()
         {
         case SimpleToken::Greater:
             eat(SimpleToken::Greater);
-            nodeTwo = ShiftExpression();
-            if(nodeTwo == NULL)
+            nodeTwo.reset(ShiftExpression());
+            if(nodeTwo.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new GreaterNode(node, nodeTwo);
-            if(node == NULL)
+            node.reset(SimpleNodeScopedPtr(new GreaterNode(node, nodeTwo));
+            if(node.isNull())
             {
-                delete nodeTwo;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer > (Integer|Double)| Double > (Double|Integer)"));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         case SimpleToken::Lower:
             eat(SimpleToken::Lower);
-            nodeTwo = ShiftExpression();
-            if(nodeTwo == NULL)
+            nodeTwo.reset(ShiftExpression());
+            if(nodeTwo.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new LowerNode(node, nodeTwo);
-            if(node == NULL)
+            node.reset(SimpleNodeScopedPtr(new LowerNode(node, nodeTwo));
+            if(node.isNull())
             {
-                delete nodeTwo;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer < (Integer|Double)| Double < (Double|Integer)"));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         case SimpleToken::EqualOrGreater:
             eat(SimpleToken::EqualOrGreater);
-            nodeTwo = ShiftExpression();
-            if(nodeTwo == NULL)
+            nodeTwo.reset(ShiftExpression());
+            if(nodeTwo.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new EqualOrGreaterNode(node, nodeTwo);
-            if(node == NULL)
+            node.reset(SimpleNodeScopedPtr(new EqualOrGreaterNode(node, nodeTwo));
+            if(node.isNull())
             {
-                delete nodeTwo;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer >= (Integer|Double)| Double >= (Double|Integer)"));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         case SimpleToken::EqualOrLower:
             eat(SimpleToken::EqualOrLower);
-            nodeTwo = ShiftExpression();
-            if(nodeTwo == NULL)
+            nodeTwo.reset(ShiftExpression());
+            if(nodeTwo.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new EqualOrLowerNode(node, nodeTwo);
-            if(node == NULL)
+            node.reset(SimpleNodeScopedPtr(new EqualOrLowerNode(node, nodeTwo));
+            if(node.isNull())
             {
-                delete nodeTwo;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer <= (Integer|Double)| Double <= (Double|Integer)"));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         default:
@@ -879,14 +850,15 @@ SimpleNode *SimpleParser::RelationalExpression()
     return node;
 }
 
-SimpleNode *SimpleParser::ShiftExpression()
+SimpleNodeScopedPtr SimpleParser::ShiftExpression()
 {
-    SimpleNode *node = AdditiveExpression();
-    if(node == NULL)
+    SimpleNodeScopedPtr node;
+    node.reset(AdditiveExpression());
+    if(node.isNull())
     {
-        return NULL;
+        return SimpleNodeScopedPtr();
     }
-    SimpleNode *nodeTwo;
+    SimpleNodeScopedPtr nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -897,42 +869,39 @@ SimpleNode *SimpleParser::ShiftExpression()
         case SimpleToken::LeftShift:
             eat(SimpleToken::LeftShift);
             nodeTwo = AdditiveExpression();
-            if(nodeTwo == NULL)
+            if(node.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             node = new LeftShiftNode(node, nodeTwo);
-            if(node == NULL)
-                return node;
+            if(node.isNull())
+            {
+                return SimpleNodeScopedPtr();
+            }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer"));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         case SimpleToken::RightShift:
             eat(SimpleToken::RightShift);
-            nodeTwo = AdditiveExpression();
-            if(nodeTwo == NULL)
+            nodeTwo.reset(AdditiveExpression());
+            if(nodeTwo.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new RightShiftNode(node, nodeTwo);
-            if(node == NULL)
+            node.reset(SimpleNodeScopedPtr(new RightShiftNode(node, nodeTwo));
+            if(node.isNull())
             {
-                return NULL;
-                delete nodeTwo;
+                return SimpleNodeScopedPtr();
             }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer"));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         default:
@@ -944,14 +913,14 @@ SimpleNode *SimpleParser::ShiftExpression()
     return node;
 }
 
-SimpleNode *SimpleParser::AdditiveExpression()
+SimpleNodeScopedPtr SimpleParser::AdditiveExpression()
 {
-    SimpleNode *node = MultiplicativeExpression();
-    if(node == NULL)
+    SimpleNodeScopedPtr node = MultiplicativeExpression();
+    if(node.isNull())
     {
-        return NULL;
+        return SimpleNodeScopedPtr();
     }
-    SimpleNode *nodeTwo;
+    SimpleNodeScopedPtr nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -961,18 +930,16 @@ SimpleNode *SimpleParser::AdditiveExpression()
         {
         case SimpleToken::Plus:
             eat(SimpleToken::Plus);
-            nodeTwo = MultiplicativeExpression();
-            if(nodeTwo == NULL)
+            nodeTwo.reset(MultiplicativeExpression());
+            if(nodeTwo.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new AdditionNode(node, nodeTwo);
-            if(node == NULL)
+            node.reset(SimpleNodeScopedPtr(new AdditionNode(node, nodeTwo));
+            if(node.isNull())
             {
-                delete nodeTwo;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
@@ -981,30 +948,26 @@ SimpleNode *SimpleParser::AdditiveExpression()
                             QString("Expected: Integer + (Integer|Double) | Double + (Double|Integer) | String + (Integer|Double|Bool|String\nWas: %1)")
                             .arg(SimpleNode::getHumanReadableTypeNameToValueType(nodeTwo->getReturnType()))
                           );
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         case SimpleToken::Minus:
             eat(SimpleToken::Minus);
-            nodeTwo = MultiplicativeExpression();
-            if(nodeTwo == NULL)
+            nodeTwo.reset(MultiplicativeExpression());
+            if(nodeTwo.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new SubtractionNode(node, nodeTwo);
-            if(node == NULL)
+            node.reset(SimpleNodeScopedPtr(new SubtractionNode(node, nodeTwo));
+            if(node.isNull())
             {
-                delete nodeTwo;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer - (Integer|Double) | Double - (Double|Integer)"));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         default:
@@ -1016,14 +979,15 @@ SimpleNode *SimpleParser::AdditiveExpression()
     return node;
 }
 
-SimpleNode *SimpleParser::MultiplicativeExpression()
+SimpleNodeScopedPtr SimpleParser::MultiplicativeExpression()
 {
-    SimpleNode *node = UnaryExpression();
-    if(node == NULL)
+    SimpleNodeScopedPtr node;
+    node.reset(UnaryExpression());
+    if(node.isNull())
     {
-        return NULL;
+        return SimpleNodeScopedPtr();
     }
-    SimpleNode *nodeTwo;
+    SimpleNodeScopedPtr nodeTwo;
     bool ContinueLoop = true;
 
     do
@@ -1033,68 +997,59 @@ SimpleNode *SimpleParser::MultiplicativeExpression()
         {
         case SimpleToken::Multiplication:
             eat(SimpleToken::Multiplication);
-            nodeTwo = UnaryExpression();
-            if(nodeTwo == NULL)
+            nodeTwo.reset(UnaryExpression());
+            if(nodeTwo.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new MultiplicationNode(node, nodeTwo);
-            if(node == NULL)
+            node.reset(SimpleNodeScopedPtr(new MultiplicationNode(node, nodeTwo));
+            if(node.isNull())
             {
-                delete nodeTwo;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer * (Integer|Double) | Double * (Double|Integer) | String * Integer"));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         case SimpleToken::Division:
             eat(SimpleToken::Division);
-            nodeTwo = UnaryExpression();
-            if(nodeTwo == NULL)
+            nodeTwo.reset(UnaryExpression());
+            if(nodeTwo.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new DivisionNode(node, nodeTwo);
-            if(node == NULL)
+            node.reset(SimpleNodeScopedPtr(new DivisionNode(node, nodeTwo));
+            if(node.isNull())
             {
-                delete nodeTwo;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer / (Integer|Double) | Double / (Double|Integer)"));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         case SimpleToken::Modulo:
             eat(SimpleToken::Modulo);
-            nodeTwo = UnaryExpression();
-            if(nodeTwo == NULL)
+            nodeTwo.reset(UnaryExpression());
+            if(nodeTwo.isNull())
             {
                 SyntacticError(CurrentToken);
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new ModuloNode(node, nodeTwo);
-            if(node == NULL)
+            node.reset(SimpleNodeScopedPtr(new ModuloNode(node, nodeTwo));
+            if(node.isNull())
             {
-                delete nodeTwo;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer % Integer"));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         default:
@@ -1106,9 +1061,9 @@ SimpleNode *SimpleParser::MultiplicativeExpression()
     return node;
 }
 
-SimpleNode *SimpleParser::UnaryExpression()
+SimpleNodeScopedPtr SimpleParser::UnaryExpression()
 {
-    SimpleNode *node = NULL;
+    SimpleNodeScopedPtr node;
     SharedSimpleTokenPtr token = CurrentToken;
 
     switch(CurrentToken->getTokenType())
@@ -1117,122 +1072,122 @@ SimpleNode *SimpleParser::UnaryExpression()
         if(lexer->peekAtNextToken()->getTokenType() == SimpleToken::VariableID )
         {
             eat(SimpleToken::Increment);
-            node = Symbol();
-            if(node == NULL)
+            node.reset(Symbol());
+            if(node.isNull())
             {
                 SyntacticError(CurrentToken);
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getNodeType() != SimpleNode::Variable)
             {
                 SyntacticError(CurrentToken, QString("Expected Variable!"));
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new IncrementNode(node);
+            node.reset(SimpleNodeScopedPtr(new IncrementNode(node));
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer Variable"));
-                delete node;
-                return NULL;
+
+                return SimpleNodeScopedPtr();
             }
         }
         else
         {
             SyntacticError(CurrentToken, QString("PreIncrement -> Expected Variable!"));
-            return NULL;
+            return SimpleNodeScopedPtr();
         }
         break;
     case SimpleToken::Decrement:
         if(lexer->peekAtNextToken()->getTokenType() == SimpleToken::VariableID )
         {
             eat(SimpleToken::Decrement);
-            node = Symbol();
-            if(node == NULL)
+            node.reset(Symbol());
+            if(node.isNull())
             {
                 SyntacticError(CurrentToken);
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             if(node->getNodeType() != SimpleNode::Variable)
             {
                 SyntacticError(CurrentToken, QString("Expected Variable!"));
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
-            node = new DecrementNode(node);
+            node.reset(SimpleNodeScopedPtr(new DecrementNode(node));
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer Variable"));
-                delete node;
-                return NULL;
+
+                return SimpleNodeScopedPtr();
             }
         }
         else
         {
             SyntacticError(CurrentToken, QString("PreDecrement -> Expected Variable!"));
-            return NULL;
+            return SimpleNodeScopedPtr();
         }
         break;
     case SimpleToken::Plus:
         eat(SimpleToken::Plus);
-        node = UnaryExpression();
-        if(node == NULL)
+        node.reset(UnaryExpression());
+        if(node.isNull())
         {
             SyntacticError(CurrentToken);
-            return NULL;
+            return SimpleNodeScopedPtr();
         }
-        node = new PositiveNode(node);
+        node.reset(SimpleNodeScopedPtr(new PositiveNode(node);
         if(node->getReturnType() == ValueNode::ErrorType)
         {
             TypeError(token, QString("Expected: Integer | Double"));
-            delete node;
-            return NULL;
+
+            return SimpleNodeScopedPtr();
         }
         break;
     case SimpleToken::Minus:
         eat(SimpleToken::Minus);
-        node = UnaryExpression();
-        if(node == NULL)
+        node.reset(UnaryExpression());
+        if(node.isNull())
         {
             SyntacticError(CurrentToken);
-            return NULL;
+            return SimpleNodeScopedPtr();
         }
-        node = new NegativeNode(node);
+        node.reset(SimpleNodeScopedPtr(new NegativeNode(node));
         if(node->getReturnType() == ValueNode::ErrorType)
         {
             TypeError(token, QString("Expected: Integer | Double"));
-            delete node;
-            return NULL;
+
+            return SimpleNodeScopedPtr();
         }
         break;
     case SimpleToken::LogicalNegation:
         eat(SimpleToken::LogicalNegation);
-        node = UnaryExpression();
-        if(node == NULL)
+        node.reset(UnaryExpression());
+        if(node.isNull())
         {
             SyntacticError(CurrentToken);
-            return NULL;
+            return SimpleNodeScopedPtr();
         }
-        node = new LogicalNegationNode(node);
+        node.reset(SimpleNodeScopedPtr(new LogicalNegationNode(node));
         if(node->getReturnType() == ValueNode::ErrorType)
         {
             TypeError(token, QString("Expected: Integer | Double | Bool"));
-            delete node;
-            return NULL;
+
+            return SimpleNodeScopedPtr();
         }
         break;
     case SimpleToken::OnesComplement:
         eat(SimpleToken::OnesComplement);
-        node = UnaryExpression();
-        if(node == NULL)
+        node.reset(UnaryExpression());
+        if(node.isNull())
         {
             SyntacticError(CurrentToken);
-            return NULL;
+            return SimpleNodeScopedPtr();
         }
-        node = new OnesComplementNode(node);
+        node.reset(SimpleNodeScopedPtr(new OnesComplementNode(node));
         if(node->getReturnType() == ValueNode::ErrorType)
         {
             TypeError(token, QString("Expected: Integer"));
-            delete node;
-            return NULL;
+
+            return SimpleNodeScopedPtr();
         }
         break;
     case SimpleToken::LParan:
@@ -1243,29 +1198,28 @@ SimpleNode *SimpleParser::UnaryExpression()
             token = CurrentToken;
             eat(SimpleToken::TypeName);
             eat(SimpleToken::RParan);
-            node = UnaryExpression();
-            if(node == NULL)
+            node.reset(UnaryExpression());
+            if(node.isNull())
             {
                 SyntacticError(CurrentToken);
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
 
             SimpleNode::ValueTypes typeToCastTo = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
-            node = new TypeCastNode(node, typeToCastTo);
+            node.reset(SimpleNodeScopedPtr(new TypeCastNode(node, typeToCastTo));
             if(node->getReturnType() == ValueNode::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer and cast to (Integer|Double|Bool|String) | Double and cast to (Integer|Double|Bool|String) | Bool and cast to (Integer|Double|Bool|String) | String and cast to String"));
-                delete node;
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
             break;
         }
     }
     default:
-        node = PostFixExpression();
-        if(node == NULL)
+        node.reset(PostFixExpression());
+        if(node.isNull())
         {
-            return NULL;
+            return SimpleNodeScopedPtr();
         }
     }
 
@@ -1273,12 +1227,13 @@ SimpleNode *SimpleParser::UnaryExpression()
     return node;
 }
 
-SimpleNode *SimpleParser::PostFixExpression()
+SimpleNodeScopedPtr SimpleParser::PostFixExpression()
 {
-    SimpleNode *node = PrimaryExpression();
-    if(node == NULL)
+    SimpleNodeScopedPtr node;
+    node.reset(PrimaryExpression());
+    if(node.isNull())
     {
-        return NULL;
+        return SimpleNodeScopedPtr();
     }
     SharedSimpleTokenPtr token = CurrentToken;
     if(node->getNodeType() == SimpleNode::Variable)
@@ -1292,23 +1247,21 @@ SimpleNode *SimpleParser::PostFixExpression()
             case SimpleToken::Increment:
                 token = CurrentToken;
                 eat(SimpleToken::Increment);
-                node = new IncrementNode(node);
+                node.reset(SimpleNodeScopedPtr(new IncrementNode(node));
                 if(node->getReturnType() == ValueNode::ErrorType)
                 {
                     TypeError(token, QString("Expected: Variable | IncrementExpression!"));
-                    delete node;
-                    return NULL;
+                    return SimpleNodeScopedPtr();
                 }
                 break;
             case SimpleToken::Decrement:
                 token = CurrentToken;
                 eat(SimpleToken::Decrement);
-                node = new DecrementNode(node);
+                node.reset(SimpleNodeScopedPtr(new DecrementNode(node));
                 if(node->getReturnType() == ValueNode::ErrorType)
                 {
                     TypeError(token, QString("Expected: Variable | DecrementExpression!"));
-                    delete node;
-                    return NULL;
+                    return SimpleNodeScopedPtr();
                 }
                 break;
             default:
@@ -1318,14 +1271,13 @@ SimpleNode *SimpleParser::PostFixExpression()
 
     }
 
-
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
     return node;
 }
 
-SimpleNode *SimpleParser::PrimaryExpression()
+SimpleNodeScopedPtr SimpleParser::PrimaryExpression()
 {
-    SimpleNode *node;
+    SimpleNodeScopedPtr node;
     SharedSimpleTokenPtr token = CurrentToken;
 
     switch(CurrentToken->getTokenType())
@@ -1335,28 +1287,28 @@ SimpleNode *SimpleParser::PrimaryExpression()
         switch(qSharedPointerDynamicCast<ValueToken>(token)->getValueType())
         {
         case SimpleNode::Integer:
-            node = new ValueNode(qSharedPointerDynamicCast<ValueToken>(token)->getInt());
+            node.reset(SimpleNodeScopedPtr(new ValueNode(qSharedPointerDynamicCast<ValueToken>(token)->getInt()));
             break;
         case SimpleNode::Double:
-            node = new ValueNode(qSharedPointerDynamicCast<ValueToken>(token)->getDouble());
+            node.reset(SimpleNodeScopedPtr(new ValueNode(qSharedPointerDynamicCast<ValueToken>(token)->getDouble()));
             break;
         case SimpleNode::Bool:
-            node = new ValueNode(qSharedPointerDynamicCast<ValueToken>(token)->getBool());
+            node.reset(SimpleNodeScopedPtr(new ValueNode(qSharedPointerDynamicCast<ValueToken>(token)->getBool()));
             break;
         case SimpleNode::String:
-            node = new ValueNode(qSharedPointerDynamicCast<ValueToken>(token)->getString());
+            node.reset(SimpleNodeScopedPtr(new ValueNode(qSharedPointerDynamicCast<ValueToken>(token)->getString()));
             break;
         default:
             qDebug() << "ERROR IN PRIMARY EXPRESSION: ValueType Unknown";
-            node = new ValueNode();
+//            node = new ValueNode();
         }
         break;
     case SimpleToken::LParan:
         eat(SimpleToken::LParan);
-        node = Expression();
-        if(node == NULL)
+        node.reset(Expression());
+        if(node.isNull())
         {
-            return NULL;
+            return SimpleNodeScopedPtr();
         }
         eat(SimpleToken::RParan);
         break;
@@ -1364,13 +1316,13 @@ SimpleNode *SimpleParser::PrimaryExpression()
         qDebug() << __PRETTY_FUNCTION__ << "EOF reached too soon!!!";
         CurrentToken = SharedSimpleTokenPtr(new EOFToken(CurrentToken->getTokenPos(),0));
         EOFUnexpectedError(CurrentToken);
-        return NULL;
+        return SimpleNodeScopedPtr();
         break;
     default:
-        node = Symbol();
-        if(node == NULL)
+        node.reset(Symbol());
+        if(node.isNull())
         {
-            return NULL;
+            return SimpleNodeScopedPtr();
         }
     }
 
@@ -1378,54 +1330,54 @@ SimpleNode *SimpleParser::PrimaryExpression()
     return node;
 }
 
-SimpleNode *SimpleParser::Symbol()
+SimpleNodeScopedPtr SimpleParser::Symbol()
 {
-    SimpleNode *node = NULL;
+    SimpleNodeScopedPtr node;
     SharedSimpleTokenPtr token = CurrentToken;
 
     switch(CurrentToken->getTokenType())
     {
     case SimpleToken::Data:
         eat(SimpleToken::Data);
-        node = new DataNode(qSharedPointerDynamicCast<DataToken>(token)->getDataIndex(), &SymblTbl);
+        node.reset(SimpleNodeScopedPtr(new DataNode(qSharedPointerDynamicCast<DataToken>(token)->getDataIndex(), &SymblTbl));
         break;
     case SimpleToken::VariableID:
         eat(SimpleToken::VariableID);
     {
         QString varID = qSharedPointerDynamicCast<VariableIDToken>(token)->getID();
-        if(CurSymblTbl->lookup(varID) == NULL)
+        if(CurSymblTbl->lookup(varID).isNull())
         {
             SyntacticError(token, QString("Variable was not declared!"));
-            return NULL;
+            return SimpleNodeScopedPtr();
         }
         if(CurrentToken->getTokenType() == SimpleToken::LParan)
         {
-            QVector<SimpleNode *>FuncParams;
-            SimpleNode *curParam = NULL;
+            QVector<SimpleNodeScopedPtr >FuncParams;
+            SimpleNodeScopedPtr curParam;
             eat(SimpleToken::LParan);
             do
             {
-                curParam = Expression();
-                if(curParam != NULL)
+                curParam.reset(Expression());
+                if(!curParam.isNull())
                 {
-                    FuncParams.append(curParam);
+                    FuncParams.append(std::move(curParam));
                 }
-            }while(curParam != NULL);
+            }while(!curParam.isNull());
             eat(SimpleToken::RParan);
-            node = new FunctionCallNode(varID, CurSymblTbl, FuncParams);
+            node.reset(SimpleNodeScopedPtr(new FunctionCallNode(varID, CurSymblTbl, FuncParams));
             if(node->getReturnType() == SimpleNode::ErrorType)
             {
                 SyntacticError(token, QString("Error in FunctionInvocation for Function: %1!").arg(varID));
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
         }
         else
         {
-            node = new VariableNode(varID, CurSymblTbl);
+            node.reset(SimpleNodeScopedPtr(new VariableNode(varID, CurSymblTbl));
             if(node->getReturnType() == SimpleNode::ErrorType)
             {
                 SyntacticError(token, QString("Variable \"%1\" not found!!!").arg(varID));
-                return NULL;
+                return SimpleNodeScopedPtr();
             }
         }
     }
@@ -1435,7 +1387,7 @@ SimpleNode *SimpleParser::Symbol()
         //        node = new DataNode(qSharedPointerDynamicCast<DataToken>(token)->getDataIndex(), &SymblTbl);
         //        break;
     default:
-        return NULL;
+        return SimpleNodeScopedPtr();
     }
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
     return node;

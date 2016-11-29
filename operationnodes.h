@@ -2,9 +2,6 @@
 #define OPERATIONNODES_H
 
 #include "simpleast.h"
-#include "unaryoperationnodes.h"
-#include "binaryoperationnodes.h"
-#include "ternaryoperationnodes.h"
 
 class OperationNode : public SimpleNode
 {
@@ -85,12 +82,12 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual const ValueNodeScopedPtr DoOperation() = 0;
+    virtual ValueNodeScopedPtr DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
 
-    const ValueNodeScopedPtr visit();
+    ValueNodeScopedPtr visit();
 protected:
     SimpleNode::ValueTypes returnType;
 };
@@ -98,7 +95,7 @@ protected:
 class UnaryOperationNode : public OperationNode
 {
 public:
-    UnaryOperationNode(const SimpleNodeScopedPtr rightChild);
+    UnaryOperationNode(SimpleNodeScopedPtr rightChild);
     ~UnaryOperationNode();
     ArityTypes getArityType() const;
     virtual OperationTypes getOpType() const = 0;
@@ -106,7 +103,7 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual const ValueNodeScopedPtr DoOperation() = 0;
+    virtual ValueNodeScopedPtr DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -120,7 +117,7 @@ protected:
 class BinaryOperationNode : public OperationNode
 {
 public:
-    BinaryOperationNode(const SimpleNodeScopedPtr leftChild, const SimpleNodeScopedPtr rightChild);
+    BinaryOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
     ~BinaryOperationNode();
     ArityTypes getArityType() const;
     virtual OperationTypes getOpType() const = 0;
@@ -128,7 +125,7 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual const ValueNodeScopedPtr DoOperation() = 0;
+    virtual ValueNodeScopedPtr DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -143,7 +140,7 @@ protected:
 class TernaryOperationNode : public OperationNode
 {
 public:
-    TernaryOperationNode(const SimpleNodeScopedPtr leftChild, const SimpleNodeScopedPtr midChild ,const SimpleNodeScopedPtr rightChild);
+    TernaryOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr midChild ,SimpleNodeScopedPtr rightChild);
     ~TernaryOperationNode();
     ArityTypes getArityType() const;
     virtual OperationTypes getOpType() const = 0;
@@ -151,7 +148,7 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual const ValueNodeScopedPtr DoOperation() = 0;
+    virtual ValueNodeScopedPtr DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;

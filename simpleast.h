@@ -5,17 +5,13 @@
 #include <QVector>
 #include <QSharedPointer>
 
-#include "simplesymboltable.h"
+//#include "simplesymboltable.h"
 
-class SymbolTable;
 class FunctionSymbol;
 class VariableSymbol;
-class ValueNode;
 class AssignmentNode;
-class SimpleNode;
 
-typedef QSharedPointer<SimpleNode> SimpleNodePtr;
-typedef QScopedPointer<SimpleNode> SimpleNodeScopedPtr;
+class ValueNode;
 typedef QScopedPointer<ValueNode> ValueNodeScopedPtr;
 
 class SimpleNode
@@ -61,6 +57,8 @@ protected:
     ValueTypes valueType;
 };
 
+typedef QSharedPointer<SimpleNode> SimpleNodePtr;
+typedef QScopedPointer<SimpleNode> SimpleNodeScopedPtr;
 
 class ValueNode : public SimpleNode
 {
@@ -92,6 +90,7 @@ public:
 private:
     QVariant value;
 };
+
 
 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 

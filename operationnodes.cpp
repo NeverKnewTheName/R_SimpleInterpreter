@@ -24,8 +24,8 @@ const ValueNodeScopedPtr OperationNode::visit()
     return ValueNodeScopePtr( new ValueNode(*(DoOperation())));
 }
 
-UnaryOperationNode::UnaryOperationNode(const ValueNodeScopedPtr rightChild) :
-    rightChild(rightChild)
+UnaryOperationNode::UnaryOperationNode(SimpleNodeScopedPtr rightChild) :
+    rightChild(std::move(rightChild))
 {
 }
 
@@ -40,9 +40,9 @@ OperationNode::ArityTypes UnaryOperationNode::getArityType() const
 }
 
 
-BinaryOperationNode::BinaryOperationNode(const SimpleNodeScopedPtr leftChild, const SimpleNodeScopedPtr rightChild) :
-    leftChild(leftChild),
-    rightChild(rightChild)
+BinaryOperationNode::BinaryOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild) :
+    leftChild(std::move(leftChild)),
+    rightChild(std::move(rightChild))
 {
 }
 
@@ -56,10 +56,10 @@ OperationNode::ArityTypes BinaryOperationNode::getArityType() const
     return OperationNode::Binary;
 }
 
-TernaryOperationNode::TernaryOperationNode(const SimpleNodeScopedPtr leftChild, const SimpleNodeScopedPtr midChild, const SimpleNodeScopedPtr rightChild) :
-    leftChild(leftChild),
-    midChild(midChild),
-    rightChild(rightChild)
+TernaryOperationNode::TernaryOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr midChild, SimpleNodeScopedPtr rightChild) :
+    leftChild(std::move(leftChild)),
+    midChild(std::move(midChild)),
+    rightChild(std::move(rightChild))
 {
 }
 

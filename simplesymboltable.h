@@ -6,12 +6,15 @@
 #include <QString>
 
 #include <QSharedPointer>
+#include <QScopedPointer>
 
-#include "symbolnodes.h"
+#include "simpleast.h"
 
-//class SimpleNode;
-//class ValueNode;
-//class FunctionNode;
+class SimpleNode;
+class ValueNode;
+class FunctionNode;
+
+class VariableNode;
 
 class SymbolTableEntry
 {
@@ -31,12 +34,14 @@ public:
     virtual SymbolTableEntryType getType() const = 0;
     virtual QString PrintToSymbolToString() const = 0;
     virtual QString PrintSymbolType() const = 0;
+    QString getIdentifier() const;
 protected:
     QString identifier;
     bool isAssigned;
 };
 
 typedef QSharedPointer<SymbolTableEntry> SymbolTableEntryPtr;
+typedef QScopedPointer<SymbolTableEntry> SymbolTableEntryScopedPtr;
 
 class SymbolTable : public SymbolTableEntry
 {
@@ -54,7 +59,6 @@ public:
 
     SymbolTableEntryPtr getParentSymbolTable() const;
 
-    QString getIdentifier() const;
 
     // SymbolTableEntry interface
 public:
@@ -69,6 +73,7 @@ private:
 };
 
 typedef QSharedPointer<SymbolTable> SymbolTablePtr;
+typedef QScopedPointer<SymbolTable> SymbolTableScopedPtr;
 
 class Symbol : public SymbolTableEntry
 {
@@ -77,7 +82,7 @@ public:
     ~Symbol();
 
     virtual SimpleNode::ValueTypes getReturnType() const;
-    virtual const ValueNode &visit() = 0;
+//    virtual const ValueNode &visit() = 0;
 
     // SymbolTableEntry interface
 public:
@@ -87,6 +92,7 @@ public:
 };
 
 typedef QSharedPointer<Symbol> SymbolPtr;
+typedef QScopedPointer<Symbol> SymbolScopedPtr;
 
 class VariableSymbol : public Symbol
 {
@@ -97,7 +103,7 @@ public:
             );
     ~VariableSymbol();
 
-    const ValueNode &getAssignedValue() const;
+    ValueNodeScopedPtr getAssignedValue() const;
 
     bool assignValue(const SimpleNode &NodeToAssign);
 
@@ -106,8 +112,8 @@ public:
     // SymbolTableEntry interface
 public:
     SymbolTableEntryType getType() const;
-    virtual QString PrintToSymbolToString() const;
-    virtual QString PrintSymbolType() const;
+    QString PrintToSymbolToString() const;
+    QString PrintSymbolType() const;
 
     // Symbol interface
 public:
@@ -119,44 +125,48 @@ private:
 };
 
 typedef QSharedPointer<VariableSymbol> VariableSymbolPtr;
+typedef QScopedPointer<VariableSymbol> VariableSymbolScopedPtr;
 
 class FunctionSymbol : public Symbol
 {
 public:
     FunctionSymbol(QString &identifier,
-            QVector<VariableNode> &FunctionParameters,
+            QVector<VariableSymbolPtr> &&functionParameters,
             SimpleNode::ValueTypes ReturnType = SimpleNode::Void
             );
     ~FunctionSymbol();
 
-    void addFunctionExpressions(const QVector<SimpleNode> &FuncExpressions);
-    void addFunctionReturnStatement(const SimpleNode &returnNode);
+    void addFunctionExpressions(QVector<SimpleNodeScopedPtr> FuncExpressions);
+    void addFunctionReturnStatement(SimpleNodeScopedPtr returnNode);
 
     ValueNode CallFunction(
-            const QVector<SimpleNode> &FunctionArguments,
+            QVector<SimpleNodeScopedPtr> FunctionArguments,
             SymbolTableEntryPtr CurrentSymbolTable
             );
 
-    bool checkFunctionArguments(const QVector<VariableNode> &FunctionArguments) const;
+    bool checkFunctionArguments(const QVector<SimpleNodeScopedPtr> &FunctionArguments) const;
 
+    SymbolTable &getFunctionSymbolTable() const;
     // SymbolTableEntry interface
 public:
     SymbolTableEntryType getType() const;
-    virtual QString PrintToSymbolToString() const;
-    virtual QString PrintSymbolType() const;
+    QString PrintToSymbolToString() const;
+    QString PrintSymbolType() const;
 
     // Symbol interface
 public:
     SimpleNode::ValueTypes getReturnType() const;
 
+
 private:
     SimpleNode::ValueTypes ReturnType;
-    QVector<VariableNode> FunctionParameters;
+    QVector<QSharedPointer<VariableNode>> FunctionParameters;
     SymbolTable FunctionSymbolTable;
-    QVector<SimpleNode> FunctionExpressions;
-    SimpleNode FunctionReturnNode;
+    QVector<SimpleNodeScopedPtr> FunctionExpressions;
+    SimpleNodeScopedPtr FunctionReturnNode;
 };
 
 typedef QSharedPointer<FunctionSymbol> FunctionSymbolPtr;
+typedef QScopedPointer<FunctionSymbol> FunctionSymbolScopedPtr;
 
 #endif // SIMPLESYMBOLTABLE_H

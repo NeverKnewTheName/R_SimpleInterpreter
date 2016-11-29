@@ -21,15 +21,33 @@ R_SimpleInterpreter::R_SimpleInterpreter(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->textEdit->hide();
-    GlobalSymbolTable.addEntry(QString("D0"), new VariableSymbol(QString("D0"), SimpleNode::Integer, new ValueNode(10)));
-    GlobalSymbolTable.addEntry(QString("D1"), new VariableSymbol(QString("D1"), SimpleNode::Integer, new ValueNode(11)));
-    GlobalSymbolTable.addEntry(QString("D2"), new VariableSymbol(QString("D2"), SimpleNode::Integer, new ValueNode(12)));
-    GlobalSymbolTable.addEntry(QString("D3"), new VariableSymbol(QString("D3"), SimpleNode::Integer, new ValueNode(13)));
-    GlobalSymbolTable.addEntry(QString("D4"), new VariableSymbol(QString("D4"), SimpleNode::Integer, new ValueNode(14)));
-    GlobalSymbolTable.addEntry(QString("D5"), new VariableSymbol(QString("D5"), SimpleNode::Integer, new ValueNode(15)));
-    GlobalSymbolTable.addEntry(QString("D6"), new VariableSymbol(QString("D6"), SimpleNode::Integer, new ValueNode(16)));
-    GlobalSymbolTable.addEntry(QString("D7"), new VariableSymbol(QString("D7"), SimpleNode::Integer, new ValueNode(17)));
-    GlobalSymbolTable.addEntry(QString("xxVARxx"), new VariableSymbol(QString("xxVARxx"), SimpleNode::Integer, new ValueNode(1)));
+    VariableSymbolPtr newVarSymbol(new VariableSymbol(QString("D0"), SimpleNode::Integer));
+    newVarSymbol->assignValue(ValueNode(10));
+    GlobalSymbolTable.addEntry(QString("D0"), newVarSymbol);
+    newVarSymbol = VariableSymbolPtr(new VariableSymbol(QString("D1"), SimpleNode::Integer));
+    newVarSymbol->assignValue(ValueNode(20));
+    GlobalSymbolTable.addEntry(QString("D1"), newVarSymbol);
+    newVarSymbol = VariableSymbolPtr(new VariableSymbol(QString("D2"), SimpleNode::Integer));
+    newVarSymbol->assignValue(ValueNode(30));
+    GlobalSymbolTable.addEntry(QString("D2"), newVarSymbol);
+    newVarSymbol = VariableSymbolPtr(new VariableSymbol(QString("D3"), SimpleNode::Integer));
+    newVarSymbol->assignValue(ValueNode(40));
+    GlobalSymbolTable.addEntry(QString("D3"), newVarSymbol);
+    newVarSymbol = VariableSymbolPtr(new VariableSymbol(QString("D4"), SimpleNode::Integer));
+    newVarSymbol->assignValue(ValueNode(50));
+    GlobalSymbolTable.addEntry(QString("D4"), newVarSymbol);
+    newVarSymbol = VariableSymbolPtr(new VariableSymbol(QString("D5"), SimpleNode::Integer));
+    newVarSymbol->assignValue(ValueNode(60));
+    GlobalSymbolTable.addEntry(QString("D5"), newVarSymbol);
+    newVarSymbol = VariableSymbolPtr(new VariableSymbol(QString("D6"), SimpleNode::Integer));
+    newVarSymbol->assignValue(ValueNode(70));
+    GlobalSymbolTable.addEntry(QString("D6"), newVarSymbol);
+    newVarSymbol = VariableSymbolPtr(new VariableSymbol(QString("D7"), SimpleNode::Integer));
+    newVarSymbol->assignValue(ValueNode(80));
+    GlobalSymbolTable.addEntry(QString("D7"), newVarSymbol);
+    newVarSymbol = VariableSymbolPtr(new VariableSymbol(QString("xxVARxx"), SimpleNode::Integer));
+    newVarSymbol->assignValue(ValueNode(1));
+    GlobalSymbolTable.addEntry(QString("xxVARxx"), newVarSymbol);
 
 
     lex = new SimpleLexer(this->parent());
@@ -46,29 +64,29 @@ void R_SimpleInterpreter::on_pushButton_clicked()
     ui->textEdit->hide();
     QString TextToInterpret = ui->plainTextEdit->document()->toPlainText();
 
-    lex->setStringForLexer(TextToInterpret);
+//    lex->setStringForLexer(TextToInterpret);
 
-    connect(lex, &SimpleLexer::LexerPosAt, this, &R_SimpleInterpreter::lexerPosChanged);
-    connect(lex, &SimpleLexer::LexerErrorHTMLMsg, this, &R_SimpleInterpreter::receiveLexerHTMLFormattedErrMsg);
+//    connect(lex, &SimpleLexer::LexerPosAt, this, &R_SimpleInterpreter::lexerPosChanged);
+//    connect(lex, &SimpleLexer::LexerErrorHTMLMsg, this, &R_SimpleInterpreter::receiveLexerHTMLFormattedErrMsg);
 
-    SimpleParser parse(lex, GlobalSymbolTable);
-    SimpleInterpreter interpreter(&parse);
+//    SimpleParser parse(lex, GlobalSymbolTable);
+//    SimpleInterpreter interpreter(&parse);
 
-    ValueNode *result = interpreter.interpret();
-    qDebug() << "Result Node: " << result->printNode();
-    qDebug() << "Result Value: " << result->getValue();
+//    ValueNode *result = interpreter.interpret();
+//    qDebug() << "Result Node: " << result->printNode();
+//    qDebug() << "Result Value: " << result->getValue();
 
-    disconnect(lex, &SimpleLexer::LexerErrorHTMLMsg, this, &R_SimpleInterpreter::receiveLexerHTMLFormattedErrMsg);
-    disconnect(lex, &SimpleLexer::LexerPosAt, this, &R_SimpleInterpreter::lexerPosChanged);
+//    disconnect(lex, &SimpleLexer::LexerErrorHTMLMsg, this, &R_SimpleInterpreter::receiveLexerHTMLFormattedErrMsg);
+//    disconnect(lex, &SimpleLexer::LexerPosAt, this, &R_SimpleInterpreter::lexerPosChanged);
 
-    if(result->getReturnType() == SimpleNode::ErrorType)
-        return;
+//    if(result->getReturnType() == SimpleNode::ErrorType)
+//        return;
 
-    QStandardItemModel *SymbolTableModel = new QStandardItemModel(this);
-    populateSymbolTableView(&GlobalSymbolTable, SymbolTableModel->invisibleRootItem());
-    ui->SymbolTableView->setModel(SymbolTableModel);
+//    QStandardItemModel *SymbolTableModel = new QStandardItemModel(this);
+//    populateSymbolTableView(&GlobalSymbolTable, SymbolTableModel->invisibleRootItem());
+//    ui->SymbolTableView->setModel(SymbolTableModel);
 
-    ui->lineEdit_2->setText(result->getValue().value<QString>());
+//    ui->lineEdit_2->setText(result->getValue().value<QString>());
 }
 
 void R_SimpleInterpreter::lexerPosChanged(int pos, int len)
@@ -104,9 +122,10 @@ void R_SimpleInterpreter::receiveLexerHTMLFormattedErrMsg(QString HTMLFormattedE
     //                          QMessageBox::Ok);
 }
 
-void R_SimpleInterpreter::populateSymbolTableView(SymbolTable *symbolTable, QStandardItem *SymbolTableModel)
+void R_SimpleInterpreter::populateSymbolTableView(SymbolTable * const symbolTable, QStandardItem *SymbolTableModel)
 {
-    for(SymbolTableEntry *entry : symbolTable->getSymbolTableAsSequence())
+    QVector<SymbolTableEntryPtr> symbolTableEntries = symbolTable->getSymbolTableEntries();
+    for(SymbolTableEntryPtr entry : symbolTableEntries)
     {
         QStandardItem *entryItem = new QStandardItem(entry->PrintSymbolType());
         QList<QStandardItem*> row;
@@ -115,7 +134,7 @@ void R_SimpleInterpreter::populateSymbolTableView(SymbolTable *symbolTable, QSta
         SymbolTableModel->appendRow(row);
         if(entry->getType() == SymbolTableEntry::SubSymbolTable)
         {
-            populateSymbolTableView(dynamic_cast<SymbolTable*>(entry), entryItem);
+            populateSymbolTableView(dynamic_cast<SymbolTable*>(entry.data()), entryItem);
         }
     }
 }
