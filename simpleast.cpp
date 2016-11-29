@@ -96,9 +96,9 @@ QString SimpleNode::printNode() const
     return QString("{(INVALID NODE):(%1)}").arg(printValue);
 }
 
-ValueNodeScopedPtr SimpleNode::visit()
+ValueNodeUniquePtr SimpleNode::visit()
 {
-    return ValueNodeScopedPtr( new ValueNode());
+    return ValueNodeUniquePtr( new ValueNode());
 }
 
 ValueNode::ValueNode() :
@@ -215,10 +215,10 @@ QString ValueNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
-ValueNodeScopedPtr ValueNode::visit()
+ValueNodeUniquePtr ValueNode::visit()
 {
     //ToTHINK DOES THIS REALLY WORK?!?!
-    return ValueNodeScopedPtr( new ValueNode(*this));
+    return ValueNodeUniquePtr( new ValueNode(*this));
 }
 
 
@@ -253,9 +253,9 @@ QString EOFNode::printNode() const
     return QString("{(EOF):(EOF)}");
 }
 
-ValueNodeScopedPtr EOFNode::visit()
+ValueNodeUniquePtr EOFNode::visit()
 {
-    return ValueNodeScopedPtr(new ValueNode());
+    return ValueNodeUniquePtr(new ValueNode());
 }
 
 

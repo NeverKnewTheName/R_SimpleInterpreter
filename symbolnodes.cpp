@@ -57,7 +57,7 @@ SimpleNode::ValueTypes VariableNode::getReturnType() const
     return valueType;
 }
 
-ValueNodeScopedPtr VariableNode::visit()
+ValueNodeUniquePtr VariableNode::visit()
 {
     RelatedVariableSymbol->getAssignedValue();
 }
@@ -198,7 +198,7 @@ VariableSymbolPtr VariableNode::getRelatedVariableSymbol() const
 //    return FuncSymbolTable;
 //}
 
-FunctionCallNode::FunctionCallNode(const QString &FunctionName, SymbolTablePtr CurSymblTable, QVector<SimpleNode> FunctionArguments) :
+FunctionCallNode::FunctionCallNode(const QString &FunctionName, SymbolTablePtr CurSymblTable, QVector<SimpleNode> &FunctionArguments) :
     FunctionName(FunctionName),
     FuncParams(FunctionParameters)
 {
@@ -263,20 +263,20 @@ QString FunctionCallNode::printNode() const
     return QString("{FunctionCall}:{%1}").arg(printValue());
 }
 
-ValueNodeScopedPtr FunctionCallNode::visit()
+ValueNodeUniquePtr FunctionCallNode::visit()
 {
     FunctionNode *symblTblEntryValue = RelatedSymbol->GetFunctionNode();
     if(symblTblEntryValue == NULL)
     {
-        return ValueNodeScopedPtr( new ValueNode());
+        return ValueNodeUniquePtr( new ValueNode());
     }
     else
     {
-        return ValueNodeScopedPtr( new ValueNode(*symblTblEntryValue->visit()));
+        return ValueNodeUniquePtr( new ValueNode(*symblTblEntryValue->visit()));
     }
 }
 
-AssignmentNode::AssignmentNode(VariableNodeScopedPtr VariableToAssign, SimpleNodeScopedPtr ValueToAssign) :
+AssignmentNode::AssignmentNode(VariableNodeUniquePtr VariableToAssign, SimpleNodeUniquePtr ValueToAssign) :
     VariableToAssign(VariableToAssign.take()),
     ValueToAssign(ValueToAssign.take()),
     valueType(this->VariableToAssign->getReturnType())
@@ -310,7 +310,7 @@ QString AssignmentNode::printNode() const
     return QString("{AssignmentNode}:{%1}").arg(printValue());
 }
 
-ValueNodeScopedPtr AssignmentNode::visit()
+ValueNodeUniquePtr AssignmentNode::visit()
 {
     VariableToAssign->getRelatedVariableSymbol()->assignValue(*ValueToAssign);
 
@@ -320,6 +320,27 @@ ValueNodeScopedPtr AssignmentNode::visit()
 ProgramNode::ProgramNode(const QString &ProgramName, const SymbolTable &ParentSymbolTable)
 {
 
+}
+
+void ProgramNode::addExpression(SimpleNodeUniquePtr &newExpression)
+{
+    ProgramExpressions.append(std::move(newExpression));
+}
+
+void ProgramNode::addFunctionDefinition(FunctionSymbolPtr newFunction)
+{
+    ProgramSymbolTable->addEntry(newFunction->getIdentifier(), newFunction);
+}
+
+void ProgramNode::addVariableDefinition(VariableSymbolPtr newVariable)
+{
+    ProgramSymbolTable->addEntry(newVariable->getIdentifier(), newVariable);
+}
+
+void ProgramNode::addReturnStatement(SimpleNodeUniquePtr ReturnStatement)
+{
+    //Maybe std::move??
+    ReturnStatement = ReturnStatement;
 }
 
 SimpleNode::NodeType ProgramNode::getNodeType() const
@@ -342,12 +363,14 @@ QString ProgramNode::printNode() const
     return QString("{ProgramNode}:{%1}").arg(printValue());
 }
 
-ValueNodeScopedPtr ProgramNode::visit()
+ValueNodeUniquePtr ProgramNode::visit()
 {
-    for(AssignmentNode &&assign : ProgramAssignments)
+    const int NrOfProgramExpression = ProgramExpressions.size();
+
+    for(int i = 0; i < NrOfProgramExpression; i++)
     {
-        //        assign.
+        ProgramExpressions.at(i)->visit();
     }
 
-    return ValueNodeScopedPtr( new ValueNode() );
+    return ReturnStatement->visit();
 }

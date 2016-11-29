@@ -6,13 +6,13 @@
 class UnaryArithmeticOperationNode : public UnaryOperationNode
 {
 public:
-    UnaryArithmeticOperationNode(const SimpleNode &rightChild);
+    UnaryArithmeticOperationNode(SimpleNodeUniquePtr rightChild);
     OperationTypes getOpType() const;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual ValueNodeScopedPtr DoOperation() = 0;
+    virtual ValueNodeUniquePtr DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -21,7 +21,7 @@ public:
 class TypeCastNode : public UnaryArithmeticOperationNode
 {
 public:
-    TypeCastNode(const SimpleNode &rightChild, SimpleNode::ValueTypes typeToCastTo);
+    TypeCastNode(SimpleNodeUniquePtr rightChild, SimpleNode::ValueTypes typeToCastTo);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
@@ -37,7 +37,7 @@ public:
      *
      * \warning Only use this operation on Integer ValueNodes
      */
-    ValueNodeScopedPtr DoOperation();
+    ValueNodeUniquePtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -48,7 +48,7 @@ private:
 class IncrementNode : public UnaryArithmeticOperationNode
 {
 public:
-    IncrementNode(const SimpleNode &rightChild);
+    IncrementNode(SimpleNodeUniquePtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
@@ -64,7 +64,7 @@ public:
      *
      * \warning Only use this operation on Integer ValueNodes
      */
-    ValueNodeScopedPtr DoOperation();
+    ValueNodeUniquePtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -73,7 +73,7 @@ public:
 class DecrementNode : public UnaryArithmeticOperationNode
 {
 public:
-    DecrementNode(const SimpleNode &rightChild);
+    DecrementNode(SimpleNodeUniquePtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
@@ -89,7 +89,7 @@ public:
      *
      * \warning Only use this operation on Integer ValueNodes
      */
-    ValueNodeScopedPtr DoOperation();
+    ValueNodeUniquePtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -98,7 +98,7 @@ public:
 class PositiveNode : public UnaryArithmeticOperationNode
 {
 public:
-    PositiveNode(const SimpleNode &rightChild);
+    PositiveNode(SimpleNodeUniquePtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
@@ -114,7 +114,7 @@ public:
      *
      * \warning Only use this operation on Integer or Double ValueNodes
      */
-    ValueNodeScopedPtr DoOperation();
+    ValueNodeUniquePtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -123,7 +123,7 @@ public:
 class NegativeNode : public UnaryArithmeticOperationNode
 {
 public:
-    NegativeNode(const SimpleNode &rightChild);
+    NegativeNode(SimpleNodeUniquePtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
@@ -139,7 +139,7 @@ public:
      *
      * \warning Only use this operation on Integer or Double ValueNodes
      */
-    ValueNodeScopedPtr DoOperation();
+    ValueNodeUniquePtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -148,13 +148,13 @@ public:
 class UnaryLogicalOperationNode : public UnaryOperationNode
 {
 public:
-    UnaryLogicalOperationNode(const SimpleNode &rightChild);
+    UnaryLogicalOperationNode(SimpleNodeUniquePtr rightChild);
     OperationTypes getOpType() const;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual ValueNodeScopedPtr DoOperation() = 0;
+    virtual ValueNodeUniquePtr DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -163,7 +163,7 @@ public:
 class LogicalNegationNode : public UnaryLogicalOperationNode
 {
 public:
-    LogicalNegationNode(const SimpleNode &rightChild);
+    LogicalNegationNode(SimpleNodeUniquePtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
@@ -180,7 +180,7 @@ public:
      * \warning Only use this operation on Integer, Double or Bool ValueNodes
      * \note If the passed ValueNode equals 0 (or 0.0) it is treated as Bool false, otherwise Bool true
      */
-    ValueNodeScopedPtr DoOperation();
+    ValueNodeUniquePtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -189,13 +189,13 @@ public:
 class UnaryBitwiseOperationNode : public UnaryOperationNode
 {
 public:
-    UnaryBitwiseOperationNode(const SimpleNode &rightChild);
+    UnaryBitwiseOperationNode(SimpleNodeUniquePtr rightChild);
     OperationTypes getOpType() const;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual ValueNodeScopedPtr DoOperation() = 0;
+    virtual ValueNodeUniquePtr DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -204,7 +204,7 @@ public:
 class OnesComplementNode : public UnaryBitwiseOperationNode
 {
 public:
-    OnesComplementNode(const SimpleNode &rightChild);
+    OnesComplementNode(SimpleNodeUniquePtr rightChild);
     virtual Operation getOp() const;
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
@@ -220,7 +220,7 @@ public:
      *
      * \warning Only use this operation on Integer ValueNodes
      */
-    virtual ValueNodeScopedPtr DoOperation();
+    virtual ValueNodeUniquePtr DoOperation();
 
     virtual QString printValue() const;
     virtual QString printNode() const;

@@ -4,6 +4,7 @@
 #include <QVariant>
 #include <QVector>
 #include <QSharedPointer>
+#include <memory>
 
 //#include "simplesymboltable.h"
 
@@ -12,7 +13,7 @@ class VariableSymbol;
 class AssignmentNode;
 
 class ValueNode;
-typedef QScopedPointer<ValueNode> ValueNodeScopedPtr;
+typedef std::unique_ptr<ValueNode> ValueNodeUniquePtr;
 
 class SimpleNode
 {
@@ -49,7 +50,7 @@ public:
     virtual QString printValue() const;
     virtual QString printNode() const;
 
-    virtual ValueNodeScopedPtr visit();
+    virtual ValueNodeUniquePtr visit();
 
     static QString getHumanReadableTypeNameToValueType(const ValueTypes type);
     static bool canConvertTypes(const ValueTypes OrigType, const ValueTypes NewType);
@@ -58,7 +59,7 @@ protected:
 };
 
 typedef QSharedPointer<SimpleNode> SimpleNodePtr;
-typedef QScopedPointer<SimpleNode> SimpleNodeScopedPtr;
+typedef std::unique_ptr<SimpleNode> SimpleNodeUniquePtr;
 
 class ValueNode : public SimpleNode
 {
@@ -71,7 +72,7 @@ public:
     ValueNode(const double value);
     ValueNode(const bool value);
     ValueNode(QString const &value);
-    ~ValueNode();
+    virtual ~ValueNode();
 
     NodeType getNodeType() const;
     ValueTypes getReturnType() const;
@@ -85,7 +86,7 @@ public:
 
     QString printValue() const;
     QString printNode() const;
-    ValueNodeScopedPtr visit();
+    ValueNodeUniquePtr visit();
 
 private:
     QVariant value;
@@ -98,13 +99,13 @@ class EOFNode : public SimpleNode
 {
 public:
     EOFNode();
-    ~EOFNode();
+    virtual ~EOFNode();
 
     NodeType getNodeType() const;
     SimpleNode::ValueTypes getReturnType() const;
     QString printValue() const;
     QString printNode() const;
 
-    ValueNodeScopedPtr visit();
+    ValueNodeUniquePtr visit();
 };
 #endif // SIMPLEAST_H

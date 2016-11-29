@@ -8,11 +8,11 @@ class VariableNode : public SimpleNode
 {
 public:
     VariableNode(VariableSymbolPtr relatedVariableSymbol);
-    ~VariableNode();
+    virtual ~VariableNode();
     virtual NodeType getNodeType() const;
     virtual SimpleNode::ValueTypes getReturnType() const;
 
-    ValueNodeScopedPtr visit();
+    ValueNodeUniquePtr visit();
 
     QString printValue() const;
     virtual QString printNode() const;
@@ -25,13 +25,13 @@ private:
     VariableSymbolPtr RelatedVariableSymbol;
 };
 
-typedef QScopedPointer<VariableNode> VariableNodeScopedPtr;
+typedef std::unique_ptr<VariableNode> VariableNodeUniquePtr;
 
 class DataNode : public VariableNode
 {
 public:
     DataNode(const unsigned int dataIndex, const SymbolTablePtr GlobalSymbolTable);
-    ~DataNode();
+    virtual ~DataNode();
     NodeType getNodeType() const;
     SimpleNode::ValueTypes getReturnType() const;
 
@@ -50,7 +50,7 @@ private:
 //            SimpleNode::ValueTypes returnType,
 //            SymbolTable *SubSymbolTable
 //            );
-//    ~FunctionNode();
+//    virtual ~FunctionNode();
 
 //    void addFuncExpressions(QVector<SimpleNode *> FuncExpressions);
 //    void addReturnStatement(SimpleNode *returnNode);
@@ -84,8 +84,8 @@ private:
 class FunctionCallNode : public SimpleNode
 {
 public:
-    FunctionCallNode(const QString &FunctionName, SymbolTableEntryPtr CurSymblTable, QVector<SimpleNodeScopedPtr> FunctionArguments = QVector<SimpleNodeScopedPtr>());
-    ~FunctionCallNode();
+    FunctionCallNode(const QString &FunctionName, SymbolTableEntryPtr CurSymblTable, QVector<SimpleNodeUniquePtr> &FunctionArguments);
+    virtual ~FunctionCallNode();
 
     // SimpleNode interface
 public:
@@ -93,7 +93,7 @@ public:
     ValueTypes getReturnType() const;
     QString printValue() const;
     QString printNode() const;
-    ValueNodeScopedPtr visit();
+    ValueNodeUniquePtr visit();
 
 private:
     QString FunctionName;
@@ -106,8 +106,8 @@ class AssignmentNode : public SimpleNode
 {
 public:
 //    AssignmentNode();
-    AssignmentNode(VariableNodeScopedPtr VariableToAssign, SimpleNodeScopedPtr ValueToAssign);
-    ~AssignmentNode();
+    AssignmentNode(VariableNodeUniquePtr VariableToAssign, SimpleNodeUniquePtr ValueToAssign);
+    virtual ~AssignmentNode();
 
     // SimpleNode interface
 public:
@@ -115,11 +115,11 @@ public:
     ValueTypes getReturnType() const;
     QString printValue() const;
     QString printNode() const;
-    ValueNodeScopedPtr visit();
+    ValueNodeUniquePtr visit();
 
 private:
-    VariableNodeScopedPtr VariableToAssign;
-    SimpleNodeScopedPtr ValueToAssign;
+    VariableNodeUniquePtr VariableToAssign;
+    SimpleNodeUniquePtr ValueToAssign;
 };
 
 
@@ -130,12 +130,12 @@ public:
             const QString &ProgramName,
             const SymbolTable &ParentSymbolTable
             );
-    ~ProgramNode();
+    virtual ~ProgramNode();
 
-    void addExpression(const SimpleNode &newExpression);
-    void addFunctionDefinition(const FunctionSymbol &newFunction);
-    void addVariableDefinition(const VariableSymbol &newVariable);
-    void addReturnStatement(const SimpleNode &ReturnStatement);
+    void addExpression(SimpleNodeUniquePtr &newExpression);
+    void addFunctionDefinition(FunctionSymbolPtr newFunction);
+    void addVariableDefinition(VariableSymbolPtr newVariable);
+    void addReturnStatement(SimpleNodeUniquePtr ReturnStatement);
 
     // SimpleNode interface
 public:
@@ -143,14 +143,16 @@ public:
     ValueTypes getReturnType() const;
     QString printValue() const;
     QString printNode() const;
-    ValueNodeScopedPtr visit();
+    ValueNodeUniquePtr visit();
 
 private:
     SimpleNode::ValueTypes type;
-    QVector<SimpleNodeScopedPtr> ProgramExpressions;
-    SimpleNodeScopedPtr ReturnStatement;
+    QVector<SimpleNodeUniquePtr> ProgramExpressions;
+    SimpleNodeUniquePtr ReturnStatement;
     const SymbolTablePtr ParentSymbolTable;
     SymbolTablePtr ProgramSymbolTable;
 };
+
+typedef std::unique_ptr<ProgramNode> ProgramNodeUniquePtr;
 
 #endif // SYMBOLNODES_H

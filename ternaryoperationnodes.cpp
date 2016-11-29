@@ -1,6 +1,6 @@
 #include "ternaryoperationnodes.h"
 
-TernaryArithmeticOperationNode::TernaryArithmeticOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr midChild, SimpleNodeScopedPtr rightChild) :
+TernaryArithmeticOperationNode::TernaryArithmeticOperationNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr midChild, SimpleNodeUniquePtr rightChild) :
     TernaryOperationNode(leftChild, midChild, rightChild)
 {
 
@@ -11,7 +11,7 @@ OperationNode::OperationTypes TernaryArithmeticOperationNode::getOpType() const
     return OperationNode::Arithmetic;
 }
 
-TernaryLogicalOperationNode::TernaryLogicalOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr midChild, SimpleNodeScopedPtr rightChild) :
+TernaryLogicalOperationNode::TernaryLogicalOperationNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr midChild, SimpleNodeUniquePtr rightChild) :
     TernaryOperationNode(leftChild, midChild, rightChild)
 {
 
@@ -22,7 +22,7 @@ OperationNode::OperationTypes TernaryLogicalOperationNode::getOpType() const
     return OperationNode::Logical;
 }
 
-ConditionalNode::ConditionalNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr midChild, SimpleNodeScopedPtr rightChild) :
+ConditionalNode::ConditionalNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr midChild, SimpleNodeUniquePtr rightChild) :
     TernaryLogicalOperationNode(leftChild, midChild, rightChild)
 {
     SimpleNode::ValueTypes returnTypeLChild = leftChild->getReturnType();
@@ -107,11 +107,11 @@ OperationNode::Precedence ConditionalNode::getPrecedence() const
     return OperationNode::ConditionalPrec;
 }
 
-const ValueNodeScopedPtr ConditionalNode::DoOperation()
+const ValueNodeUniquePtr ConditionalNode::DoOperation()
 {
-    ValueNodeScopedPtr value1(leftChild->visit().take());
-    ValueNodeScopedPtr value2(midChild->visit().take());
-    ValueNodeScopedPtr value3(rightChild->visit().take());
+    ValueNodeUniquePtr value1(leftChild->visit().take());
+    ValueNodeUniquePtr value2(midChild->visit().take());
+    ValueNodeUniquePtr value3(rightChild->visit().take());
 
     bool IsTrue = value1->getValue().value<bool>();
 
@@ -120,35 +120,35 @@ const ValueNodeScopedPtr ConditionalNode::DoOperation()
     case SimpleNode::Integer:
         if(implicitCastRightChild == SimpleNode::Double)
         {
-            return ValueNodeScopedPtr(new ValueNode((IsTrue) ? value2->getValue().value<double>() : value3->getValue().value<double>() ));
+            return ValueNodeUniquePtr(new ValueNode((IsTrue) ? value2->getValue().value<double>() : value3->getValue().value<double>() ));
         }
         else if(implicitCastRightChild == SimpleNode::Bool)
         {
-            return ValueNodeScopedPtr(new ValueNode((IsTrue) ? value2->getValue().value<bool>() : value3->getValue().value<bool>() ));
+            return ValueNodeUniquePtr(new ValueNode((IsTrue) ? value2->getValue().value<bool>() : value3->getValue().value<bool>() ));
         }
         else
         {
-            return ValueNodeScopedPtr(new ValueNode((IsTrue) ? value2->getValue().value<int>() : value3->getValue().value<int>() ));
+            return ValueNodeUniquePtr(new ValueNode((IsTrue) ? value2->getValue().value<int>() : value3->getValue().value<int>() ));
         }
         break;
     case SimpleNode::Double:
         if(implicitCastRightChild == SimpleNode::Bool)
         {
-            return ValueNodeScopedPtr(new ValueNode((IsTrue) ? value2->getValue().value<bool>() : value3->getValue().value<bool>() ));
+            return ValueNodeUniquePtr(new ValueNode((IsTrue) ? value2->getValue().value<bool>() : value3->getValue().value<bool>() ));
         }
         else
         {
-            return ValueNodeScopedPtr(new ValueNode((IsTrue) ? value2->getValue().value<double>() : value3->getValue().value<double>() ));
+            return ValueNodeUniquePtr(new ValueNode((IsTrue) ? value2->getValue().value<double>() : value3->getValue().value<double>() ));
         }
         break;
     case SimpleNode::Bool:
-        return ValueNodeScopedPtr(new ValueNode((IsTrue) ? value2->getValue().value<bool>() : value3->getValue().value<bool>() ));
+        return ValueNodeUniquePtr(new ValueNode((IsTrue) ? value2->getValue().value<bool>() : value3->getValue().value<bool>() ));
         break;
     case SimpleNode::String:
-        return ValueNodeScopedPtr(new ValueNode((IsTrue) ? value2->getValue().value<QString>() : value3->getValue().value<QString>() ));
+        return ValueNodeUniquePtr(new ValueNode((IsTrue) ? value2->getValue().value<QString>() : value3->getValue().value<QString>() ));
         break;
     default:
-        return ValueNodeScopedPtr(new ValueNode());
+        return ValueNodeUniquePtr(new ValueNode());
     }
 
 }
@@ -166,7 +166,7 @@ QString ConditionalNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
-TernaryBitwiseOperationNode::TernaryBitwiseOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr midChild, SimpleNodeScopedPtr rightChild) :
+TernaryBitwiseOperationNode::TernaryBitwiseOperationNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr midChild, SimpleNodeUniquePtr rightChild) :
     TernaryOperationNode(leftChild, midChild, rightChild)
 {
 

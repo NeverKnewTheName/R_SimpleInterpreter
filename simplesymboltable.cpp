@@ -140,9 +140,9 @@ VariableSymbol::~VariableSymbol()
     qDebug() << __PRETTY_FUNCTION__;
 }
 
-ValueNodeScopedPtr VariableSymbol::getAssignedValue() const
+ValueNodeUniquePtr VariableSymbol::getAssignedValue() const
 {
-    return ValueNodeScopedPtr( new ValueNode( AssignedNode ) );
+    return ValueNodeUniquePtr( new ValueNode( AssignedNode ) );
 }
 
 bool VariableSymbol::assignValue(const SimpleNode &NodeToAssign)
@@ -225,18 +225,18 @@ FunctionSymbol::~FunctionSymbol()
     qDebug() << __PRETTY_FUNCTION__;
 }
 
-void FunctionSymbol::addFunctionExpressions(QVector<SimpleNodeScopedPtr> FuncExpressions)
+void FunctionSymbol::addFunctionExpressions(QVector<SimpleNodeUniquePtr> &FuncExpressions)
 {
     FunctionExpressions = std::move(FuncExpressions);
 }
 
-void FunctionSymbol::addFunctionReturnStatement(SimpleNodeScopedPtr returnNode)
+void FunctionSymbol::addFunctionReturnStatement(SimpleNodeUniquePtr returnNode)
 {
     FunctionReturnNode = std::move(returnNode);
 }
 
-ValueNodeScopedPtr FunctionSymbol::CallFunction(
-        QVector<SimpleNodeScopedPtr> FunctionArguments,
+ValueNodeUniquePtr FunctionSymbol::CallFunction(
+        QVector<SimpleNodeUniquePtr> &FunctionArguments,
         SymbolTableEntryPtr CurrentSymbolTable
         )
 {
@@ -253,26 +253,26 @@ ValueNodeScopedPtr FunctionSymbol::CallFunction(
     for(int i = 0; i < NrOfParameters; i++)
     {
         const VariableNode &param = FunctionParameters.at(i);
-        SimpleNodeScopedPtr argument = std::move(FunctionArguments.value(i));
+        SimpleNodeUniquePtr argument = std::move(FunctionArguments.value(i));
         qSharedPointerDynamicCast<VariableSymbol>(FunctionSymbolTable.lookup(param.getVariableName()))->assignValue(argument->visit());
     }
 
     FunctionSymbolTable.addParentSymbolTable(CurrentSymbolTable);
 
-    for(SimpleNodeScopedPtr &expression : FunctionExpressions)
+    for(SimpleNodeUniquePtr &expression : FunctionExpressions)
     {
         expression->visit();
     }
 
-    return ValueNodeScopedPtr(new ValueNode( *(FunctionReturnNode->visit())));
+    return ValueNodeUniquePtr(new ValueNode( *(FunctionReturnNode->visit())));
 }
 
-SymbolTable &FunctionSymbol::getFunctionSymbolTable() const
+SymbolTablePtr FunctionSymbol::getFunctionSymbolTable() const
 {
     return FunctionSymbolTable;
 }
 
-bool FunctionSymbol::checkFunctionArguments(const QVector<SimpleNodeScopedPtr> &FunctionArguments) const
+bool FunctionSymbol::checkFunctionArguments(const QVector<SimpleNodeUniquePtr> &FunctionArguments) const
 {
     const int NrOfParameters = FunctionParameters.size();
     if(NrOfParameters != FunctionArguments.size())
@@ -284,7 +284,7 @@ bool FunctionSymbol::checkFunctionArguments(const QVector<SimpleNodeScopedPtr> &
     for(int i = 0; i < NrOfParameters; i++)
     {
         const VariableNode &param = FunctionParameters.at(i);
-        const SimpleNodeScopedPtr &argument = FunctionArguments.at(i);
+        const SimpleNodeUniquePtr &argument = FunctionArguments.at(i);
         if(!SimpleNode::canConvertTypes(param.getReturnType(), argument->getReturnType()))
         {
             qDebug() << "Type mismatch at paramter: " << i << " Expected: "

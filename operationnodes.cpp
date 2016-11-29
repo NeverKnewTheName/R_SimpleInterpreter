@@ -19,12 +19,12 @@ SimpleNode::ValueTypes OperationNode::getReturnType() const
     return returnType;
 }
 
-const ValueNodeScopedPtr OperationNode::visit()
+const ValueNodeUniquePtr OperationNode::visit()
 {
     return ValueNodeScopePtr( new ValueNode(*(DoOperation())));
 }
 
-UnaryOperationNode::UnaryOperationNode(SimpleNodeScopedPtr rightChild) :
+UnaryOperationNode::UnaryOperationNode(SimpleNodeUniquePtr rightChild) :
     rightChild(std::move(rightChild))
 {
 }
@@ -40,7 +40,7 @@ OperationNode::ArityTypes UnaryOperationNode::getArityType() const
 }
 
 
-BinaryOperationNode::BinaryOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild) :
+BinaryOperationNode::BinaryOperationNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr rightChild) :
     leftChild(std::move(leftChild)),
     rightChild(std::move(rightChild))
 {
@@ -56,7 +56,7 @@ OperationNode::ArityTypes BinaryOperationNode::getArityType() const
     return OperationNode::Binary;
 }
 
-TernaryOperationNode::TernaryOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr midChild, SimpleNodeScopedPtr rightChild) :
+TernaryOperationNode::TernaryOperationNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr midChild, SimpleNodeUniquePtr rightChild) :
     leftChild(std::move(leftChild)),
     midChild(std::move(midChild)),
     rightChild(std::move(rightChild))

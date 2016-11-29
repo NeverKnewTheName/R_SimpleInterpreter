@@ -6,13 +6,13 @@
 class TernaryArithmeticOperationNode : public TernaryOperationNode
 {
 public:
-    TernaryArithmeticOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr midChild, SimpleNodeScopedPtr rightChild);
+    TernaryArithmeticOperationNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr midChild, SimpleNodeUniquePtr rightChild);
     OperationTypes getOpType() const;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual ValueNodeScopedPtr DoOperation() = 0;
+    virtual ValueNodeUniquePtr DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -21,13 +21,13 @@ public:
 class TernaryLogicalOperationNode : public TernaryOperationNode
 {
 public:
-    TernaryLogicalOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr midChild, SimpleNodeScopedPtr rightChild);
+    TernaryLogicalOperationNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr midChild, SimpleNodeUniquePtr rightChild);
     OperationTypes getOpType() const;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual ValueNodeScopedPtr DoOperation() = 0;
+    virtual ValueNodeUniquePtr DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -36,12 +36,12 @@ public:
 class ConditionalNode : public TernaryLogicalOperationNode
 {
 public:
-    ConditionalNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr midChild, SimpleNodeScopedPtr rightChild);
+    ConditionalNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr midChild, SimpleNodeUniquePtr rightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    ValueNodeScopedPtr DoOperation();
+    ValueNodeUniquePtr DoOperation();
 
     QString printValue() const;
     QString printNode() const;
@@ -50,13 +50,13 @@ public:
 class TernaryBitwiseOperationNode : public TernaryOperationNode
 {
 public:
-    TernaryBitwiseOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr midChild, SimpleNodeScopedPtr rightChild);
+    TernaryBitwiseOperationNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr midChild, SimpleNodeUniquePtr rightChild);
     OperationTypes getOpType() const;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual ValueNodeScopedPtr DoOperation() = 0;
+    virtual ValueNodeUniquePtr DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;

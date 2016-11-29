@@ -110,6 +110,7 @@
 
 #include "simplelexer.h"
 #include "simplesymboltable.h"
+#include "symbolnodes.h"
 //#include "simpleast.h"
 
 class Msg;
@@ -122,36 +123,36 @@ class SimpleParser
 {
 public:
     SimpleParser(SimpleLexer *lexer, SymbolTablePtr parentSymblTbl);
-    SimpleNodeScopedPtr parse();
+    SimpleNodeUniquePtr parse();
 
-    const SymbolTable &getProgramSymblTbl();
+    SymbolTablePtr getProgramSymblTbl();
 
 private:
     void eat(SimpleToken::TokenType tokenType);
-    SimpleNodeScopedPtr Program();
+    ProgramNodeUniquePtr Program();
     FunctionSymbolPtr FunctionDefinition();
     FunctionSymbolPtr FunctionDeclaration();
     VariableSymbolPtr VarDefinition();
     VariableSymbolPtr VarDeclaration();
-    SimpleNodeScopedPtr ReturnStatement();
-    SimpleNodeScopedPtr Expression();
-    SimpleNodeScopedPtr AssignmentExpression();
-    SimpleNodeScopedPtr ConditionalExpression();
-    SimpleNodeScopedPtr LogicalORExpression();
-    SimpleNodeScopedPtr LogicalXORExpression();
-    SimpleNodeScopedPtr LogicalANDExpression();
-    SimpleNodeScopedPtr BitwiseORExpression();
-    SimpleNodeScopedPtr BitwiseXORExpression();
-    SimpleNodeScopedPtr BitwiseANDExpression();
-    SimpleNodeScopedPtr EqualityExpression();
-    SimpleNodeScopedPtr RelationalExpression();
-    SimpleNodeScopedPtr ShiftExpression();
-    SimpleNodeScopedPtr AdditiveExpression();
-    SimpleNodeScopedPtr MultiplicativeExpression();
-    SimpleNodeScopedPtr UnaryExpression();
-    SimpleNodeScopedPtr PostFixExpression();
-    SimpleNodeScopedPtr PrimaryExpression();
-    SimpleNodeScopedPtr Symbol();
+    SimpleNodeUniquePtr ReturnStatement();
+    SimpleNodeUniquePtr Expression();
+    SimpleNodeUniquePtr AssignmentExpression();
+    SimpleNodeUniquePtr ConditionalExpression();
+    SimpleNodeUniquePtr LogicalORExpression();
+    SimpleNodeUniquePtr LogicalXORExpression();
+    SimpleNodeUniquePtr LogicalANDExpression();
+    SimpleNodeUniquePtr BitwiseORExpression();
+    SimpleNodeUniquePtr BitwiseXORExpression();
+    SimpleNodeUniquePtr BitwiseANDExpression();
+    SimpleNodeUniquePtr EqualityExpression();
+    SimpleNodeUniquePtr RelationalExpression();
+    SimpleNodeUniquePtr ShiftExpression();
+    SimpleNodeUniquePtr AdditiveExpression();
+    SimpleNodeUniquePtr MultiplicativeExpression();
+    SimpleNodeUniquePtr UnaryExpression();
+    SimpleNodeUniquePtr PostFixExpression();
+    SimpleNodeUniquePtr PrimaryExpression();
+    SimpleNodeUniquePtr Symbol();
 
     void SyntacticError(SharedSimpleTokenPtr Token, QString details = QString());
     void TypeError(SharedSimpleTokenPtr Token, QString details = QString());
@@ -160,9 +161,9 @@ private:
 
     SimpleLexer *lexer;
     SharedSimpleTokenPtr CurrentToken;
-    const SymbolTable &ParentSymblTbl;
-    SymbolTable ProgramSymbolTable;
-    SymbolTable * CurSymblTbl;
+    SymbolTablePtr ParentSymblTbl;
+    SymbolTablePtr ProgramSymbolTable;
+    SymbolTablePtr CurSymblTbl;
     bool ErrorOccured;
 };
 

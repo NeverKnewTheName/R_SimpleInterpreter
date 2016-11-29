@@ -82,12 +82,12 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual ValueNodeScopedPtr DoOperation() = 0;
+    virtual ValueNodeUniquePtr DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
 
-    ValueNodeScopedPtr visit();
+    ValueNodeUniquePtr visit();
 protected:
     SimpleNode::ValueTypes returnType;
 };
@@ -95,20 +95,20 @@ protected:
 class UnaryOperationNode : public OperationNode
 {
 public:
-    UnaryOperationNode(SimpleNodeScopedPtr rightChild);
-    ~UnaryOperationNode();
+    UnaryOperationNode(SimpleNodeUniquePtr rightChild);
+    virtual ~UnaryOperationNode();
     ArityTypes getArityType() const;
     virtual OperationTypes getOpType() const = 0;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual ValueNodeScopedPtr DoOperation() = 0;
+    virtual ValueNodeUniquePtr DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
 protected:
-    SimpleNodeScopedPtr rightChild;
+    SimpleNodeUniquePtr rightChild;
     SimpleNode::ValueTypes implicitCastRightChild;
 };
 
@@ -117,21 +117,21 @@ protected:
 class BinaryOperationNode : public OperationNode
 {
 public:
-    BinaryOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr rightChild);
-    ~BinaryOperationNode();
+    BinaryOperationNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr rightChild);
+    virtual ~BinaryOperationNode();
     ArityTypes getArityType() const;
     virtual OperationTypes getOpType() const = 0;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual ValueNodeScopedPtr DoOperation() = 0;
+    virtual ValueNodeUniquePtr DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
 protected:
-    SimpleNodeScopedPtr leftChild;
-    SimpleNodeScopedPtr rightChild;
+    SimpleNodeUniquePtr leftChild;
+    SimpleNodeUniquePtr rightChild;
     SimpleNode::ValueTypes implicitCastLeftChild;
     SimpleNode::ValueTypes implicitCastRightChild;
 };
@@ -140,22 +140,22 @@ protected:
 class TernaryOperationNode : public OperationNode
 {
 public:
-    TernaryOperationNode(SimpleNodeScopedPtr leftChild, SimpleNodeScopedPtr midChild ,SimpleNodeScopedPtr rightChild);
-    ~TernaryOperationNode();
+    TernaryOperationNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr midChild ,SimpleNodeUniquePtr rightChild);
+    virtual ~TernaryOperationNode();
     ArityTypes getArityType() const;
     virtual OperationTypes getOpType() const = 0;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual ValueNodeScopedPtr DoOperation() = 0;
+    virtual ValueNodeUniquePtr DoOperation() = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
 protected:
-    SimpleNodeScopedPtr leftChild;
-    SimpleNodeScopedPtr midChild;
-    SimpleNodeScopedPtr rightChild;
+    SimpleNodeUniquePtr leftChild;
+    SimpleNodeUniquePtr midChild;
+    SimpleNodeUniquePtr rightChild;
     SimpleNode::ValueTypes implicitCastLeftChild;
     SimpleNode::ValueTypes implicitCastMidChild;
     SimpleNode::ValueTypes implicitCastRightChild;

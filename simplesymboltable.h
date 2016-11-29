@@ -6,7 +6,6 @@
 #include <QString>
 
 #include <QSharedPointer>
-#include <QScopedPointer>
 
 #include "simpleast.h"
 
@@ -41,7 +40,7 @@ protected:
 };
 
 typedef QSharedPointer<SymbolTableEntry> SymbolTableEntryPtr;
-typedef QScopedPointer<SymbolTableEntry> SymbolTableEntryScopedPtr;
+typedef std::unique_ptr<SymbolTableEntry> SymbolTableEntryUniquePtr;
 
 class SymbolTable : public SymbolTableEntry
 {
@@ -73,7 +72,7 @@ private:
 };
 
 typedef QSharedPointer<SymbolTable> SymbolTablePtr;
-typedef QScopedPointer<SymbolTable> SymbolTableScopedPtr;
+typedef std::unique_ptr<SymbolTable> SymbolTableUniquePtr;
 
 class Symbol : public SymbolTableEntry
 {
@@ -92,7 +91,7 @@ public:
 };
 
 typedef QSharedPointer<Symbol> SymbolPtr;
-typedef QScopedPointer<Symbol> SymbolScopedPtr;
+typedef std::unique_ptr<Symbol> SymbolUniquePtr;
 
 class VariableSymbol : public Symbol
 {
@@ -103,7 +102,7 @@ public:
             );
     ~VariableSymbol();
 
-    ValueNodeScopedPtr getAssignedValue() const;
+    ValueNodeUniquePtr getAssignedValue() const;
 
     bool assignValue(const SimpleNode &NodeToAssign);
 
@@ -125,7 +124,7 @@ private:
 };
 
 typedef QSharedPointer<VariableSymbol> VariableSymbolPtr;
-typedef QScopedPointer<VariableSymbol> VariableSymbolScopedPtr;
+typedef std::unique_ptr<VariableSymbol> VariableSymbolUniquePtr;
 
 class FunctionSymbol : public Symbol
 {
@@ -136,17 +135,17 @@ public:
             );
     ~FunctionSymbol();
 
-    void addFunctionExpressions(QVector<SimpleNodeScopedPtr> FuncExpressions);
-    void addFunctionReturnStatement(SimpleNodeScopedPtr returnNode);
+    void addFunctionExpressions(QVector<SimpleNodeUniquePtr> &FuncExpressions);
+    void addFunctionReturnStatement(SimpleNodeUniquePtr returnNode);
 
     ValueNode CallFunction(
-            QVector<SimpleNodeScopedPtr> FunctionArguments,
+            QVector<SimpleNodeUniquePtr> &FunctionArguments,
             SymbolTableEntryPtr CurrentSymbolTable
             );
 
-    bool checkFunctionArguments(const QVector<SimpleNodeScopedPtr> &FunctionArguments) const;
+    bool checkFunctionArguments(const QVector<SimpleNodeUniquePtr> &FunctionArguments) const;
 
-    SymbolTable &getFunctionSymbolTable() const;
+    SymbolTablePtr getFunctionSymbolTable() const;
     // SymbolTableEntry interface
 public:
     SymbolTableEntryType getType() const;
@@ -157,16 +156,15 @@ public:
 public:
     SimpleNode::ValueTypes getReturnType() const;
 
-
 private:
+    SymbolTablePtr FunctionSymbolTable;
     SimpleNode::ValueTypes ReturnType;
     QVector<QSharedPointer<VariableNode>> FunctionParameters;
-    SymbolTable FunctionSymbolTable;
-    QVector<SimpleNodeScopedPtr> FunctionExpressions;
-    SimpleNodeScopedPtr FunctionReturnNode;
+    QVector<SimpleNodeUniquePtr> FunctionExpressions;
+    SimpleNodeUniquePtr FunctionReturnNode;
 };
 
 typedef QSharedPointer<FunctionSymbol> FunctionSymbolPtr;
-typedef QScopedPointer<FunctionSymbol> FunctionSymbolScopedPtr;
+typedef std::unique_ptr<FunctionSymbol> FunctionSymbolUniquePtr;
 
 #endif // SIMPLESYMBOLTABLE_H

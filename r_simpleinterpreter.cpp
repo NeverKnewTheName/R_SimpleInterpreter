@@ -124,17 +124,17 @@ void R_SimpleInterpreter::receiveLexerHTMLFormattedErrMsg(QString HTMLFormattedE
 
 void R_SimpleInterpreter::populateSymbolTableView(SymbolTable * const symbolTable, QStandardItem *SymbolTableModel)
 {
-    QVector<SymbolTableEntryPtr> symbolTableEntries = symbolTable->getSymbolTableEntries();
-    for(SymbolTableEntryPtr entry : symbolTableEntries)
-    {
-        QStandardItem *entryItem = new QStandardItem(entry->PrintSymbolType());
-        QList<QStandardItem*> row;
-        row.append(entryItem);
-        row.append(new QStandardItem(entry->PrintToSymbolToString()));
-        SymbolTableModel->appendRow(row);
-        if(entry->getType() == SymbolTableEntry::SubSymbolTable)
-        {
-            populateSymbolTableView(dynamic_cast<SymbolTable*>(entry.data()), entryItem);
-        }
-    }
+//    QVector<SymbolTableEntryPtr> symbolTableEntries = symbolTable->getSymbolTableEntries();
+//    for(SymbolTableEntryPtr entry : symbolTableEntries)
+//    {
+//        QStandardItem *entryItem = new QStandardItem(entry->PrintSymbolType());
+//        QList<QStandardItem*> row;
+//        row.append(entryItem);
+//        row.append(new QStandardItem(entry->PrintToSymbolToString()));
+//        SymbolTableModel->appendRow(row);
+//        if(entry->getType() == SymbolTableEntry::SubSymbolTable)
+//        {
+//            populateSymbolTableView(dynamic_cast<SymbolTable*>(entry.data()), entryItem);
+//        }
+//    }
 }
