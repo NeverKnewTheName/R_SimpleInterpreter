@@ -6,13 +6,13 @@
 class UnaryArithmeticOperationNode : public UnaryOperationNode
 {
 public:
-    UnaryArithmeticOperationNode(SimpleNodeUniquePtr rightChild);
+    UnaryArithmeticOperationNode(std::unique_ptr<SimpleNode> RightChild);
     OperationTypes getOpType() const;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual ValueNodeUniquePtr DoOperation() = 0;
+    virtual std::unique_ptr<ValueNode> DoOperation() const = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -21,7 +21,7 @@ public:
 class TypeCastNode : public UnaryArithmeticOperationNode
 {
 public:
-    TypeCastNode(SimpleNodeUniquePtr rightChild, SimpleNode::ValueTypes typeToCastTo);
+    TypeCastNode(std::unique_ptr<SimpleNode> RightChild, Node::ValueTypes typeToCastTo);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
@@ -37,18 +37,18 @@ public:
      *
      * \warning Only use this operation on Integer ValueNodes
      */
-    ValueNodeUniquePtr DoOperation();
+    std::unique_ptr<ValueNode> DoOperation() const;
 
     QString printValue() const;
     QString printNode() const;
 private:
-    SimpleNode::ValueTypes typeToCastTo;
+    Node::ValueTypes typeToCastTo;
 };
 
 class IncrementNode : public UnaryArithmeticOperationNode
 {
 public:
-    IncrementNode(SimpleNodeUniquePtr rightChild);
+    IncrementNode(std::unique_ptr<SimpleNode> RightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
@@ -64,7 +64,7 @@ public:
      *
      * \warning Only use this operation on Integer ValueNodes
      */
-    ValueNodeUniquePtr DoOperation();
+    std::unique_ptr<ValueNode> DoOperation() const;
 
     QString printValue() const;
     QString printNode() const;
@@ -73,7 +73,7 @@ public:
 class DecrementNode : public UnaryArithmeticOperationNode
 {
 public:
-    DecrementNode(SimpleNodeUniquePtr rightChild);
+    DecrementNode(std::unique_ptr<SimpleNode> RightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
@@ -89,7 +89,7 @@ public:
      *
      * \warning Only use this operation on Integer ValueNodes
      */
-    ValueNodeUniquePtr DoOperation();
+    std::unique_ptr<ValueNode> DoOperation() const;
 
     QString printValue() const;
     QString printNode() const;
@@ -98,7 +98,7 @@ public:
 class PositiveNode : public UnaryArithmeticOperationNode
 {
 public:
-    PositiveNode(SimpleNodeUniquePtr rightChild);
+    PositiveNode(std::unique_ptr<SimpleNode> RightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
@@ -114,7 +114,7 @@ public:
      *
      * \warning Only use this operation on Integer or Double ValueNodes
      */
-    ValueNodeUniquePtr DoOperation();
+    std::unique_ptr<ValueNode> DoOperation() const;
 
     QString printValue() const;
     QString printNode() const;
@@ -123,7 +123,7 @@ public:
 class NegativeNode : public UnaryArithmeticOperationNode
 {
 public:
-    NegativeNode(SimpleNodeUniquePtr rightChild);
+    NegativeNode(std::unique_ptr<SimpleNode> RightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
@@ -139,7 +139,7 @@ public:
      *
      * \warning Only use this operation on Integer or Double ValueNodes
      */
-    ValueNodeUniquePtr DoOperation();
+    std::unique_ptr<ValueNode> DoOperation() const;
 
     QString printValue() const;
     QString printNode() const;
@@ -148,13 +148,13 @@ public:
 class UnaryLogicalOperationNode : public UnaryOperationNode
 {
 public:
-    UnaryLogicalOperationNode(SimpleNodeUniquePtr rightChild);
+    UnaryLogicalOperationNode(std::unique_ptr<SimpleNode> RightChild);
     OperationTypes getOpType() const;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual ValueNodeUniquePtr DoOperation() = 0;
+    virtual std::unique_ptr<ValueNode> DoOperation() const = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -163,7 +163,7 @@ public:
 class LogicalNegationNode : public UnaryLogicalOperationNode
 {
 public:
-    LogicalNegationNode(SimpleNodeUniquePtr rightChild);
+    LogicalNegationNode(std::unique_ptr<SimpleNode> RightChild);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
@@ -180,7 +180,7 @@ public:
      * \warning Only use this operation on Integer, Double or Bool ValueNodes
      * \note If the passed ValueNode equals 0 (or 0.0) it is treated as Bool false, otherwise Bool true
      */
-    ValueNodeUniquePtr DoOperation();
+    std::unique_ptr<ValueNode> DoOperation() const;
 
     QString printValue() const;
     QString printNode() const;
@@ -189,13 +189,13 @@ public:
 class UnaryBitwiseOperationNode : public UnaryOperationNode
 {
 public:
-    UnaryBitwiseOperationNode(SimpleNodeUniquePtr rightChild);
+    UnaryBitwiseOperationNode(std::unique_ptr<SimpleNode> RightChild);
     OperationTypes getOpType() const;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual ValueNodeUniquePtr DoOperation() = 0;
+    virtual std::unique_ptr<ValueNode> DoOperation() const = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -204,7 +204,7 @@ public:
 class OnesComplementNode : public UnaryBitwiseOperationNode
 {
 public:
-    OnesComplementNode(SimpleNodeUniquePtr rightChild);
+    OnesComplementNode(std::unique_ptr<SimpleNode> RightChild);
     virtual Operation getOp() const;
     virtual Associativity getAssociativity() const;
     virtual Precedence getPrecedence() const;
@@ -220,7 +220,7 @@ public:
      *
      * \warning Only use this operation on Integer ValueNodes
      */
-    virtual ValueNodeUniquePtr DoOperation();
+    virtual std::unique_ptr<ValueNode> DoOperation() const;
 
     virtual QString printValue() const;
     virtual QString printNode() const;

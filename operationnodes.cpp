@@ -1,5 +1,9 @@
 #include "operationnodes.h"
 
+#include <QDebug>
+
+#include "valuenode.h"
+
 OperationNode::OperationNode()
 {
 }
@@ -9,23 +13,23 @@ OperationNode::~OperationNode()
     qDebug() << __PRETTY_FUNCTION__;
 }
 
-SimpleNode::NodeType OperationNode::getNodeType() const
+Node::NodeType OperationNode::getNodeType() const
 {
-    return SimpleNode::Operation;
+    return Node::Operation;
 }
 
-SimpleNode::ValueTypes OperationNode::getReturnType() const
+Node::ValueTypes OperationNode::getReturnType() const
 {
     return returnType;
 }
 
-const ValueNodeUniquePtr OperationNode::visit()
+std::unique_ptr<ValueNode> OperationNode::visit() const
 {
-    return ValueNodeScopePtr( new ValueNode(*(DoOperation())));
+    return DoOperation();
 }
 
-UnaryOperationNode::UnaryOperationNode(SimpleNodeUniquePtr rightChild) :
-    rightChild(std::move(rightChild))
+UnaryOperationNode::UnaryOperationNode(std::unique_ptr<SimpleNode> rightChild) :
+    UnaryOPRightChild(std::move(rightChild))
 {
 }
 
@@ -40,9 +44,9 @@ OperationNode::ArityTypes UnaryOperationNode::getArityType() const
 }
 
 
-BinaryOperationNode::BinaryOperationNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr rightChild) :
-    leftChild(std::move(leftChild)),
-    rightChild(std::move(rightChild))
+BinaryOperationNode::BinaryOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
+    BinaryOPLeftChild(std::move(leftChild)),
+    BinaryOPRightChild(std::move(rightChild))
 {
 }
 
@@ -56,10 +60,10 @@ OperationNode::ArityTypes BinaryOperationNode::getArityType() const
     return OperationNode::Binary;
 }
 
-TernaryOperationNode::TernaryOperationNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr midChild, SimpleNodeUniquePtr rightChild) :
-    leftChild(std::move(leftChild)),
-    midChild(std::move(midChild)),
-    rightChild(std::move(rightChild))
+TernaryOperationNode::TernaryOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> midChild, std::unique_ptr<SimpleNode> rightChild) :
+    TernaryOPLeftChild(std::move(leftChild)),
+    TernaryOPMidChild(std::move(midChild)),
+    TernaryOPRightChild(std::move(rightChild))
 {
 }
 

@@ -1,7 +1,7 @@
 #ifndef OPERATIONNODES_H
 #define OPERATIONNODES_H
 
-#include "simpleast.h"
+#include "simplenode.h"
 
 class OperationNode : public SimpleNode
 {
@@ -74,28 +74,28 @@ public:
 
     OperationNode();
     virtual ~OperationNode();
-    NodeType getNodeType() const;
-    SimpleNode::ValueTypes getReturnType() const;
+    Node::NodeType getNodeType() const;
+    Node::ValueTypes getReturnType() const;
     virtual ArityTypes getArityType() const = 0;
     virtual OperationTypes getOpType() const = 0;
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual ValueNodeUniquePtr DoOperation() = 0;
+    virtual std::unique_ptr<ValueNode> DoOperation() const = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
 
-    ValueNodeUniquePtr visit();
+    std::unique_ptr<ValueNode> visit() const;
 protected:
-    SimpleNode::ValueTypes returnType;
+    Node::ValueTypes returnType;
 };
 
 class UnaryOperationNode : public OperationNode
 {
 public:
-    UnaryOperationNode(SimpleNodeUniquePtr rightChild);
+    UnaryOperationNode(std::unique_ptr<SimpleNode> RightChild);
     virtual ~UnaryOperationNode();
     ArityTypes getArityType() const;
     virtual OperationTypes getOpType() const = 0;
@@ -103,13 +103,13 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual ValueNodeUniquePtr DoOperation() = 0;
+    virtual std::unique_ptr<ValueNode> DoOperation() const = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
 protected:
-    SimpleNodeUniquePtr rightChild;
-    SimpleNode::ValueTypes implicitCastRightChild;
+    std::unique_ptr<SimpleNode> UnaryOPRightChild;
+    Node::ValueTypes implicitCastRightChild;
 };
 
 
@@ -117,7 +117,7 @@ protected:
 class BinaryOperationNode : public OperationNode
 {
 public:
-    BinaryOperationNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr rightChild);
+    BinaryOperationNode(std::unique_ptr<SimpleNode> LeftChild, std::unique_ptr<SimpleNode> RightChild);
     virtual ~BinaryOperationNode();
     ArityTypes getArityType() const;
     virtual OperationTypes getOpType() const = 0;
@@ -125,22 +125,22 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual ValueNodeUniquePtr DoOperation() = 0;
+    virtual std::unique_ptr<ValueNode> DoOperation() const = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
 protected:
-    SimpleNodeUniquePtr leftChild;
-    SimpleNodeUniquePtr rightChild;
-    SimpleNode::ValueTypes implicitCastLeftChild;
-    SimpleNode::ValueTypes implicitCastRightChild;
+    std::unique_ptr<SimpleNode> BinaryOPLeftChild;
+    std::unique_ptr<SimpleNode> BinaryOPRightChild;
+    Node::ValueTypes implicitCastLeftChild;
+    Node::ValueTypes implicitCastRightChild;
 };
 
 
 class TernaryOperationNode : public OperationNode
 {
 public:
-    TernaryOperationNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr midChild ,SimpleNodeUniquePtr rightChild);
+    TernaryOperationNode(std::unique_ptr<SimpleNode> LeftChild, std::unique_ptr<SimpleNode> midChild ,std::unique_ptr<SimpleNode> rightChild);
     virtual ~TernaryOperationNode();
     ArityTypes getArityType() const;
     virtual OperationTypes getOpType() const = 0;
@@ -148,17 +148,17 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual ValueNodeUniquePtr DoOperation() = 0;
+    virtual std::unique_ptr<ValueNode> DoOperation() const = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
 protected:
-    SimpleNodeUniquePtr leftChild;
-    SimpleNodeUniquePtr midChild;
-    SimpleNodeUniquePtr rightChild;
-    SimpleNode::ValueTypes implicitCastLeftChild;
-    SimpleNode::ValueTypes implicitCastMidChild;
-    SimpleNode::ValueTypes implicitCastRightChild;
+    std::unique_ptr<SimpleNode> TernaryOPLeftChild;
+    std::unique_ptr<SimpleNode> TernaryOPMidChild;
+    std::unique_ptr<SimpleNode> TernaryOPRightChild;
+    Node::ValueTypes implicitCastLeftChild;
+    Node::ValueTypes implicitCastMidChild;
+    Node::ValueTypes implicitCastRightChild;
 };
 
 #endif // OPERATIONNODES_H

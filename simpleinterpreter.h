@@ -2,23 +2,25 @@
 #define SIMPLEINTERPRETER_H
 
 #include <QString>
-#include "simplesymboltable.h"
+#include <QSharedPointer>
+#include <memory>
 
 class SimpleNode;
 class ValueNode;
 class SimpleParser;
+class SymbolTable;
 
 class SimpleInterpreter
 {
 public:
     SimpleInterpreter(SimpleParser *parser);
-    SimpleInterpreter(const QString &StringToInterpret, SymbolTable &GlobalSymbolTable);
+    SimpleInterpreter(const QString &StringToInterpret, QSharedPointer<SymbolTable> GlobalSymbolTable);
     ~SimpleInterpreter();
 
-    ValueNode *interpret();
+    std::unique_ptr<ValueNode> interpret();
 private:
     SimpleParser *parser;
-    SimpleNode *tree;
+    std::unique_ptr<SimpleNode> tree;
 };
 
 #endif // SIMPLEINTERPRETER_H

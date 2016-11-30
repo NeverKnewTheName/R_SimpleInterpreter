@@ -5,7 +5,7 @@
 #include <QSharedPointer>
 #include <QDebug>
 
-#include "simpleast.h"
+#include "simplenode.h"
 
 class SimpleToken
 {
@@ -94,7 +94,7 @@ public:
 class ValueToken : public SimpleToken
 {
 public:
-    ValueToken(const QVariant value, const SimpleNode::ValueTypes valueType, const int TokenPos, const int TokenLen) :
+    ValueToken(const QVariant value, const Node::ValueTypes valueType, const int TokenPos, const int TokenLen) :
         SimpleToken(SimpleToken::Value, TokenPos, TokenLen),
         value(value),
         valueType(valueType)
@@ -124,7 +124,7 @@ public:
         return value.value<QString>();
     }
 
-    SimpleNode::ValueTypes getValueType() const
+    Node::ValueTypes getValueType() const
     {
         return valueType;
     }
@@ -142,7 +142,7 @@ public:
 
 private:
     const QVariant value;
-    const SimpleNode::ValueTypes valueType;
+    const Node::ValueTypes valueType;
 };
 
 class IntegerToken : public SimpleToken
@@ -299,10 +299,10 @@ public:
 class TypeNameToken : public SimpleToken
 {
 public:
-    TypeNameToken(SimpleNode::ValueTypes type, const int TokenPos, const int TokenLen);
+    TypeNameToken(Node::ValueTypes type, const int TokenPos, const int TokenLen);
     ~TypeNameToken();
 
-    SimpleNode::ValueTypes getType() const;
+    Node::ValueTypes getType() const;
 
     // SimpleToken interface
 public:
@@ -310,7 +310,7 @@ public:
     QString printToken() const;
 
 private:
-    const SimpleNode::ValueTypes type;
+    const Node::ValueTypes type;
 };
 
 class SemiColonDelimToken : public SimpleToken

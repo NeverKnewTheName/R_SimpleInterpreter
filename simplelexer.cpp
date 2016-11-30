@@ -39,6 +39,7 @@ SimpleLexer::SimpleLexer(const QString &InputString, QObject *parent) :
 
 SimpleLexer::~SimpleLexer()
 {
+    qDebug() << __PRETTY_FUNCTION__;
 }
 
 void SimpleLexer::setStringForLexer(const QString &InputString)
@@ -87,26 +88,26 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
         {
             //TypeName
             QString TypeName = regExMatch.captured(REGEX_TYPENAME);
-            SimpleNode::ValueTypes type = SimpleNode::Integer;
+            Node::ValueTypes type = Node::Integer;
             if(!TypeName.compare(QString("Integer")))
             {
-                type = SimpleNode::Integer;
+                type = Node::Integer;
             }
             else if(!TypeName.compare(QString("Double")))
             {
-                type = SimpleNode::Double;
+                type = Node::Double;
             }
             else if(!TypeName.compare(QString("Bool")))
             {
-                type = SimpleNode::Bool;
+                type = Node::Bool;
             }
             else if(!TypeName.compare(QString("String")))
             {
-                type = SimpleNode::String;
+                type = Node::String;
             }
             else if(!TypeName.compare(QString("Void")))
             {
-                type = SimpleNode::Void;
+                type = Node::Void;
             }
             Token = SharedSimpleTokenPtr(new TypeNameToken(type, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
         }
@@ -114,7 +115,7 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
         {
             //IsString
             QString string = regExMatch.captured(REGEX_STRING);
-            Token = SharedSimpleTokenPtr(new ValueToken(QVariant(string), SimpleNode::String, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+            Token = SharedSimpleTokenPtr(new ValueToken(QVariant(string), Node::String, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
         }
         else if(!regExMatch.captured(REGEX_VALUE).isNull())
         {
@@ -125,18 +126,18 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
                 if(!regExMatch.captured(REGEX_NUMBER_AFTER_POINT).isNull())
                 {
                     //IsDouble
-                    Token = SharedSimpleTokenPtr(new ValueToken(QVariant(regExMatch.captured(REGEX_VALUE).toDouble()), SimpleNode::Double, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+                    Token = SharedSimpleTokenPtr(new ValueToken(QVariant(regExMatch.captured(REGEX_VALUE).toDouble()), Node::Double, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else
                 {
                     //IsInteger
-                    Token = SharedSimpleTokenPtr(new ValueToken(QVariant(regExMatch.captured(REGEX_VALUE).toInt()), SimpleNode::Integer, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+                    Token = SharedSimpleTokenPtr(new ValueToken(QVariant(regExMatch.captured(REGEX_VALUE).toInt()), Node::Integer, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
             }
             else if(!regExMatch.captured(REGEX_VALUE_BOOL).isNull())
             {
                 //Boolean
-                Token = SharedSimpleTokenPtr(new ValueToken(QVariant((regExMatch.captured(REGEX_VALUE).compare(QString("true")) ? false : true)), SimpleNode::Bool, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+                Token = SharedSimpleTokenPtr(new ValueToken(QVariant((regExMatch.captured(REGEX_VALUE).compare(QString("true")) ? false : true)), Node::Bool, PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
             }
         }
         else if(!regExMatch.captured(REGEX_DATA).isNull())

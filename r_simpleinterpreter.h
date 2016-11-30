@@ -5,7 +5,7 @@
 
 #include <QStandardItem>
 
-#include <simplesymboltable.h>
+#include <symboltable.h>
 
 class SimpleLexer;
 class SimpleParser;
@@ -37,7 +37,7 @@ private:
     SimpleLexer *lex;
     SimpleParser *parse;
     SimpleInterpreter *interpr;
-    SymbolTable GlobalSymbolTable;
+    QSharedPointer<SymbolTable> GlobalSymbolTable;
 };
 
 #endif // R_SIMPLEINTERPRETER_H

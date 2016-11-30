@@ -1,7 +1,9 @@
 #include "ternaryoperationnodes.h"
 
-TernaryArithmeticOperationNode::TernaryArithmeticOperationNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr midChild, SimpleNodeUniquePtr rightChild) :
-    TernaryOperationNode(leftChild, midChild, rightChild)
+#include "valuenode.h"
+
+TernaryArithmeticOperationNode::TernaryArithmeticOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> midChild, std::unique_ptr<SimpleNode> rightChild) :
+    TernaryOperationNode(std::move(leftChild), std::move(midChild), std::move(rightChild))
 {
 
 }
@@ -11,8 +13,8 @@ OperationNode::OperationTypes TernaryArithmeticOperationNode::getOpType() const
     return OperationNode::Arithmetic;
 }
 
-TernaryLogicalOperationNode::TernaryLogicalOperationNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr midChild, SimpleNodeUniquePtr rightChild) :
-    TernaryOperationNode(leftChild, midChild, rightChild)
+TernaryLogicalOperationNode::TernaryLogicalOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> midChild, std::unique_ptr<SimpleNode> rightChild) :
+    TernaryOperationNode(std::move(leftChild), std::move(midChild), std::move(rightChild))
 {
 
 }
@@ -22,70 +24,70 @@ OperationNode::OperationTypes TernaryLogicalOperationNode::getOpType() const
     return OperationNode::Logical;
 }
 
-ConditionalNode::ConditionalNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr midChild, SimpleNodeUniquePtr rightChild) :
-    TernaryLogicalOperationNode(leftChild, midChild, rightChild)
+ConditionalNode::ConditionalNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> midChild, std::unique_ptr<SimpleNode> rightChild) :
+    TernaryLogicalOperationNode(std::move(leftChild), std::move(midChild), std::move(rightChild))
 {
-    SimpleNode::ValueTypes returnTypeLChild = leftChild->getReturnType();
-    SimpleNode::ValueTypes returnTypeMChild = midChild->getReturnType();
-    SimpleNode::ValueTypes returnTypeRChild = rightChild->getReturnType();
+    Node::ValueTypes returnTypeLChild = TernaryOPLeftChild->getReturnType();
+    Node::ValueTypes returnTypeMChild = TernaryOPMidChild->getReturnType();
+    Node::ValueTypes returnTypeRChild = TernaryOPRightChild->getReturnType();
 
-    returnType = ValueNode::ErrorType;
+    returnType = Node::ErrorType;
 
-    if( ( returnTypeLChild == ValueNode::Bool ) ||
-            ( returnTypeLChild == ValueNode::Integer ) ||
-            ( returnTypeLChild == ValueNode::Double ) )
+    if( ( returnTypeLChild == Node::Bool ) ||
+            ( returnTypeLChild == Node::Integer ) ||
+            ( returnTypeLChild == Node::Double ) )
     {
-        implicitCastLeftChild = ValueNode::Bool;
+        implicitCastLeftChild = Node::Bool;
         switch(returnTypeMChild)
         {
-        case ValueNode::Integer:
-            if(returnTypeRChild == ValueNode::Double)
+        case Node::Integer:
+            if(returnTypeRChild == Node::Double)
             {
-                implicitCastMidChild = ValueNode::Double;
-                implicitCastRightChild = ValueNode::Double;
-                returnType = ValueNode::Double;
+                implicitCastMidChild = Node::Double;
+                implicitCastRightChild = Node::Double;
+                returnType = Node::Double;
             }
-            else if( returnTypeRChild == ValueNode::Bool )
+            else if( returnTypeRChild == Node::Bool )
             {
-                implicitCastMidChild = ValueNode::Bool;
-                implicitCastRightChild = ValueNode::Bool;
-                returnType = ValueNode::Bool;
+                implicitCastMidChild = Node::Bool;
+                implicitCastRightChild = Node::Bool;
+                returnType = Node::Bool;
             }
-            else if( returnTypeRChild != ValueNode::String )
+            else if( returnTypeRChild != Node::String )
             {
-                implicitCastMidChild = ValueNode::Integer;
-                implicitCastRightChild = ValueNode::Integer;
-                returnType = ValueNode::Integer;
-            }
-            break;
-        case ValueNode::Double:
-            if( returnTypeRChild == ValueNode::Bool )
-            {
-                implicitCastMidChild = ValueNode::Bool;
-                implicitCastRightChild = ValueNode::Bool;
-                returnType = ValueNode::Bool;
-            }
-            else if( returnTypeRChild != ValueNode::String )
-            {
-                implicitCastMidChild = ValueNode::Double;
-                implicitCastRightChild = ValueNode::Double;
-                returnType = ValueNode::Double; // Implicitly casts Integer to Double
+                implicitCastMidChild = Node::Integer;
+                implicitCastRightChild = Node::Integer;
+                returnType = Node::Integer;
             }
             break;
-        case ValueNode::Bool:
-            if( returnTypeRChild != ValueNode::String )
+        case Node::Double:
+            if( returnTypeRChild == Node::Bool )
             {
-                implicitCastMidChild = ValueNode::Bool;
-                implicitCastRightChild = ValueNode::Bool;
-                returnType = ValueNode::Bool; // Implicitly casts Integer and Double to Bool
+                implicitCastMidChild = Node::Bool;
+                implicitCastRightChild = Node::Bool;
+                returnType = Node::Bool;
+            }
+            else if( returnTypeRChild != Node::String )
+            {
+                implicitCastMidChild = Node::Double;
+                implicitCastRightChild = Node::Double;
+                returnType = Node::Double; // Implicitly casts Integer to Double
             }
             break;
-        case ValueNode::String: // if one return ChildNode is a String, the other node must also be a String
-            if( returnTypeRChild == ValueNode::String )
+        case Node::Bool:
+            if( returnTypeRChild != Node::String )
             {
-                implicitCastMidChild = ValueNode::String;
-                implicitCastRightChild = ValueNode::String;
-                returnType = ValueNode::String;
+                implicitCastMidChild = Node::Bool;
+                implicitCastRightChild = Node::Bool;
+                returnType = Node::Bool; // Implicitly casts Integer and Double to Bool
+            }
+            break;
+        case Node::String: // if one return ChildNode is a String, the other node must also be a String
+            if( returnTypeRChild == Node::String )
+            {
+                implicitCastMidChild = Node::String;
+                implicitCastRightChild = Node::String;
+                returnType = Node::String;
             }
             break;
         }
@@ -107,48 +109,48 @@ OperationNode::Precedence ConditionalNode::getPrecedence() const
     return OperationNode::ConditionalPrec;
 }
 
-const ValueNodeUniquePtr ConditionalNode::DoOperation()
+std::unique_ptr<ValueNode> ConditionalNode::DoOperation() const
 {
-    ValueNodeUniquePtr value1(leftChild->visit().take());
-    ValueNodeUniquePtr value2(midChild->visit().take());
-    ValueNodeUniquePtr value3(rightChild->visit().take());
+    std::unique_ptr<ValueNode> value1 = TernaryOPLeftChild->visit();
+    std::unique_ptr<ValueNode> value2 = TernaryOPMidChild->visit();
+    std::unique_ptr<ValueNode> value3 = TernaryOPRightChild->visit();
 
     bool IsTrue = value1->getValue().value<bool>();
 
     switch(implicitCastMidChild)
     {
-    case SimpleNode::Integer:
-        if(implicitCastRightChild == SimpleNode::Double)
+    case Node::Integer:
+        if(implicitCastRightChild == Node::Double)
         {
-            return ValueNodeUniquePtr(new ValueNode((IsTrue) ? value2->getValue().value<double>() : value3->getValue().value<double>() ));
+            return std::unique_ptr<ValueNode>(new ValueNode((IsTrue) ? value2->getValue().value<double>() : value3->getValue().value<double>() ));
         }
-        else if(implicitCastRightChild == SimpleNode::Bool)
+        else if(implicitCastRightChild == Node::Bool)
         {
-            return ValueNodeUniquePtr(new ValueNode((IsTrue) ? value2->getValue().value<bool>() : value3->getValue().value<bool>() ));
-        }
-        else
-        {
-            return ValueNodeUniquePtr(new ValueNode((IsTrue) ? value2->getValue().value<int>() : value3->getValue().value<int>() ));
-        }
-        break;
-    case SimpleNode::Double:
-        if(implicitCastRightChild == SimpleNode::Bool)
-        {
-            return ValueNodeUniquePtr(new ValueNode((IsTrue) ? value2->getValue().value<bool>() : value3->getValue().value<bool>() ));
+            return std::unique_ptr<ValueNode>(new ValueNode((IsTrue) ? value2->getValue().value<bool>() : value3->getValue().value<bool>() ));
         }
         else
         {
-            return ValueNodeUniquePtr(new ValueNode((IsTrue) ? value2->getValue().value<double>() : value3->getValue().value<double>() ));
+            return std::unique_ptr<ValueNode>(new ValueNode((IsTrue) ? value2->getValue().value<int>() : value3->getValue().value<int>() ));
         }
         break;
-    case SimpleNode::Bool:
-        return ValueNodeUniquePtr(new ValueNode((IsTrue) ? value2->getValue().value<bool>() : value3->getValue().value<bool>() ));
+    case Node::Double:
+        if(implicitCastRightChild == Node::Bool)
+        {
+            return std::unique_ptr<ValueNode>(new ValueNode((IsTrue) ? value2->getValue().value<bool>() : value3->getValue().value<bool>() ));
+        }
+        else
+        {
+            return std::unique_ptr<ValueNode>(new ValueNode((IsTrue) ? value2->getValue().value<double>() : value3->getValue().value<double>() ));
+        }
         break;
-    case SimpleNode::String:
-        return ValueNodeUniquePtr(new ValueNode((IsTrue) ? value2->getValue().value<QString>() : value3->getValue().value<QString>() ));
+    case Node::Bool:
+        return std::unique_ptr<ValueNode>(new ValueNode((IsTrue) ? value2->getValue().value<bool>() : value3->getValue().value<bool>() ));
+        break;
+    case Node::String:
+        return std::unique_ptr<ValueNode>(new ValueNode((IsTrue) ? value2->getValue().value<QString>() : value3->getValue().value<QString>() ));
         break;
     default:
-        return ValueNodeUniquePtr(new ValueNode());
+        return std::unique_ptr<ValueNode>(new ValueNode());
     }
 
 }
@@ -166,8 +168,8 @@ QString ConditionalNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
-TernaryBitwiseOperationNode::TernaryBitwiseOperationNode(SimpleNodeUniquePtr leftChild, SimpleNodeUniquePtr midChild, SimpleNodeUniquePtr rightChild) :
-    TernaryOperationNode(leftChild, midChild, rightChild)
+TernaryBitwiseOperationNode::TernaryBitwiseOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> midChild, std::unique_ptr<SimpleNode> rightChild) :
+    TernaryOperationNode(std::move(leftChild), std::move(midChild), std::move(rightChild))
 {
 
 }

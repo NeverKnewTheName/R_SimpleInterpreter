@@ -17,26 +17,44 @@ SOURCES += main.cpp\
     simplelexer.cpp \
     simpletoken.cpp \
     simpleparser.cpp \
-    simpleast.cpp \
-    simplesymboltable.cpp \
     simpleinterpreter.cpp \
     operationnodes.cpp \
     unaryoperationnodes.cpp \
     binaryoperationnodes.cpp \
     ternaryoperationnodes.cpp \
-    symbolnodes.cpp
+    variablenode.cpp \
+    datanode.cpp \
+    functioncallnode.cpp \
+    assignmentnode.cpp \
+    programnode.cpp \
+    simplenode.cpp \
+    valuenode.cpp \
+    symboltableentry.cpp \
+    symbol.cpp \
+    symboltable.cpp \
+    variablesymbol.cpp \
+    functionsymbol.cpp
 
 HEADERS  += r_simpleinterpreter.h \
     simplelexer.h \
     simpletoken.h \
     simpleparser.h \
-    simpleast.h \
-    simplesymboltable.h \
     simpleinterpreter.h \
     operationnodes.h \
     unaryoperationnodes.h \
     binaryoperationnodes.h \
     ternaryoperationnodes.h \
-    symbolnodes.h
+    variablenode.h \
+    datanode.h \
+    functioncallnode.h \
+    assignmentnode.h \
+    programnode.h \
+    simplenode.h \
+    valuenode.h \
+    symboltableentry.h \
+    symbol.h \
+    symboltable.h \
+    variablesymbol.h \
+    functionsymbol.h
 
 FORMS    += r_simpleinterpreter.ui

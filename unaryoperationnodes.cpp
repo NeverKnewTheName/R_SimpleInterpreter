@@ -1,8 +1,14 @@
 #include "unaryoperationnodes.h"
-#include "symbolnodes.h"
 
-UnaryArithmeticOperationNode::UnaryArithmeticOperationNode(SimpleNodeUniquePtr rightChild) :
-    UnaryOperationNode(rightChild)
+#include "simplenode.h"
+#include "valuenode.h"
+
+#include "variablenode.h"
+#include "programnode.h"
+
+
+UnaryArithmeticOperationNode::UnaryArithmeticOperationNode(std::unique_ptr<SimpleNode> rightChild) :
+    UnaryOperationNode(std::move(rightChild))
 {
 }
 
@@ -11,43 +17,43 @@ OperationNode::OperationTypes UnaryArithmeticOperationNode::getOpType() const
     return OperationNode::Arithmetic;
 }
 
-TypeCastNode::TypeCastNode(SimpleNodeUniquePtr rightChild, SimpleNode::ValueTypes typeToCastTo) :
-    UnaryArithmeticOperationNode(rightChild),
+TypeCastNode::TypeCastNode(std::unique_ptr<SimpleNode> rightChild, Node::ValueTypes typeToCastTo) :
+    UnaryArithmeticOperationNode(std::move(rightChild)),
     typeToCastTo(typeToCastTo)
 {
-    returnType = rightChild->getReturnType();
+    returnType = UnaryOPRightChild->getReturnType();
 
     switch(returnType)
     {
-    case SimpleNode::Integer:
-    case SimpleNode::Double:
-    case SimpleNode::Bool:
-        if(typeToCastTo != SimpleNode::ErrorType )
+    case Node::Integer:
+    case Node::Double:
+    case Node::Bool:
+        if(typeToCastTo != Node::ErrorType )
         {
             implicitCastRightChild = typeToCastTo;
             returnType = typeToCastTo;
         }
         else
         {
-            implicitCastRightChild = SimpleNode::ErrorType;
-            returnType = ErrorType;
+            implicitCastRightChild = Node::ErrorType;
+            returnType = Node::ErrorType;
         }
         break;
-    case SimpleNode::String:
-        if(typeToCastTo == SimpleNode::String)
+    case Node::String:
+        if(typeToCastTo == Node::String)
         {
-            implicitCastRightChild = SimpleNode::String;
-            returnType = SimpleNode::String;
+            implicitCastRightChild = Node::String;
+            returnType = Node::String;
         }
         else
         {
-            implicitCastRightChild = SimpleNode::ErrorType;
-            returnType = ErrorType;
+            implicitCastRightChild = Node::ErrorType;
+            returnType = Node::ErrorType;
         }
         break;
-    case SimpleNode::ErrorType:
-        implicitCastRightChild = SimpleNode::ErrorType;
-        returnType = ErrorType;
+    case Node::ErrorType:
+        implicitCastRightChild = Node::ErrorType;
+        returnType = Node::ErrorType;
         break;
     }
 }
@@ -67,27 +73,27 @@ OperationNode::Precedence TypeCastNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-ValueNodeUniquePtr TypeCastNode::DoOperation()
+std::unique_ptr<ValueNode> TypeCastNode::DoOperation() const
 {
-    ValueNodeUniquePtr value(rightChild->visit().take());
+    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
 
     switch(typeToCastTo)
     {
-    case SimpleNode::Integer:
-        return ValueNodeUniquePtr( new ValueNode(value.getValue().value<int>()));
+    case Node::Integer:
+        return std::unique_ptr<ValueNode>( new ValueNode(value->getValue().value<int>()));
         break;
-    case SimpleNode::Double:
-        return ValueNodeUniquePtr( new ValueNode(value.getValue().value<double>()));
+    case Node::Double:
+        return std::unique_ptr<ValueNode>( new ValueNode(value->getValue().value<double>()));
         break;
-    case SimpleNode::Bool:
-        return ValueNodeUniquePtr( new ValueNode(value.getValue().value<bool>()));
+    case Node::Bool:
+        return std::unique_ptr<ValueNode>( new ValueNode(value->getValue().value<bool>()));
         break;
-    case SimpleNode::String:
-        return ValueNodeUniquePtr( new ValueNode(value.getValue().value<QString>()));
+    case Node::String:
+        return std::unique_ptr<ValueNode>( new ValueNode(value->getValue().value<QString>()));
         break;
-    case SimpleNode::ErrorType:
+    case Node::ErrorType:
     default:
-        return ValueNodeUniquePtr( new ValueNode());
+        return std::unique_ptr<ValueNode>( new ValueNode());
     }
 }
 
@@ -96,19 +102,19 @@ QString TypeCastNode::printValue() const
     QString TypeClearName;
     switch(typeToCastTo)
     {
-    case SimpleNode::Integer:
+    case Node::Integer:
         TypeClearName = QString("Integer");
         break;
-    case SimpleNode::Double:
+    case Node::Double:
         TypeClearName = QString("Double");
         break;
-    case SimpleNode::Bool:
+    case Node::Bool:
         TypeClearName = QString("Bool");
         break;
-    case SimpleNode::String:
+    case Node::String:
         TypeClearName = QString("String");
         break;
-    case SimpleNode::ErrorType:
+    case Node::ErrorType:
         TypeClearName = QString("ErrorType");
         break;
     }
@@ -121,17 +127,17 @@ QString TypeCastNode::printNode() const
     return QString("{(TypeCast):(%1)}").arg(printValue());
 }
 
-IncrementNode::IncrementNode(SimpleNodeUniquePtr rightChild) :
-    UnaryArithmeticOperationNode(rightChild)
+IncrementNode::IncrementNode(std::unique_ptr<SimpleNode> rightChild) :
+    UnaryArithmeticOperationNode(std::move(rightChild))
 {
-    returnType = rightChild->getReturnType();
-    if(returnType == ValueNode::Integer)
+    returnType = UnaryOPRightChild->getReturnType();
+    if(returnType == Node::Integer)
     {
-        implicitCastRightChild = SimpleNode::Integer;
+        implicitCastRightChild = Node::Integer;
     }
     else
     {
-        returnType = ValueNode::ErrorType;
+        returnType = Node::ErrorType;
     }
 }
 
@@ -150,15 +156,15 @@ OperationNode::Precedence IncrementNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-ValueNodeUniquePtr IncrementNode::DoOperation()
+std::unique_ptr<ValueNode> IncrementNode::DoOperation() const
 {
-    ValueNodeUniquePtr value(rightChild->visit().take());
+    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
 
     ValueNode Result = ValueNode(value->getValue().value<int>() + 1);
 
-    dynamic_cast<VariableNode*>(rightChild.data())->getRelatedVariableSymbol()->assignValue(Result);
+    dynamic_cast<VariableNode*>(UnaryOPRightChild.get())->getRelatedVariableSymbol()->assignValue(Result);
 
-    return ValueNodeUniquePtr( new ValueNode(Result));
+    return std::unique_ptr<ValueNode>( new ValueNode(Result));
 }
 
 QString IncrementNode::printValue() const
@@ -174,17 +180,17 @@ QString IncrementNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
-DecrementNode::DecrementNode(SimpleNodeUniquePtr rightChild) :
-    UnaryArithmeticOperationNode(rightChild)
+DecrementNode::DecrementNode(std::unique_ptr<SimpleNode> rightChild) :
+    UnaryArithmeticOperationNode(std::move(rightChild))
 {
-    returnType = rightChild->getReturnType();
-    if(returnType == ValueNode::Integer)
+    returnType = UnaryOPRightChild->getReturnType();
+    if(returnType == Node::Integer)
     {
-        implicitCastRightChild = SimpleNode::Integer;
+        implicitCastRightChild = Node::Integer;
     }
     else
     {
-        returnType = ValueNode::ErrorType;
+        returnType = Node::ErrorType;
     }
 }
 
@@ -203,15 +209,15 @@ OperationNode::Precedence DecrementNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-ValueNodeUniquePtr DecrementNode::DoOperation()
+std::unique_ptr<ValueNode> DecrementNode::DoOperation() const
 {
-    ValueNodeUniquePtr value(rightChild->visit().take());
+    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
 
     ValueNode Result = ValueNode(value->getValue().value<int>() - 1);
 
-    dynamic_cast<VariableNode*>(rightChild.data())->getRelatedVariableSymbol()->assignValue(Result);
+    dynamic_cast<VariableNode*>(UnaryOPRightChild.get())->getRelatedVariableSymbol()->assignValue(Result);
 
-    return ValueNodeUniquePtr( new ValueNode(Result));
+    return std::unique_ptr<ValueNode>( new ValueNode(Result));
 }
 
 QString DecrementNode::printValue() const
@@ -227,21 +233,21 @@ QString DecrementNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
-PositiveNode::PositiveNode(SimpleNodeUniquePtr rightChild) :
-    UnaryArithmeticOperationNode(rightChild)
+PositiveNode::PositiveNode(std::unique_ptr<SimpleNode> rightChild) :
+    UnaryArithmeticOperationNode(std::move(rightChild))
 {
-    returnType = rightChild->getReturnType();
-    if( returnType == ValueNode::Integer )
+    returnType = UnaryOPRightChild->getReturnType();
+    if( returnType == Node::Integer )
     {
-        implicitCastRightChild = SimpleNode::Integer;
+        implicitCastRightChild = Node::Integer;
     }
-    else if( returnType == ValueNode::Double )
+    else if( returnType == Node::Double )
     {
-        implicitCastRightChild = SimpleNode::Double;
+        implicitCastRightChild = Node::Double;
     }
     else
     {
-        returnType = ValueNode::ErrorType;
+        returnType = Node::ErrorType;
     }
 }
 
@@ -260,20 +266,20 @@ OperationNode::Precedence PositiveNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-ValueNodeUniquePtr PositiveNode::DoOperation()
+std::unique_ptr<ValueNode> PositiveNode::DoOperation() const
 {
-    ValueNodeUniquePtr value(rightChild->visit().take());
+    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
 
     switch(implicitCastRightChild)
     {
-    case ValueNode::Integer:
-        return ValueNodeUniquePtr( new ValueNode(value.getValue().value<int>()));
+    case Node::Integer:
+        return std::unique_ptr<ValueNode>( new ValueNode(value->getValue().value<int>()));
         break;
-    case ValueNode::Double:
-        return ValueNodeUniquePtr( new ValueNode(value.getValue().value<double>()));
+    case Node::Double:
+        return std::unique_ptr<ValueNode>( new ValueNode(value->getValue().value<double>()));
         break;
     default:
-        return ValueNodeUniquePtr( new ValueNode());
+        return std::unique_ptr<ValueNode>( new ValueNode());
     }
 }
 
@@ -290,21 +296,21 @@ QString PositiveNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
-NegativeNode::NegativeNode(SimpleNodeUniquePtr rightChild) :
-    UnaryArithmeticOperationNode(rightChild)
+NegativeNode::NegativeNode(std::unique_ptr<SimpleNode> rightChild) :
+    UnaryArithmeticOperationNode(std::move(rightChild))
 {
-    returnType = rightChild->getReturnType();
-    if( returnType == ValueNode::Integer )
+    returnType = UnaryOPRightChild->getReturnType();
+    if( returnType == Node::Integer )
     {
-        implicitCastRightChild = SimpleNode::Integer;
+        implicitCastRightChild = Node::Integer;
     }
-    else if( returnType == ValueNode::Double )
+    else if( returnType == Node::Double )
     {
-        implicitCastRightChild = SimpleNode::Double;
+        implicitCastRightChild = Node::Double;
     }
     else
     {
-        returnType = ValueNode::ErrorType;
+        returnType = Node::ErrorType;
     }
 }
 
@@ -323,20 +329,20 @@ OperationNode::Precedence NegativeNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-ValueNodeUniquePtr NegativeNode::DoOperation()
+std::unique_ptr<ValueNode> NegativeNode::DoOperation() const
 {
-    ValueNodeUniquePtr value(rightChild->visit().take());
+    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
 
     switch(implicitCastRightChild)
     {
-    case ValueNode::Integer:
-        return ValueNodeUniquePtr( new ValueNode(value.getValue().value<int>() * -1));
+    case Node::Integer:
+        return std::unique_ptr<ValueNode>( new ValueNode(value->getValue().value<int>() * -1));
         break;
-    case ValueNode::Double:
-        return ValueNodeUniquePtr( new ValueNode(value.getValue().value<double>() * -1));
+    case Node::Double:
+        return std::unique_ptr<ValueNode>( new ValueNode(value->getValue().value<double>() * -1));
         break;
     default:
-        return ValueNodeUniquePtr( new ValueNode());
+        return std::unique_ptr<ValueNode>( new ValueNode());
     }
 }
 
@@ -353,8 +359,8 @@ QString NegativeNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
-UnaryLogicalOperationNode::UnaryLogicalOperationNode(SimpleNodeUniquePtr rightChild) :
-    UnaryOperationNode(rightChild)
+UnaryLogicalOperationNode::UnaryLogicalOperationNode(std::unique_ptr<SimpleNode> rightChild) :
+    UnaryOperationNode(std::move(rightChild))
 {
 }
 
@@ -363,12 +369,12 @@ OperationNode::OperationTypes UnaryLogicalOperationNode::getOpType() const
     return OperationNode::Logical;
 }
 
-LogicalNegationNode::LogicalNegationNode(SimpleNodeUniquePtr rightChild) :
-    UnaryLogicalOperationNode(rightChild)
+LogicalNegationNode::LogicalNegationNode(std::unique_ptr<SimpleNode> rightChild) :
+    UnaryLogicalOperationNode(std::move(rightChild))
 {
-    returnType = rightChild->getReturnType();
-    if( ( returnType != ValueNode::Integer ) && ( returnType != ValueNode::Double )  && ( returnType != ValueNode::Bool ) )
-        returnType = ValueNode::ErrorType;
+    returnType = UnaryOPRightChild->getReturnType();
+    if( ( returnType != Node::Integer ) && ( returnType != Node::Double )  && ( returnType != Node::Bool ) )
+        returnType = Node::ErrorType;
 }
 
 OperationNode::Operation LogicalNegationNode::getOp() const
@@ -386,25 +392,25 @@ OperationNode::Precedence LogicalNegationNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-ValueNodeUniquePtr LogicalNegationNode::DoOperation()
+std::unique_ptr<ValueNode> LogicalNegationNode::DoOperation() const
 {
-    ValueNodeUniquePtr value(rightChild->visit().take());
+    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
 
     bool IsTrue = value->getValue().value<bool>();
 
     switch(implicitCastRightChild)
     {
-    case ValueNode::Integer:
-        return ValueNodeUniquePtr( new ValueNode(IsTrue ? 0 : 1));
+    case Node::Integer:
+        return std::unique_ptr<ValueNode>( new ValueNode(IsTrue ? 0 : 1));
         break;
-    case ValueNode::Double:
-        return ValueNodeUniquePtr( new ValueNode(IsTrue ? 0.0 : 1.0));
+    case Node::Double:
+        return std::unique_ptr<ValueNode>( new ValueNode(IsTrue ? 0.0 : 1.0));
         break;
-    case ValueNode::Bool:
-        return ValueNodeUniquePtr( new ValueNode(IsTrue ? false : true));
+    case Node::Bool:
+        return std::unique_ptr<ValueNode>( new ValueNode(IsTrue ? false : true));
         break;
     default:
-        return ValueNodeUniquePtr( new ValueNode());
+        return std::unique_ptr<ValueNode>( new ValueNode());
     }
 }
 
@@ -421,8 +427,8 @@ QString LogicalNegationNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
-UnaryBitwiseOperationNode::UnaryBitwiseOperationNode(SimpleNodeUniquePtr rightChild) :
-    UnaryOperationNode(rightChild)
+UnaryBitwiseOperationNode::UnaryBitwiseOperationNode(std::unique_ptr<SimpleNode> rightChild) :
+    UnaryOperationNode(std::move(rightChild))
 {
 }
 
@@ -431,13 +437,13 @@ OperationNode::OperationTypes UnaryBitwiseOperationNode::getOpType() const
     return OperationNode::Bitwise;
 }
 
-OnesComplementNode::OnesComplementNode(SimpleNodeUniquePtr rightChild) :
-    UnaryBitwiseOperationNode(rightChild)
+OnesComplementNode::OnesComplementNode(std::unique_ptr<SimpleNode> rightChild) :
+    UnaryBitwiseOperationNode(std::move(rightChild))
 {
-    returnType = rightChild->getReturnType();
-    if( ( returnType != ValueNode::Integer ) )
+    returnType = UnaryOPRightChild->getReturnType();
+    if( ( returnType != Node::Integer ) )
     {
-        returnType = ValueNode::ErrorType;
+        returnType = Node::ErrorType;
     }
 }
 
@@ -456,11 +462,11 @@ OperationNode::Precedence OnesComplementNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-ValueNodeUniquePtr OnesComplementNode::DoOperation()
+std::unique_ptr<ValueNode> OnesComplementNode::DoOperation() const
 {
-    ValueNodeUniquePtr value(rightChild->visit().take());
+    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
 
-    return ValueNodeUniquePtr( new ValueNode(~(value->getValue().value<int>())));
+    return std::unique_ptr<ValueNode>( new ValueNode(~(value->getValue().value<int>())));
 }
 
 QString OnesComplementNode::printValue() const

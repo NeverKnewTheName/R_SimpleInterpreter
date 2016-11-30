@@ -2,7 +2,10 @@
 
 #include "simplelexer.h"
 #include "simpleparser.h"
-#include "simpleast.h"
+
+#include "simplenode.h"
+#include "valuenode.h"
+#include "symboltable.h"
 
 #include <QDebug>
 
@@ -12,7 +15,7 @@ SimpleInterpreter::SimpleInterpreter(SimpleParser *parser) :
     tree = parser->parse();
 }
 
-SimpleInterpreter::SimpleInterpreter(const QString &StringToInterpret, SymbolTable &GlobalSymbolTable)
+SimpleInterpreter::SimpleInterpreter(const QString &StringToInterpret, QSharedPointer<SymbolTable> GlobalSymbolTable)
 {
     SimpleLexer *lexer = new SimpleLexer(StringToInterpret);
     parser = new SimpleParser(lexer,GlobalSymbolTable);
@@ -22,14 +25,12 @@ SimpleInterpreter::SimpleInterpreter(const QString &StringToInterpret, SymbolTab
 SimpleInterpreter::~SimpleInterpreter()
 {
     qDebug() << __PRETTY_FUNCTION__;
-    if(tree != NULL)
-        delete tree;
 }
 
-ValueNode *SimpleInterpreter::interpret()
+std::unique_ptr<ValueNode> SimpleInterpreter::interpret()
 {
-    if(tree == NULL)
-        return new ValueNode();
+    if(tree == nullptr)
+        return std::unique_ptr<ValueNode>();
 
-    return &tree->visit();
+    return tree->visit();
 }

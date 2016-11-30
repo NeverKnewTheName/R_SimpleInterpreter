@@ -109,8 +109,8 @@
 #define SIMPLEPARSER_H
 
 #include "simplelexer.h"
-#include "simplesymboltable.h"
-#include "symbolnodes.h"
+#include "symboltable.h"
+#include "programnode.h"
 //#include "simpleast.h"
 
 class Msg;
@@ -122,37 +122,38 @@ class VariableNode;
 class SimpleParser
 {
 public:
-    SimpleParser(SimpleLexer *lexer, SymbolTablePtr parentSymblTbl);
-    SimpleNodeUniquePtr parse();
+    SimpleParser(SimpleLexer *lexer, QSharedPointer<SymbolTable> parentSymblTbl);
+    ~SimpleParser();
+    std::unique_ptr<SimpleNode> parse();
 
-    SymbolTablePtr getProgramSymblTbl();
+    QSharedPointer<SymbolTable> getProgramSymblTbl();
 
 private:
     void eat(SimpleToken::TokenType tokenType);
-    ProgramNodeUniquePtr Program();
-    FunctionSymbolPtr FunctionDefinition();
-    FunctionSymbolPtr FunctionDeclaration();
-    VariableSymbolPtr VarDefinition();
-    VariableSymbolPtr VarDeclaration();
-    SimpleNodeUniquePtr ReturnStatement();
-    SimpleNodeUniquePtr Expression();
-    SimpleNodeUniquePtr AssignmentExpression();
-    SimpleNodeUniquePtr ConditionalExpression();
-    SimpleNodeUniquePtr LogicalORExpression();
-    SimpleNodeUniquePtr LogicalXORExpression();
-    SimpleNodeUniquePtr LogicalANDExpression();
-    SimpleNodeUniquePtr BitwiseORExpression();
-    SimpleNodeUniquePtr BitwiseXORExpression();
-    SimpleNodeUniquePtr BitwiseANDExpression();
-    SimpleNodeUniquePtr EqualityExpression();
-    SimpleNodeUniquePtr RelationalExpression();
-    SimpleNodeUniquePtr ShiftExpression();
-    SimpleNodeUniquePtr AdditiveExpression();
-    SimpleNodeUniquePtr MultiplicativeExpression();
-    SimpleNodeUniquePtr UnaryExpression();
-    SimpleNodeUniquePtr PostFixExpression();
-    SimpleNodeUniquePtr PrimaryExpression();
-    SimpleNodeUniquePtr Symbol();
+    std::unique_ptr<ProgramNode> Program();
+    QSharedPointer<FunctionSymbol> FunctionDefinition();
+    QSharedPointer<FunctionSymbol> FunctionDeclaration();
+    QSharedPointer<VariableSymbol> VarDefinition();
+    QSharedPointer<VariableSymbol> VarDeclaration();
+    std::unique_ptr<SimpleNode> ReturnStatement();
+    std::unique_ptr<SimpleNode> Expression();
+    std::unique_ptr<SimpleNode> AssignmentExpression();
+    std::unique_ptr<SimpleNode> ConditionalExpression();
+    std::unique_ptr<SimpleNode> LogicalORExpression();
+    std::unique_ptr<SimpleNode> LogicalXORExpression();
+    std::unique_ptr<SimpleNode> LogicalANDExpression();
+    std::unique_ptr<SimpleNode> BitwiseORExpression();
+    std::unique_ptr<SimpleNode> BitwiseXORExpression();
+    std::unique_ptr<SimpleNode> BitwiseANDExpression();
+    std::unique_ptr<SimpleNode> EqualityExpression();
+    std::unique_ptr<SimpleNode> RelationalExpression();
+    std::unique_ptr<SimpleNode> ShiftExpression();
+    std::unique_ptr<SimpleNode> AdditiveExpression();
+    std::unique_ptr<SimpleNode> MultiplicativeExpression();
+    std::unique_ptr<SimpleNode> UnaryExpression();
+    std::unique_ptr<SimpleNode> PostFixExpression();
+    std::unique_ptr<SimpleNode> PrimaryExpression();
+    std::unique_ptr<SimpleNode> Symbol();
 
     void SyntacticError(SharedSimpleTokenPtr Token, QString details = QString());
     void TypeError(SharedSimpleTokenPtr Token, QString details = QString());
@@ -161,9 +162,9 @@ private:
 
     SimpleLexer *lexer;
     SharedSimpleTokenPtr CurrentToken;
-    SymbolTablePtr ParentSymblTbl;
-    SymbolTablePtr ProgramSymbolTable;
-    SymbolTablePtr CurSymblTbl;
+    QSharedPointer<SymbolTable> ParentSymblTbl;
+    QSharedPointer<SymbolTable> ProgramSymbolTable;
+    QSharedPointer<SymbolTable> CurSymblTbl;
     bool ErrorOccured;
 };
 

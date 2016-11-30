@@ -456,7 +456,7 @@ QString RParanToken::printToken() const
 //}
 
 
-TypeNameToken::TypeNameToken(SimpleNode::ValueTypes type, const int TokenPos, const int TokenLen) :
+TypeNameToken::TypeNameToken(Node::ValueTypes type, const int TokenPos, const int TokenLen) :
     SimpleToken(SimpleToken::TypeName, TokenPos, TokenLen),
     type(type)
 {
@@ -468,7 +468,7 @@ TypeNameToken::~TypeNameToken()
     qDebug() << __PRETTY_FUNCTION__;
 }
 
-SimpleNode::ValueTypes TypeNameToken::getType() const
+Node::ValueTypes TypeNameToken::getType() const
 {
     return type;
 }
