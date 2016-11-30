@@ -2,16 +2,17 @@
 
 #include <QDebug>
 
-#include "symboltable.h"
+#include "simplesymboltable.h"
 #include "variablesymbol.h"
+#include "simplestack.h"
 
 FunctionSymbol::FunctionSymbol(
         const QString &identifier,
-        QSharedPointer<SymbolTable> SymbolTableForFunction,
+        QSharedPointer<SimpleSymbolTable> SymbolTableForFunction,
         std::vector<QSharedPointer<VariableSymbol> > &&functionParameters,
         Node::ValueTypes ReturnType
         ) :
-    Symbol(identifier),
+    SimpleSymbol(identifier),
     FunctionSymbolTable(SymbolTableForFunction),
     ReturnType(ReturnType),
     FunctionParameters(functionParameters),
@@ -21,7 +22,7 @@ FunctionSymbol::FunctionSymbol(
     for(int i = 0; i < NrOfFunctionParameters; i++)
     {
         QString paramIdentifier = FunctionParameters.at(i)->getIdentifier();
-        FunctionSymbolTable->addEntry(paramIdentifier,qSharedPointerDynamicCast<SymbolTableEntry>(FunctionParameters.at(i)));
+        FunctionSymbolTable->addEntry(paramIdentifier,qSharedPointerDynamicCast<SimpleSymbolTableEntry>(FunctionParameters.at(i)));
     }
 }
 
@@ -47,7 +48,7 @@ void FunctionSymbol::addVariableDefinition(QSharedPointer<VariableSymbol> newVar
 
 std::unique_ptr<ValueNode> FunctionSymbol::CallFunction(
         const std::vector<std::unique_ptr<SimpleNode> > &FunctionArguments,
-        QSharedPointer<SymbolTable> CurrentSymbolTable
+        QSharedPointer<SimpleSymbolTable> CurrentSymbolTable
         )
 {
     //ToDO SOMEHOW SAVE THE VALUES AND REPRODUCE THEM WHEN THE FUNCTION RETURNS...
@@ -79,7 +80,7 @@ std::unique_ptr<ValueNode> FunctionSymbol::CallFunction(
     return FunctionReturnNode->visit();
 }
 
-QSharedPointer<SymbolTable> FunctionSymbol::getFunctionSymbolTable() const
+QSharedPointer<SimpleSymbolTable> FunctionSymbol::getFunctionSymbolTable() const
 {
     return FunctionSymbolTable;
 }
@@ -110,9 +111,9 @@ bool FunctionSymbol::checkFunctionArguments(const QVector<std::unique_ptr<Simple
     return true;
 }
 
-SymbolTableEntry::SymbolTableEntryType FunctionSymbol::getType() const
+SimpleSymbolTableEntry::SymbolTableEntryType FunctionSymbol::getType() const
 {
-    return SymbolTableEntry::Function;
+    return SimpleSymbolTableEntry::Function;
 }
 
 //ToDO !!!

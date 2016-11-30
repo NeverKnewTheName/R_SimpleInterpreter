@@ -4,6 +4,7 @@
 
 #include "valuenode.h"
 #include "variablenode.h"
+#include "simplestack.h"
 
 AssignmentNode::AssignmentNode(std::unique_ptr<VariableNode> VariableToAssign, std::unique_ptr<SimpleNode> ValueToAssign) :
     SimpleNode(VariableToAssign->getReturnType()),
@@ -39,7 +40,7 @@ QString AssignmentNode::printNode() const
     return QString("{AssignmentNode}:{%1}").arg(printValue());
 }
 
-std::unique_ptr<ValueNode> AssignmentNode::visit() const
+std::unique_ptr<ValueNode> AssignmentNode::visit(QSharedPointer<SimpleStack> StackToUse) const
 {
     VariableToAssign->getRelatedVariableSymbol()->assignValue(*ValueToAssign);
 

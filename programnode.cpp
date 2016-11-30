@@ -2,12 +2,13 @@
 
 #include <QDebug>
 
-#include "symboltable.h"
+#include "simplesymboltable.h"
 #include "variablesymbol.h"
 #include "functionsymbol.h"
+#include "simplestack.h"
 
 ProgramNode::ProgramNode(const QString &ProgramName,
-        QSharedPointer<SymbolTable> SymbolTableToUse
+        QSharedPointer<SimpleSymbolTable> SymbolTableToUse
         ) :
     ProgramName(ProgramName),
     ProgramSymbolTable(SymbolTableToUse)
@@ -61,7 +62,7 @@ QString ProgramNode::printNode() const
     return QString("{ProgramNode}:{%1}").arg(printValue());
 }
 
-std::unique_ptr<ValueNode> ProgramNode::visit() const
+std::unique_ptr<ValueNode> ProgramNode::visit(QSharedPointer<SimpleStack> StackToUse) const
 {
     const int NrOfProgramExpression = ProgramExpressions.size();
 

@@ -6,6 +6,7 @@
 #include <memory>
 
 class ValueNode;
+class SimpleStack;
 
 namespace Node {
 typedef enum _NodeType
@@ -46,7 +47,7 @@ public:
     virtual QString printValue() const;
     virtual QString printNode() const;
 
-    virtual std::unique_ptr<ValueNode> visit() const;
+    virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
 
     static QString getHumanReadableTypeNameToValueType(const Node::ValueTypes type);
     static bool canConvertTypes(const Node::ValueTypes OrigType, const Node::ValueTypes NewType);
@@ -67,6 +68,6 @@ public:
     QString printValue() const;
     QString printNode() const;
 
-    std::unique_ptr<ValueNode> visit() const;
+    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
 };
 #endif // SIMPLENODE_H

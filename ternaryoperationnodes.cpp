@@ -1,6 +1,7 @@
 #include "ternaryoperationnodes.h"
 
 #include "valuenode.h"
+#include "simplestack.h"
 
 TernaryArithmeticOperationNode::TernaryArithmeticOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> midChild, std::unique_ptr<SimpleNode> rightChild) :
     TernaryOperationNode(std::move(leftChild), std::move(midChild), std::move(rightChild))
@@ -109,7 +110,7 @@ OperationNode::Precedence ConditionalNode::getPrecedence() const
     return OperationNode::ConditionalPrec;
 }
 
-std::unique_ptr<ValueNode> ConditionalNode::DoOperation() const
+std::unique_ptr<ValueNode> ConditionalNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
     std::unique_ptr<ValueNode> value1 = TernaryOPLeftChild->visit();
     std::unique_ptr<ValueNode> value2 = TernaryOPMidChild->visit();

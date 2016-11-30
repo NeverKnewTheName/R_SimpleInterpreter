@@ -1,9 +1,9 @@
-#ifndef SYMBOLTABLEENTRY_H
-#define SYMBOLTABLEENTRY_H
+#ifndef SIMPLESYMBOLTABLEENTRY_H
+#define SIMPLESYMBOLTABLEENTRY_H
 
 #include <QString>
 
-class SymbolTableEntry
+class SimpleSymbolTableEntry
 {
 public:
     typedef enum _SymbolTableEntryType
@@ -15,8 +15,8 @@ public:
         ERRORType
     }SymbolTableEntryType;
 
-    SymbolTableEntry(QString const& identifier);
-    virtual ~SymbolTableEntry();
+    SimpleSymbolTableEntry(QString const& identifier);
+    virtual ~SimpleSymbolTableEntry();
 
     virtual SymbolTableEntryType getType() const = 0;
     virtual QString PrintToSymbolToString() const = 0;
@@ -28,4 +28,4 @@ protected:
     bool isAssigned;
 };
 
-#endif // SYMBOLTABLEENTRY_H
+#endif // SIMPLESYMBOLTABLEENTRY_H

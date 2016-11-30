@@ -2,15 +2,16 @@
 
 #include <QDebug>
 
-#include "symboltableentry.h"
-#include "symboltable.h"
+#include "simplesymboltableentry.h"
+#include "simplesymboltable.h"
 #include "functionsymbol.h"
+#include "simplestack.h"
 
 
 
 FunctionCallNode::FunctionCallNode(
         const QString &FunctionName,
-        QSharedPointer<SymbolTable> CurSymblTable,
+        QSharedPointer<SimpleSymbolTable> CurSymblTable,
         std::vector<std::unique_ptr<SimpleNode> > &FunctionArguments
         ) :
     FunctionName(FunctionName),
@@ -47,7 +48,7 @@ QString FunctionCallNode::printNode() const
     return QString("{FunctionCall}:{%1}").arg(printValue());
 }
 
-std::unique_ptr<ValueNode> FunctionCallNode::visit() const
+std::unique_ptr<ValueNode> FunctionCallNode::visit(QSharedPointer<SimpleStack> StackToUse) const
 {
     return RelatedSymbol->CallFunction(FuncArgs, CurrentSymbolTable);
 }

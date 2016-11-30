@@ -3,20 +3,20 @@
 
 #include <QString>
 #include "vector"
-#include "symbol.h"
+#include "simplesymbol.h"
 
 #include "simplenode.h"
 #include "valuenode.h"
 #include "variablesymbol.h"
 
-class SymbolTable;
+class SimpleSymbolTable;
 
-class FunctionSymbol : public Symbol
+class FunctionSymbol : public SimpleSymbol
 {
 public:
     FunctionSymbol(
             const QString &identifier,
-            QSharedPointer<SymbolTable> SymbolTableForFunction,
+            QSharedPointer<SimpleSymbolTable> SymbolTableForFunction,
             std::vector<QSharedPointer<VariableSymbol> > &&functionParameters,
             Node::ValueTypes ReturnType = Node::Void
             );
@@ -28,12 +28,13 @@ public:
 
     std::unique_ptr<ValueNode> CallFunction(
             const std::vector<std::unique_ptr<SimpleNode> > &FunctionArguments,
-            QSharedPointer<SymbolTable> CurrentSymbolTable
+            QSharedPointer<SimpleSymbolTable> CurrentSymbolTable
             );
 
     bool checkFunctionArguments(const QVector<std::unique_ptr<SimpleNode>> &FunctionArguments) const;
 
-    QSharedPointer<SymbolTable> getFunctionSymbolTable() const;
+    QSharedPointer<SimpleSymbolTable> getFunctionSymbolTable() const;
+
     // SymbolTableEntry interface
 public:
     SymbolTableEntryType getType() const;
@@ -45,7 +46,7 @@ public:
     Node::ValueTypes getReturnType() const;
 
 private:
-    QSharedPointer<SymbolTable> FunctionSymbolTable;
+    QSharedPointer<SimpleSymbolTable> FunctionSymbolTable;
     Node::ValueTypes ReturnType;
     std::vector<QSharedPointer<VariableSymbol>> FunctionParameters;
     std::vector<std::unique_ptr<SimpleNode>> FunctionExpressions;

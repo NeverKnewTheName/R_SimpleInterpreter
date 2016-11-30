@@ -1,4 +1,5 @@
 #include "variablenode.h"
+#include "simplestack.h"
 
 #include <QDebug>
 
@@ -23,7 +24,7 @@ Node::ValueTypes VariableNode::getReturnType() const
     return RelatedVariableSymbol->getReturnType();
 }
 
-std::unique_ptr<ValueNode> VariableNode::visit() const
+std::unique_ptr<ValueNode> VariableNode::visit(QSharedPointer<SimpleStack> StackToUse) const
 {
     return RelatedVariableSymbol->getAssignedValue();
 }

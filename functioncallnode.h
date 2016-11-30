@@ -4,7 +4,7 @@
 #include <vector>
 #include "simplenode.h"
 
-class SymbolTable;
+class SimpleSymbolTable;
 class FunctionSymbol;
 
 class FunctionCallNode : public SimpleNode
@@ -12,7 +12,7 @@ class FunctionCallNode : public SimpleNode
 public:
     FunctionCallNode(
             const QString &FunctionName,
-            QSharedPointer<SymbolTable> CurSymblTable,
+            QSharedPointer<SimpleSymbolTable> CurSymblTable,
             std::vector<std::unique_ptr<SimpleNode>> &FunctionArguments
             );
     virtual ~FunctionCallNode();
@@ -23,13 +23,13 @@ public:
     Node::ValueTypes getReturnType() const;
     QString printValue() const;
     QString printNode() const;
-    std::unique_ptr<ValueNode> visit() const;
+    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
 
 private:
     QString FunctionName;
     std::vector<std::unique_ptr<SimpleNode>> FuncArgs;
     QSharedPointer<FunctionSymbol> RelatedSymbol;
-    QSharedPointer<SymbolTable> CurrentSymbolTable;
+    QSharedPointer<SimpleSymbolTable> CurrentSymbolTable;
     Node::ValueTypes returnType;
 };
 

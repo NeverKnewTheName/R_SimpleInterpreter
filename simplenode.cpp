@@ -5,8 +5,9 @@
 
 #include "valuenode.h"
 #include "operationnodes.h"
-#include "symboltable.h"
+#include "simplesymboltable.h"
 
+#include "simplestack.h"
 
 SimpleNode::SimpleNode(Node::ValueTypes valueType) :
     valueType(valueType)
@@ -99,7 +100,7 @@ QString SimpleNode::printNode() const
     return QString("{(INVALID NODE):(%1)}").arg(printValue());
 }
 
-std::unique_ptr<ValueNode> SimpleNode::visit() const
+std::unique_ptr<ValueNode> SimpleNode::visit(QSharedPointer<SimpleStack> StackToUse) const
 {
     return std::unique_ptr<ValueNode>( new ValueNode());
 }
@@ -135,7 +136,7 @@ QString EOFNode::printNode() const
     return QString("{(EOF):(EOF)}");
 }
 
-std::unique_ptr<ValueNode> EOFNode::visit() const
+std::unique_ptr<ValueNode> EOFNode::visit(QSharedPointer<SimpleStack> StackToUse) const
 {
     return std::unique_ptr<ValueNode>(new ValueNode());
 }

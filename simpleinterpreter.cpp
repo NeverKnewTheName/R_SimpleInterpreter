@@ -5,17 +5,23 @@
 
 #include "simplenode.h"
 #include "valuenode.h"
-#include "symboltable.h"
+#include "simplesymboltable.h"
+#include "simplestack.h"
 
 #include <QDebug>
 
 SimpleInterpreter::SimpleInterpreter(SimpleParser *parser) :
-    parser(parser)
+    parser(parser),
+    InterpreterStack(100)
 {
     tree = parser->parse();
 }
 
-SimpleInterpreter::SimpleInterpreter(const QString &StringToInterpret, QSharedPointer<SymbolTable> GlobalSymbolTable)
+SimpleInterpreter::SimpleInterpreter(
+        const QString &StringToInterpret,
+        QSharedPointer<SimpleSymbolTable> GlobalSymbolTable
+        ) :
+InterpreterStack(100)
 {
     SimpleLexer *lexer = new SimpleLexer(StringToInterpret);
     parser = new SimpleParser(lexer,GlobalSymbolTable);

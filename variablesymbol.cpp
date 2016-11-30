@@ -1,11 +1,12 @@
 #include "variablesymbol.h"
+#include "simplestack.h"
 
 #include <QDebug>
 
 VariableSymbol::VariableSymbol(const QString &identifier,
                                Node::ValueTypes VariableType
                                ) :
-    Symbol(identifier),
+    SimpleSymbol(identifier),
     AssignedNode(ValueNode()),
     VariableType(VariableType)
 {
@@ -61,9 +62,9 @@ bool VariableSymbol::assignValue(const SimpleNode &NodeToAssign)
     return true;
 }
 
-SymbolTableEntry::SymbolTableEntryType VariableSymbol::getType() const
+SimpleSymbolTableEntry::SymbolTableEntryType VariableSymbol::getType() const
 {
-    return SymbolTableEntry::Variable;
+    return SimpleSymbolTableEntry::Variable;
 }
 
 QString VariableSymbol::PrintToSymbolToString() const

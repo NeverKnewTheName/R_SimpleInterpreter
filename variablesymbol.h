@@ -2,11 +2,11 @@
 #define VARIABLESYMBOL_H
 
 #include <QString>
-#include "symbol.h"
+#include "simplesymbol.h"
 #include "valuenode.h"
 
 
-class VariableSymbol : public Symbol
+class VariableSymbol : public SimpleSymbol
 {
 public:
     VariableSymbol(

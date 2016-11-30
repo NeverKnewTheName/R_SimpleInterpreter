@@ -5,6 +5,7 @@
 
 #include "variablenode.h"
 #include "programnode.h"
+#include "simplestack.h"
 
 
 UnaryArithmeticOperationNode::UnaryArithmeticOperationNode(std::unique_ptr<SimpleNode> rightChild) :
@@ -73,7 +74,7 @@ OperationNode::Precedence TypeCastNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-std::unique_ptr<ValueNode> TypeCastNode::DoOperation() const
+std::unique_ptr<ValueNode> TypeCastNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
     std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
 
@@ -156,7 +157,7 @@ OperationNode::Precedence IncrementNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-std::unique_ptr<ValueNode> IncrementNode::DoOperation() const
+std::unique_ptr<ValueNode> IncrementNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
     std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
 
@@ -209,7 +210,7 @@ OperationNode::Precedence DecrementNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-std::unique_ptr<ValueNode> DecrementNode::DoOperation() const
+std::unique_ptr<ValueNode> DecrementNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
     std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
 
@@ -266,7 +267,7 @@ OperationNode::Precedence PositiveNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-std::unique_ptr<ValueNode> PositiveNode::DoOperation() const
+std::unique_ptr<ValueNode> PositiveNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
     std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
 
@@ -329,7 +330,7 @@ OperationNode::Precedence NegativeNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-std::unique_ptr<ValueNode> NegativeNode::DoOperation() const
+std::unique_ptr<ValueNode> NegativeNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
     std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
 
@@ -392,7 +393,7 @@ OperationNode::Precedence LogicalNegationNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-std::unique_ptr<ValueNode> LogicalNegationNode::DoOperation() const
+std::unique_ptr<ValueNode> LogicalNegationNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
     std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
 
@@ -462,7 +463,7 @@ OperationNode::Precedence OnesComplementNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-std::unique_ptr<ValueNode> OnesComplementNode::DoOperation() const
+std::unique_ptr<ValueNode> OnesComplementNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
     std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
 

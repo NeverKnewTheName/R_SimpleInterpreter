@@ -1,16 +1,16 @@
-#ifndef SYMBOL_H
-#define SYMBOL_H
+#ifndef SIMPLESYMBOL_H
+#define SIMPLESYMBOL_H
 
 #include <QDebug>
 
-#include "symboltableentry.h"
+#include "simplesymboltableentry.h"
 #include "simplenode.h"
 
-class Symbol : public SymbolTableEntry
+class SimpleSymbol : public SimpleSymbolTableEntry
 {
 public:
-    Symbol(const QString &identifier) : SymbolTableEntry(identifier){}
-    virtual ~Symbol(){
+    SimpleSymbol(const QString &identifier) : SimpleSymbolTableEntry(identifier){}
+    virtual ~SimpleSymbol(){
         qDebug() << __PRETTY_FUNCTION__;
     }
 
@@ -24,4 +24,4 @@ public:
 };
 
 
-#endif // SYMBOL_H
+#endif // SIMPLESYMBOL_H

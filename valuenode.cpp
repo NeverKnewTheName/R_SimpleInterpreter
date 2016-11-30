@@ -1,4 +1,5 @@
 #include "valuenode.h"
+#include "simplestack.h"
 
 #include <QDebug>
 
@@ -116,7 +117,7 @@ QString ValueNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
-std::unique_ptr<ValueNode> ValueNode::visit() const
+std::unique_ptr<ValueNode> ValueNode::visit(QSharedPointer<SimpleStack> StackToUse) const
 {
     //ToTHINK DOES THIS REALLY WORK?!?!
     return std::unique_ptr<ValueNode>( new ValueNode(*this));

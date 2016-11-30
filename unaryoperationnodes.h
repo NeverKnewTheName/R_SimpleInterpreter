@@ -12,7 +12,7 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual std::unique_ptr<ValueNode> DoOperation() const = 0;
+    virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -37,7 +37,7 @@ public:
      *
      * \warning Only use this operation on Integer ValueNodes
      */
-    std::unique_ptr<ValueNode> DoOperation() const;
+    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -64,7 +64,7 @@ public:
      *
      * \warning Only use this operation on Integer ValueNodes
      */
-    std::unique_ptr<ValueNode> DoOperation() const;
+    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -89,7 +89,7 @@ public:
      *
      * \warning Only use this operation on Integer ValueNodes
      */
-    std::unique_ptr<ValueNode> DoOperation() const;
+    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -114,7 +114,7 @@ public:
      *
      * \warning Only use this operation on Integer or Double ValueNodes
      */
-    std::unique_ptr<ValueNode> DoOperation() const;
+    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -139,7 +139,7 @@ public:
      *
      * \warning Only use this operation on Integer or Double ValueNodes
      */
-    std::unique_ptr<ValueNode> DoOperation() const;
+    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -154,7 +154,7 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual std::unique_ptr<ValueNode> DoOperation() const = 0;
+    virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -180,7 +180,7 @@ public:
      * \warning Only use this operation on Integer, Double or Bool ValueNodes
      * \note If the passed ValueNode equals 0 (or 0.0) it is treated as Bool false, otherwise Bool true
      */
-    std::unique_ptr<ValueNode> DoOperation() const;
+    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -195,7 +195,7 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual std::unique_ptr<ValueNode> DoOperation() const = 0;
+    virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -220,7 +220,7 @@ public:
      *
      * \warning Only use this operation on Integer ValueNodes
      */
-    virtual std::unique_ptr<ValueNode> DoOperation() const;
+    virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
 
     virtual QString printValue() const;
     virtual QString printNode() const;

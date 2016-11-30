@@ -4,6 +4,8 @@
 
 #include "valuenode.h"
 
+#include "simplestack.h"
+
 OperationNode::OperationNode()
 {
 }
@@ -23,9 +25,9 @@ Node::ValueTypes OperationNode::getReturnType() const
     return returnType;
 }
 
-std::unique_ptr<ValueNode> OperationNode::visit() const
+std::unique_ptr<ValueNode> OperationNode::visit(QSharedPointer<SimpleStack> StackToUse) const
 {
-    return DoOperation();
+    return DoOperation(StackToUse);
 }
 
 UnaryOperationNode::UnaryOperationNode(std::unique_ptr<SimpleNode> rightChild) :

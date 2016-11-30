@@ -1,12 +1,12 @@
-#include "symboltable.h"
+#include "simplesymboltable.h"
 
 #include "simplenode.h"
 
 #include <QDebug>
 
 
-SymbolTable::SymbolTable(QString const& identifier, QSharedPointer<SymbolTable> parentSymbolTable) :
-    SymbolTableEntry(identifier),
+SimpleSymbolTable::SimpleSymbolTable(QString const& identifier, QSharedPointer<SimpleSymbolTable> parentSymbolTable) :
+    SimpleSymbolTableEntry(identifier),
     parentSymbolTable(parentSymbolTable)
 {
 //    if(!parentSymbolTable.isNull())
@@ -15,7 +15,7 @@ SymbolTable::SymbolTable(QString const& identifier, QSharedPointer<SymbolTable> 
 //    }
 }
 
-SymbolTable::~SymbolTable()
+SimpleSymbolTable::~SimpleSymbolTable()
 {
     SymbolTableEntries.clear();
     SymbolTableIndices.clear();
@@ -26,9 +26,9 @@ SymbolTable::~SymbolTable()
     qDebug() << __PRETTY_FUNCTION__;
 }
 
-QSharedPointer<SymbolTableEntry> SymbolTable::lookup(const QString &identifier)
+QSharedPointer<SimpleSymbolTableEntry> SimpleSymbolTable::lookup(const QString &identifier)
 {
-    QSharedPointer<SymbolTableEntry> entry = QSharedPointer<SymbolTableEntry>();
+    QSharedPointer<SimpleSymbolTableEntry> entry = QSharedPointer<SimpleSymbolTableEntry>();
 
     if(SymbolTableIndices.contains(identifier))
     {
@@ -42,7 +42,7 @@ QSharedPointer<SymbolTableEntry> SymbolTable::lookup(const QString &identifier)
     return entry;
 }
 
-bool SymbolTable::addEntry(const QString &identifier, QSharedPointer<SymbolTableEntry> entry)
+bool SimpleSymbolTable::addEntry(const QString &identifier, QSharedPointer<SimpleSymbolTableEntry> entry)
 {
     if(SymbolTableIndices.contains(identifier))
     {
@@ -67,7 +67,7 @@ bool SymbolTable::addEntry(const QString &identifier, QSharedPointer<SymbolTable
     return true;
 }
 
-bool SymbolTable::removeEntry(const QString &identifier)
+bool SimpleSymbolTable::removeEntry(const QString &identifier)
 {
     if(!SymbolTableIndices.contains(identifier))
     {
@@ -83,17 +83,17 @@ bool SymbolTable::removeEntry(const QString &identifier)
     return true;
 }
 
-bool SymbolTable::DoesIdentifierExistInCurrentScope(const QString &IdentifierToCheck) const
+bool SimpleSymbolTable::DoesIdentifierExistInCurrentScope(const QString &IdentifierToCheck) const
 {
     return SymbolTableIndices.contains(IdentifierToCheck);
 }
 
-const std::vector<QSharedPointer<SymbolTableEntry>> &SymbolTable::getSymbolTableEntries() const
+const std::vector<QSharedPointer<SimpleSymbolTableEntry>> &SimpleSymbolTable::getSymbolTableEntries() const
 {
     return SymbolTableEntries;
 }
 
-bool SymbolTable::addParentSymbolTable(QSharedPointer<SymbolTable> parent)
+bool SimpleSymbolTable::addParentSymbolTable(QSharedPointer<SimpleSymbolTable> parent)
 {
     if(parentSymbolTable != NULL)
     {
@@ -104,27 +104,27 @@ bool SymbolTable::addParentSymbolTable(QSharedPointer<SymbolTable> parent)
     return true;
 }
 
-bool SymbolTable::addSubSymbolTable(QSharedPointer<SymbolTable> SubSymbolTable)
+bool SimpleSymbolTable::addSubSymbolTable(QSharedPointer<SimpleSymbolTable> SubSymbolTable)
 {
-    return addEntry(SubSymbolTable->getIdentifier(), qSharedPointerDynamicCast<SymbolTableEntry>(SubSymbolTable));
+    return addEntry(SubSymbolTable->getIdentifier(), qSharedPointerDynamicCast<SimpleSymbolTableEntry>(SubSymbolTable));
 }
 
-SymbolTableEntry::SymbolTableEntryType SymbolTable::getType() const
+SimpleSymbolTableEntry::SymbolTableEntryType SimpleSymbolTable::getType() const
 {
-    return SymbolTableEntry::SubSymbolTable;
+    return SimpleSymbolTableEntry::SubSymbolTable;
 }
 
-QString SymbolTable::PrintToSymbolToString() const
+QString SimpleSymbolTable::PrintToSymbolToString() const
 {
     return identifier;
 }
 
-QString SymbolTable::PrintSymbolType() const
+QString SimpleSymbolTable::PrintSymbolType() const
 {
     return QString("SubSymbolTable");
 }
 
-QSharedPointer<SymbolTableEntry> SymbolTable::getParentSymbolTable() const
+QSharedPointer<SimpleSymbolTableEntry> SimpleSymbolTable::getParentSymbolTable() const
 {
     return parentSymbolTable;
 }

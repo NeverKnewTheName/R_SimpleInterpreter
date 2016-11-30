@@ -5,7 +5,7 @@
 
 #include <QStandardItem>
 
-#include <symboltable.h>
+#include <simplesymboltable.h>
 
 class SimpleLexer;
 class SimpleParser;
@@ -30,14 +30,14 @@ private slots:
     void receiveLexerHTMLFormattedErrMsg(QString HTMLFormattedErrMsg);
 
 private:
-    void populateSymbolTableView(QSharedPointer<SymbolTable> symbolTable, QStandardItem *SymbolTableModel);
+    void populateSymbolTableView(QSharedPointer<SimpleSymbolTable> symbolTable, QStandardItem *SymbolTableModel);
 
 private:
     Ui::R_SimpleInterpreter *ui;
     SimpleLexer *lex;
     SimpleParser *parse;
     SimpleInterpreter *interpr;
-    QSharedPointer<SymbolTable> GlobalSymbolTable;
+    QSharedPointer<SimpleSymbolTable> GlobalSymbolTable;
 };
 
 #endif // R_SIMPLEINTERPRETER_H

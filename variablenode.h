@@ -13,7 +13,7 @@ public:
     virtual Node::NodeType getNodeType() const;
     virtual Node::ValueTypes getReturnType() const;
 
-    std::unique_ptr<ValueNode> visit() const;
+    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
 
     QString printValue() const;
     virtual QString printNode() const;

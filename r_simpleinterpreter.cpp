@@ -10,8 +10,8 @@
 #include "valuenode.h"
 
 
-#include "symboltableentry.h"
-#include "symboltable.h"
+#include "simplesymboltableentry.h"
+#include "simplesymboltable.h"
 #include "functionsymbol.h"
 #include "variablesymbol.h"
 
@@ -25,7 +25,7 @@
 R_SimpleInterpreter::R_SimpleInterpreter(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::R_SimpleInterpreter),
-    GlobalSymbolTable( new SymbolTable(QString("GlobalSymblTbl")))
+    GlobalSymbolTable( new SimpleSymbolTable(QString("GlobalSymblTbl")))
 {
     ui->setupUi(this);
     ui->textEdit->hide();
@@ -142,21 +142,21 @@ void R_SimpleInterpreter::receiveLexerHTMLFormattedErrMsg(QString HTMLFormattedE
     //                          QMessageBox::Ok);
 }
 
-void R_SimpleInterpreter::populateSymbolTableView(QSharedPointer<SymbolTable> symbolTable, QStandardItem *SymbolTableModel)
+void R_SimpleInterpreter::populateSymbolTableView(QSharedPointer<SimpleSymbolTable> symbolTable, QStandardItem *SymbolTableModel)
 {
-    std::vector<QSharedPointer<SymbolTableEntry>> symbolTableEntries = symbolTable->getSymbolTableEntries();
-    for(QSharedPointer<SymbolTableEntry> &entry : symbolTableEntries)
+    std::vector<QSharedPointer<SimpleSymbolTableEntry>> symbolTableEntries = symbolTable->getSymbolTableEntries();
+    for(QSharedPointer<SimpleSymbolTableEntry> &entry : symbolTableEntries)
     {
         QStandardItem *entryItem = new QStandardItem(entry->PrintSymbolType());
         QList<QStandardItem*> row;
         row.append(entryItem);
         row.append(new QStandardItem(entry->PrintToSymbolToString()));
         SymbolTableModel->appendRow(row);
-        if(entry->getType() == SymbolTableEntry::SubSymbolTable)
+        if(entry->getType() == SimpleSymbolTableEntry::SubSymbolTable)
         {
-            populateSymbolTableView(qSharedPointerDynamicCast<SymbolTable>(entry), entryItem);
+            populateSymbolTableView(qSharedPointerDynamicCast<SimpleSymbolTable>(entry), entryItem);
         }
-        else if(entry->getType() == SymbolTableEntry::Function)
+        else if(entry->getType() == SimpleSymbolTableEntry::Function)
         {
             populateSymbolTableView(qSharedPointerDynamicCast<FunctionSymbol>(entry)->getFunctionSymbolTable(), entryItem);
         }

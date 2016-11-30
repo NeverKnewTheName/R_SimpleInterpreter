@@ -28,7 +28,7 @@ public:
 
     QString printValue() const;
     QString printNode() const;
-    std::unique_ptr<ValueNode> visit() const;
+    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
 
 private:
     Node::ValueTypes valueType;

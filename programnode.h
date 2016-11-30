@@ -6,7 +6,7 @@
 
 #include "simplenode.h"
 
-class SymbolTable;
+class SimpleSymbolTable;
 class VariableSymbol;
 class FunctionSymbol;
 
@@ -15,7 +15,7 @@ class ProgramNode : public SimpleNode
 public:
     ProgramNode(
             const QString &ProgramName,
-            QSharedPointer<SymbolTable> SymbolTableToUse
+            QSharedPointer<SimpleSymbolTable> SymbolTableToUse
             );
     ~ProgramNode();
 
@@ -30,15 +30,15 @@ public:
     Node::ValueTypes getReturnType() const;
     QString printValue() const;
     QString printNode() const;
-    std::unique_ptr<ValueNode> visit() const;
+    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
 
 private:
     QString ProgramName;
     Node::ValueTypes type;
     std::vector<std::unique_ptr<SimpleNode>> ProgramExpressions;
     std::unique_ptr<SimpleNode> ProgramReturnStatement;
-    QSharedPointer<SymbolTable> ParentSymbolTable;
-    QSharedPointer<SymbolTable> ProgramSymbolTable;
+    QSharedPointer<SimpleSymbolTable> ParentSymbolTable;
+    QSharedPointer<SimpleSymbolTable> ProgramSymbolTable;
 };
 
 

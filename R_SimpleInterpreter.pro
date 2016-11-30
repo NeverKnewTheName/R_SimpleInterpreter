@@ -29,11 +29,13 @@ SOURCES += main.cpp\
     programnode.cpp \
     simplenode.cpp \
     valuenode.cpp \
-    symboltableentry.cpp \
-    symbol.cpp \
-    symboltable.cpp \
     variablesymbol.cpp \
-    functionsymbol.cpp
+    functionsymbol.cpp \
+    controlnode.cpp \
+    simplesymbol.cpp \
+    simplesymboltable.cpp \
+    simplesymboltableentry.cpp \
+    simplestack.cpp
 
 HEADERS  += r_simpleinterpreter.h \
     simplelexer.h \
@@ -51,10 +53,12 @@ HEADERS  += r_simpleinterpreter.h \
     programnode.h \
     simplenode.h \
     valuenode.h \
-    symboltableentry.h \
-    symbol.h \
-    symboltable.h \
     variablesymbol.h \
-    functionsymbol.h
+    functionsymbol.h \
+    controlnode.h \
+    simplesymbol.h \
+    simplesymboltable.h \
+    simplesymboltableentry.h \
+    simplestack.h
 
 FORMS    += r_simpleinterpreter.ui

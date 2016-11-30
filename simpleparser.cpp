@@ -1,5 +1,5 @@
 #include "simpleparser.h"
-#include "symboltable.h"
+#include "simplesymboltable.h"
 #include <QDebug>
 
 #include "simplenode.h"
@@ -14,16 +14,18 @@
 #include "binaryoperationnodes.h"
 #include "ternaryoperationnodes.h"
 
-#include "symboltableentry.h"
-#include "symboltable.h"
+#include "simplesymboltableentry.h"
+#include "simplesymboltable.h"
 #include "variablesymbol.h"
 #include "functionsymbol.h"
 
-SimpleParser::SimpleParser(SimpleLexer *lexer, QSharedPointer<SymbolTable> parentSymblTbl) :
+#include "simplestack.h"
+
+SimpleParser::SimpleParser(SimpleLexer *lexer, QSharedPointer<SimpleSymbolTable> parentSymblTbl) :
     lexer(lexer),
     CurrentToken(lexer->getNextToken()),
     ParentSymblTbl(parentSymblTbl),
-    ProgramSymbolTable(new SymbolTable(QString("ProgramSymbolTable"), ParentSymblTbl)),
+    ProgramSymbolTable(new SimpleSymbolTable(QString("ProgramSymbolTable"), ParentSymblTbl)),
     CurSymblTbl(NULL),
     ErrorOccured(false)
 {
@@ -57,7 +59,7 @@ std::unique_ptr<SimpleNode> SimpleParser::parse()
     return std::move(node);
 }
 
-QSharedPointer<SymbolTable> SimpleParser::getProgramSymblTbl()
+QSharedPointer<SimpleSymbolTable> SimpleParser::getProgramSymblTbl()
 {
     return ProgramSymbolTable;
 }
@@ -151,7 +153,7 @@ std::unique_ptr<ProgramNode> SimpleParser::Program()
 
 QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
 {
-    QSharedPointer<SymbolTable> SavedSymbolTable = CurSymblTbl;
+    QSharedPointer<SimpleSymbolTable> SavedSymbolTable = CurSymblTbl;
     QSharedPointer<FunctionSymbol> DeclaredFuncSymbol = FunctionDeclaration();
 
     if(DeclaredFuncSymbol == nullptr)
@@ -160,7 +162,7 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
         return QSharedPointer<FunctionSymbol>();
     }
     SharedSimpleTokenPtr token = CurrentToken;
-    QSharedPointer<SymbolTable> FuncSubSymblTbl = DeclaredFuncSymbol->getFunctionSymbolTable();
+    QSharedPointer<SimpleSymbolTable> FuncSubSymblTbl = DeclaredFuncSymbol->getFunctionSymbolTable();
     //    CurSymblTbl = FuncSubSymblTbl;
 
     if(CurrentToken->getTokenType() == SimpleToken::LCurlyParan)
@@ -236,7 +238,7 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDeclaration(/*SymbolTable *
     QSharedPointer<FunctionSymbol> FuncSymbol;
     SharedSimpleTokenPtr token;
 
-    QSharedPointer<SymbolTable> SavedSymbolTable = CurSymblTbl;
+    QSharedPointer<SimpleSymbolTable> SavedSymbolTable = CurSymblTbl;
 
     if(CurrentToken->getTokenType() == SimpleToken::TypeName)
     {
@@ -248,7 +250,7 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDeclaration(/*SymbolTable *
         eat(SimpleToken::VariableID);
         QString FuncName = qSharedPointerDynamicCast<VariableIDToken>(token)->getID();
 
-        QSharedPointer<SymbolTable> functionSymbolTable(new SymbolTable(QString("%1_SymbolTable").arg(FuncName)));
+        QSharedPointer<SimpleSymbolTable> functionSymbolTable(new SimpleSymbolTable(QString("%1_SymbolTable").arg(FuncName)));
         CurSymblTbl = functionSymbolTable;
 
         eat(SimpleToken::LParan);
@@ -274,7 +276,7 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDeclaration(/*SymbolTable *
                         returnType
                         )
                     );
-        SavedSymbolTable->addEntry(FuncName, qSharedPointerDynamicCast<SymbolTableEntry>(FuncSymbol));
+        SavedSymbolTable->addEntry(FuncName, qSharedPointerDynamicCast<SimpleSymbolTableEntry>(FuncSymbol));
         //        SymblTbl.addEntry(FuncName, FuncSymbol);
     }
 

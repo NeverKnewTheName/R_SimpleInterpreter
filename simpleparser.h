@@ -108,8 +108,11 @@
 #ifndef SIMPLEPARSER_H
 #define SIMPLEPARSER_H
 
+
+#include <QObject>
+
 #include "simplelexer.h"
-#include "symboltable.h"
+#include "simplesymboltable.h"
 #include "programnode.h"
 //#include "simpleast.h"
 
@@ -119,14 +122,16 @@ class SimpleNode;
 class FunctionNode;
 class VariableNode;
 
-class SimpleParser
+class SimpleParser : public QObject
 {
+    Q_OBJECT
+
 public:
-    SimpleParser(SimpleLexer *lexer, QSharedPointer<SymbolTable> parentSymblTbl);
+    SimpleParser(SimpleLexer *lexer, QSharedPointer<SimpleSymbolTable> parentSymblTbl);
     ~SimpleParser();
     std::unique_ptr<SimpleNode> parse();
 
-    QSharedPointer<SymbolTable> getProgramSymblTbl();
+    QSharedPointer<SimpleSymbolTable> getProgramSymblTbl();
 
 private:
     void eat(SimpleToken::TokenType tokenType);
@@ -162,9 +167,9 @@ private:
 
     SimpleLexer *lexer;
     SharedSimpleTokenPtr CurrentToken;
-    QSharedPointer<SymbolTable> ParentSymblTbl;
-    QSharedPointer<SymbolTable> ProgramSymbolTable;
-    QSharedPointer<SymbolTable> CurSymblTbl;
+    QSharedPointer<SimpleSymbolTable> ParentSymblTbl;
+    QSharedPointer<SimpleSymbolTable> ProgramSymbolTable;
+    QSharedPointer<SimpleSymbolTable> CurSymblTbl;
     bool ErrorOccured;
 };
 

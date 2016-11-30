@@ -2,10 +2,11 @@
 
 #include <QDebug>
 
-#include "symboltable.h"
+#include "simplesymboltable.h"
 #include "variablesymbol.h"
+#include "simplestack.h"
 
-DataNode::DataNode(const unsigned int dataIndex, const QSharedPointer<SymbolTable> GlobalSymbolTable) :
+DataNode::DataNode(const unsigned int dataIndex, const QSharedPointer<SimpleSymbolTable> GlobalSymbolTable) :
     VariableNode(qSharedPointerDynamicCast<VariableSymbol>(GlobalSymbolTable->lookup(QString("D%1").arg(dataIndex)))),
     dataIndex(dataIndex)
 {

@@ -82,12 +82,12 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual std::unique_ptr<ValueNode> DoOperation() const = 0;
+    virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
 
-    std::unique_ptr<ValueNode> visit() const;
+    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
 protected:
     Node::ValueTypes returnType;
 };
@@ -103,7 +103,7 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual std::unique_ptr<ValueNode> DoOperation() const = 0;
+    virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -125,7 +125,7 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual std::unique_ptr<ValueNode> DoOperation() const = 0;
+    virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -148,7 +148,7 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual std::unique_ptr<ValueNode> DoOperation() const = 0;
+    virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;

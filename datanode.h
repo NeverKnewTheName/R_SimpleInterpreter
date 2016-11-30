@@ -3,12 +3,12 @@
 
 #include "variablenode.h"
 
-class SymbolTable;
+class SimpleSymbolTable;
 
 class DataNode : public VariableNode
 {
 public:
-    DataNode(const unsigned int dataIndex, const QSharedPointer<SymbolTable> GlobalSymbolTable);
+    DataNode(const unsigned int dataIndex, const QSharedPointer<SimpleSymbolTable> GlobalSymbolTable);
     virtual ~DataNode();
     Node::NodeType getNodeType() const;
     Node::ValueTypes getReturnType() const;
