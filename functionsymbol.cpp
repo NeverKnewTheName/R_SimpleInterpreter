@@ -50,6 +50,8 @@ std::unique_ptr<ValueNode> FunctionSymbol::CallFunction(
         QSharedPointer<SymbolTable> CurrentSymbolTable
         )
 {
+    //ToDO SOMEHOW SAVE THE VALUES AND REPRODUCE THEM WHEN THE FUNCTION RETURNS...
+//    QSharedPointer<SymbolTable> SavedFunctionSymbolTable = FunctionSymbolTable.data();
     const size_t NrOfParameters = FunctionParameters.size();
     if(NrOfParameters != FunctionArguments.size())
     {

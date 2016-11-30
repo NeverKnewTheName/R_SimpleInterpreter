@@ -30,7 +30,7 @@ private slots:
     void receiveLexerHTMLFormattedErrMsg(QString HTMLFormattedErrMsg);
 
 private:
-    void populateSymbolTableView(SymbolTable * const symbolTable, QStandardItem *SymbolTableModel);
+    void populateSymbolTableView(QSharedPointer<SymbolTable> symbolTable, QStandardItem *SymbolTableModel);
 
 private:
     Ui::R_SimpleInterpreter *ui;

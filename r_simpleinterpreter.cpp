@@ -1,13 +1,18 @@
 #include "r_simpleinterpreter.h"
 #include "ui_r_simpleinterpreter.h"
 
-#include "simpletoken.h"
 #include "simplelexer.h"
 #include "simpleparser.h"
-#include "symboltable.h"
 #include "simpleinterpreter.h"
 
+#include "simpletoken.h"
+
 #include "valuenode.h"
+
+
+#include "symboltableentry.h"
+#include "symboltable.h"
+#include "functionsymbol.h"
 #include "variablesymbol.h"
 
 #include <QMessageBox>
@@ -97,9 +102,9 @@ void R_SimpleInterpreter::on_pushButton_clicked()
     if((result == nullptr) || (result->getReturnType() == Node::ErrorType))
         return;
 
-    //    QStandardItemModel *SymbolTableModel = new QStandardItemModel(this);
-    //    populateSymbolTableView(&GlobalSymbolTable, SymbolTableModel->invisibleRootItem());
-    //    ui->SymbolTableView->setModel(SymbolTableModel);
+    QStandardItemModel *SymbolTableModel = new QStandardItemModel(this);
+    populateSymbolTableView(GlobalSymbolTable, SymbolTableModel->invisibleRootItem());
+    ui->SymbolTableView->setModel(SymbolTableModel);
 
     ui->lineEdit_2->setText(result->getValue().value<QString>());
 }
@@ -137,19 +142,23 @@ void R_SimpleInterpreter::receiveLexerHTMLFormattedErrMsg(QString HTMLFormattedE
     //                          QMessageBox::Ok);
 }
 
-void R_SimpleInterpreter::populateSymbolTableView(SymbolTable * const symbolTable, QStandardItem *SymbolTableModel)
+void R_SimpleInterpreter::populateSymbolTableView(QSharedPointer<SymbolTable> symbolTable, QStandardItem *SymbolTableModel)
 {
-    //    QVector<SymbolTableEntryPtr> symbolTableEntries = symbolTable->getSymbolTableEntries();
-    //    for(SymbolTableEntryPtr entry : symbolTableEntries)
-    //    {
-    //        QStandardItem *entryItem = new QStandardItem(entry->PrintSymbolType());
-    //        QList<QStandardItem*> row;
-    //        row.append(entryItem);
-    //        row.append(new QStandardItem(entry->PrintToSymbolToString()));
-    //        SymbolTableModel->appendRow(row);
-    //        if(entry->getType() == SymbolTableEntry::SubSymbolTable)
-    //        {
-    //            populateSymbolTableView(dynamic_cast<SymbolTable*>(entry.data()), entryItem);
-    //        }
-    //    }
+    std::vector<QSharedPointer<SymbolTableEntry>> symbolTableEntries = symbolTable->getSymbolTableEntries();
+    for(QSharedPointer<SymbolTableEntry> &entry : symbolTableEntries)
+    {
+        QStandardItem *entryItem = new QStandardItem(entry->PrintSymbolType());
+        QList<QStandardItem*> row;
+        row.append(entryItem);
+        row.append(new QStandardItem(entry->PrintToSymbolToString()));
+        SymbolTableModel->appendRow(row);
+        if(entry->getType() == SymbolTableEntry::SubSymbolTable)
+        {
+            populateSymbolTableView(qSharedPointerDynamicCast<SymbolTable>(entry), entryItem);
+        }
+        else if(entry->getType() == SymbolTableEntry::Function)
+        {
+            populateSymbolTableView(qSharedPointerDynamicCast<FunctionSymbol>(entry)->getFunctionSymbolTable(), entryItem);
+        }
+    }
 }
