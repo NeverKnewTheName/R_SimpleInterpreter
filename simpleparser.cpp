@@ -37,25 +37,24 @@ SimpleParser::~SimpleParser()
 
 std::unique_ptr<SimpleNode> SimpleParser::parse()
 {
-        std::unique_ptr<SimpleNode> node;
+    std::unique_ptr<SimpleNode> node;
+    if(CurrentToken->getTokenType() != SimpleToken::EOFToken)
+    {
+        node = Program();
+
         if(CurrentToken->getTokenType() != SimpleToken::EOFToken)
         {
-            node = Program();
-
-            if(CurrentToken->getTokenType() != SimpleToken::EOFToken)
+            qDebug() << __PRETTY_FUNCTION__ << ": NOT EOF";
+            if(node != nullptr)
             {
-                qDebug() << __PRETTY_FUNCTION__ << ": NOT EOF";
-                if(node != nullptr)
-                {
-
-                    EOFExpectedError(CurrentToken, QString("EOF was expected but not there was still input..."));
-                    return nullptr;
-                }
+                EOFExpectedError(CurrentToken, QString("EOF was expected but not there was still input..."));
+                return nullptr;
             }
-
         }
-        qDebug() << __PRETTY_FUNCTION__ << ": EOF";
-        return std::move(node);
+
+    }
+    qDebug() << __PRETTY_FUNCTION__ << ": EOF";
+    return std::move(node);
 }
 
 QSharedPointer<SymbolTable> SimpleParser::getProgramSymblTbl()
@@ -81,7 +80,7 @@ void SimpleParser::eat(SimpleToken::TokenType tokenType)
 std::unique_ptr<ProgramNode> SimpleParser::Program()
 {
     SharedSimpleTokenPtr token = CurrentToken;
-//    QSharedPointer<SymbolTable> ProgramSymbolTable(new SymbolTable(QString("ProgramSymblTbl"), ParentSymblTbl));
+    //    QSharedPointer<SymbolTable> ProgramSymbolTable(new SymbolTable(QString("ProgramSymblTbl"), ParentSymblTbl));
 
     std::unique_ptr<ProgramNode> programNode(new ProgramNode(QString("Program"), ProgramSymbolTable));
 
@@ -95,6 +94,10 @@ std::unique_ptr<ProgramNode> SimpleParser::Program()
         QSharedPointer<VariableSymbol> newVarDefinition = VarDefinition();
         if(newVarDefinition == nullptr)
         {
+            if(ErrorOccured)
+            {
+                return nullptr;
+            }
             lexer->ResetLexerToToken(token);
             CurrentToken = token;
         }
@@ -129,6 +132,7 @@ std::unique_ptr<ProgramNode> SimpleParser::Program()
             return Q_NULLPTR;
         }
         programNode->addExpression(ProgramExpression);
+        eat(SimpleToken::SemiColonDelim);
     }
 
 
@@ -166,13 +170,16 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
 
         while(CurrentToken->getTokenType() == SimpleToken::TypeName)
         {
-            QSharedPointer<VariableSymbol> varDef = VarDefinition();
-            //Add to function symbol table
-            //            if(varDef->getNodeType() == Node::Assignment)
-            //            {
-            //                SimpleNodeScopedPtr Assignment;
-            //                FuncExpressions.append(SimpleNodeScopedPtr(new AssignmentNode(VariableNodeScopedPtr(new VariableNode(varDef)),Assignment)));
-            //            }
+            // // // Variable Definition // // //
+            token = CurrentToken;
+            QSharedPointer<VariableSymbol> newVarDefinition = VarDefinition();
+            if(newVarDefinition == nullptr)
+            {
+                SyntacticError(token, QString("Expected Variable definition after TypeName!"));
+                return QSharedPointer<FunctionSymbol>();
+            }
+
+            DeclaredFuncSymbol->addVariableDefinition(newVarDefinition);
         }
 
         std::unique_ptr<SimpleNode> ExpressionNode;
@@ -206,7 +213,7 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
             return QSharedPointer<FunctionSymbol>();
         }
 
-//        eat(SimpleToken::SemiColonDelim);
+        //        eat(SimpleToken::SemiColonDelim);
     }
     else
     {
@@ -229,6 +236,8 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDeclaration(/*SymbolTable *
     QSharedPointer<FunctionSymbol> FuncSymbol;
     SharedSimpleTokenPtr token;
 
+    QSharedPointer<SymbolTable> SavedSymbolTable = CurSymblTbl;
+
     if(CurrentToken->getTokenType() == SimpleToken::TypeName)
     {
         token = CurrentToken;
@@ -239,7 +248,9 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDeclaration(/*SymbolTable *
         eat(SimpleToken::VariableID);
         QString FuncName = qSharedPointerDynamicCast<VariableIDToken>(token)->getID();
 
-        //        SymbolTable *FuncSubSymblTbl = new SymbolTable(QString("FuncSymblTbl_%1").arg(FuncName),&SymblTbl);
+        QSharedPointer<SymbolTable> functionSymbolTable(new SymbolTable(QString("%1_SymbolTable").arg(FuncName)));
+        CurSymblTbl = functionSymbolTable;
+
         eat(SimpleToken::LParan);
         std::vector<QSharedPointer<VariableSymbol>> parameters;
         while(CurrentToken->getTokenType() == SimpleToken::TypeName)
@@ -255,9 +266,15 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDeclaration(/*SymbolTable *
 
         eat(SimpleToken::RParan);
 
-        FuncSymbol = QSharedPointer<FunctionSymbol>(new FunctionSymbol(FuncName, std::move(parameters), returnType));
-        CurSymblTbl->addEntry(FuncName, qSharedPointerDynamicCast<SymbolTableEntry>(FuncSymbol));
-        CurSymblTbl = FuncSymbol->getFunctionSymbolTable();
+        FuncSymbol = QSharedPointer<FunctionSymbol>(
+                    new FunctionSymbol(
+                        FuncName,
+                        functionSymbolTable,
+                        std::move(parameters),
+                        returnType
+                        )
+                    );
+        SavedSymbolTable->addEntry(FuncName, qSharedPointerDynamicCast<SymbolTableEntry>(FuncSymbol));
         //        SymblTbl.addEntry(FuncName, FuncSymbol);
     }
 
@@ -289,7 +306,7 @@ QSharedPointer<VariableSymbol> SimpleParser::VarDefinition()
             return QSharedPointer<VariableSymbol>();
         }
         Node::ValueTypes exprReturnType = nodeTwo->getReturnType();
-        if( ( exprReturnType == Node::ErrorType ) || ( !SimpleNode::canConvertTypes(exprReturnType, VarDeclarationSymbol->getReturnType()) ) )
+        if( ( exprReturnType == Node::ErrorType ) || ( !SimpleNode::canConvertTypes(VarDeclarationSymbol->getReturnType(), exprReturnType) ) )
         {
             TypeError(
                         token,
@@ -331,6 +348,12 @@ QSharedPointer<VariableSymbol> SimpleParser::VarDeclaration()
             eat(SimpleToken::VariableID);
             QString VariableID = qSharedPointerDynamicCast<VariableIDToken>(token)->getID();
             //            SymbolTableToRegisterVariableTo->addEntry(VariableID, new VariableSymbol(VariableID, type));
+            if(CurSymblTbl->DoesIdentifierExistInCurrentScope(VariableID))
+            {
+                qDebug() << "VARIABLE DOES ALREADY EXIST!";
+                SyntacticError(token, QString("Variable was already declared in this scope!"));
+                return QSharedPointer<VariableSymbol>();
+            }
             varDeclarationSymbol = QSharedPointer<VariableSymbol>(new VariableSymbol(VariableID, type));
         }
     }
@@ -400,7 +423,7 @@ std::unique_ptr<SimpleNode> SimpleParser::AssignmentExpression()
             eat(SimpleToken::Assign);
             token = CurrentToken;
             nodeTwo = AssignmentExpression();
-            if(node == nullptr)
+            if(nodeTwo == nullptr)
             {
                 SyntacticError(CurrentToken, QString("Assignable Value expected!"));
                 return Q_NULLPTR;
@@ -624,7 +647,7 @@ std::unique_ptr<SimpleNode> SimpleParser::BitwiseORExpression()
                 return Q_NULLPTR;
             }
             node.reset(new ORNode(std::move(node), std::move(nodeTwo)));
-                    if(node == nullptr)
+            if(node == nullptr)
             {
                 return Q_NULLPTR;
             }
@@ -872,7 +895,7 @@ std::unique_ptr<SimpleNode> SimpleParser::RelationalExpression()
                 return Q_NULLPTR;
             }
             node.reset(new EqualOrLowerNode(std::move(node), std::move(nodeTwo)));
-                    if(node == nullptr)
+            if(node == nullptr)
             {
                 return Q_NULLPTR;
             }
@@ -1062,7 +1085,7 @@ std::unique_ptr<SimpleNode> SimpleParser::MultiplicativeExpression()
                 return Q_NULLPTR;
             }
             node.reset(new DivisionNode(std::move(node), std::move(nodeTwo)));
-                    if(node == nullptr)
+            if(node == nullptr)
             {
                 return Q_NULLPTR;
             }
@@ -1081,7 +1104,7 @@ std::unique_ptr<SimpleNode> SimpleParser::MultiplicativeExpression()
                 return Q_NULLPTR;
             }
             node.reset(new ModuloNode(std::move(node), std::move(nodeTwo)));
-                    if(node == nullptr)
+            if(node == nullptr)
             {
                 return Q_NULLPTR;
             }
@@ -1123,7 +1146,7 @@ std::unique_ptr<SimpleNode> SimpleParser::UnaryExpression()
                 return Q_NULLPTR;
             }
             node.reset(new IncrementNode(std::move(node)));
-                    if(node->getReturnType() == Node::ErrorType)
+            if(node->getReturnType() == Node::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer Variable"));
 
@@ -1152,7 +1175,7 @@ std::unique_ptr<SimpleNode> SimpleParser::UnaryExpression()
                 return Q_NULLPTR;
             }
             node.reset(new DecrementNode(std::move(node)));
-                    if(node->getReturnType() == Node::ErrorType)
+            if(node->getReturnType() == Node::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer Variable"));
 
@@ -1174,15 +1197,15 @@ std::unique_ptr<SimpleNode> SimpleParser::UnaryExpression()
             return Q_NULLPTR;
         }
         node.reset(new PositiveNode(std::move(node)));
-                   if(node->getReturnType() == Node::ErrorType)
+        if(node->getReturnType() == Node::ErrorType)
         {
-                       TypeError(token, QString("Expected: Integer | Double"));
+            TypeError(token, QString("Expected: Integer | Double"));
 
-                       return Q_NULLPTR;
-                   }
-                   break;
-            case SimpleToken::Minus:
-            eat(SimpleToken::Minus);
+            return Q_NULLPTR;
+        }
+        break;
+    case SimpleToken::Minus:
+        eat(SimpleToken::Minus);
         node = UnaryExpression();
         if(node == nullptr)
         {
@@ -1190,7 +1213,7 @@ std::unique_ptr<SimpleNode> SimpleParser::UnaryExpression()
             return Q_NULLPTR;
         }
         node.reset(new NegativeNode(std::move(node)));
-                if(node->getReturnType() == Node::ErrorType)
+        if(node->getReturnType() == Node::ErrorType)
         {
             TypeError(token, QString("Expected: Integer | Double"));
 
@@ -1206,7 +1229,7 @@ std::unique_ptr<SimpleNode> SimpleParser::UnaryExpression()
             return Q_NULLPTR;
         }
         node.reset(new LogicalNegationNode(std::move(node)));
-                if(node->getReturnType() == Node::ErrorType)
+        if(node->getReturnType() == Node::ErrorType)
         {
             TypeError(token, QString("Expected: Integer | Double | Bool"));
 
@@ -1222,7 +1245,7 @@ std::unique_ptr<SimpleNode> SimpleParser::UnaryExpression()
             return Q_NULLPTR;
         }
         node.reset(new OnesComplementNode(std::move(node)));
-                if(node->getReturnType() == Node::ErrorType)
+        if(node->getReturnType() == Node::ErrorType)
         {
             TypeError(token, QString("Expected: Integer"));
 
@@ -1246,7 +1269,7 @@ std::unique_ptr<SimpleNode> SimpleParser::UnaryExpression()
 
             Node::ValueTypes typeToCastTo = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
             node.reset(new TypeCastNode(std::move(node), typeToCastTo));
-                    if(node->getReturnType() == Node::ErrorType)
+            if(node->getReturnType() == Node::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer and cast to (Integer|Double|Bool|String) | Double and cast to (Integer|Double|Bool|String) | Bool and cast to (Integer|Double|Bool|String) | String and cast to String"));
                 return Q_NULLPTR;

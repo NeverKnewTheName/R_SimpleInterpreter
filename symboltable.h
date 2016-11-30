@@ -18,6 +18,8 @@ public:
     bool addEntry(QString const& identifier, QSharedPointer<SymbolTableEntry> entry);
     bool removeEntry(QString const& identifier);
 
+    bool DoesIdentifierExistInCurrentScope(const QString &IdentifierToCheck) const;
+
     const std::vector<QSharedPointer<SymbolTableEntry>> &getSymbolTableEntries() const;
 
     bool addParentSymbolTable(QSharedPointer<SymbolTable> parent);

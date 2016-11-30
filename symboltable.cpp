@@ -83,6 +83,11 @@ bool SymbolTable::removeEntry(const QString &identifier)
     return true;
 }
 
+bool SymbolTable::DoesIdentifierExistInCurrentScope(const QString &IdentifierToCheck) const
+{
+    return SymbolTableIndices.contains(IdentifierToCheck);
+}
+
 const std::vector<QSharedPointer<SymbolTableEntry>> &SymbolTable::getSymbolTableEntries() const
 {
     return SymbolTableEntries;

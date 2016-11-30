@@ -14,7 +14,9 @@ class SymbolTable;
 class FunctionSymbol : public Symbol
 {
 public:
-    FunctionSymbol(const QString &identifier,
+    FunctionSymbol(
+            const QString &identifier,
+            QSharedPointer<SymbolTable> SymbolTableForFunction,
             std::vector<QSharedPointer<VariableSymbol> > &&functionParameters,
             Node::ValueTypes ReturnType = Node::Void
             );
@@ -22,6 +24,7 @@ public:
 
     void addFunctionExpressions(std::vector<std::unique_ptr<SimpleNode>> &FuncExpressions);
     void addFunctionReturnStatement(std::unique_ptr<SimpleNode> returnNode);
+    void addVariableDefinition(QSharedPointer<VariableSymbol> newVariable);
 
     std::unique_ptr<ValueNode> CallFunction(
             const std::vector<std::unique_ptr<SimpleNode> > &FunctionArguments,

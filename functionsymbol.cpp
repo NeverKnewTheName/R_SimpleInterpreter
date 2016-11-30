@@ -5,12 +5,14 @@
 #include "symboltable.h"
 #include "variablesymbol.h"
 
-FunctionSymbol::FunctionSymbol(const QString &identifier,
+FunctionSymbol::FunctionSymbol(
+        const QString &identifier,
+        QSharedPointer<SymbolTable> SymbolTableForFunction,
         std::vector<QSharedPointer<VariableSymbol> > &&functionParameters,
         Node::ValueTypes ReturnType
         ) :
     Symbol(identifier),
-    FunctionSymbolTable(new SymbolTable(QString("%1_SymbolTable").arg(identifier))),
+    FunctionSymbolTable(SymbolTableForFunction),
     ReturnType(ReturnType),
     FunctionParameters(functionParameters),
     FunctionReturnNode(new ValueNode())
@@ -36,6 +38,11 @@ void FunctionSymbol::addFunctionExpressions(std::vector<std::unique_ptr<SimpleNo
 void FunctionSymbol::addFunctionReturnStatement(std::unique_ptr<SimpleNode> returnNode)
 {
     FunctionReturnNode = std::move(returnNode);
+}
+
+void FunctionSymbol::addVariableDefinition(QSharedPointer<VariableSymbol> newVariable)
+{
+    FunctionSymbolTable->addEntry(newVariable->getIdentifier(), newVariable);
 }
 
 std::unique_ptr<ValueNode> FunctionSymbol::CallFunction(
