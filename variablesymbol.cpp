@@ -4,13 +4,10 @@
 #include <QDebug>
 
 VariableSymbol::VariableSymbol(const QString &identifier,
-                               Node::ValueTypes VariableType
+                               const Node::ValueTypes VariableType
                                ) :
-    SimpleSymbol(identifier),
-    AssignedNode(ValueNode()),
-    VariableType(VariableType)
+    ValueSymbol(identifier, VariableType)
 {
-
 }
 
 VariableSymbol::~VariableSymbol()
@@ -18,46 +15,52 @@ VariableSymbol::~VariableSymbol()
     qDebug() << __PRETTY_FUNCTION__;
 }
 
-std::unique_ptr<ValueNode> VariableSymbol::getAssignedValue() const
+std::unique_ptr<ValueNode> VariableSymbol::getAssignedValue(QSharedPointer<SimpleStack> StackToUse) const
 {
-    return std::unique_ptr<ValueNode>( new ValueNode( AssignedNode ) );
+    //The currently assigned value will be at the address of the current scope (last scope for symbol) in the stack
+    return StackToUse->StackAt(AddressPerScope.back());
 }
 
-bool VariableSymbol::assignValue(const SimpleNode &NodeToAssign)
+bool VariableSymbol::assignValue(std::unique_ptr<SimpleNode> NodeToAssign, QSharedPointer<SimpleStack> StackToUse) const
 {
-    ValueNode newValueNode;// = valueNode; //Save the previous value because it could be referenced in the assignment!!!
+    std::unique_ptr<ValueNode> newValueNode;// = valueNode; //Save the previous value because it could be referenced in the assignment!!!
 
-    if(!SimpleNode::canConvertTypes(VariableType, NodeToAssign.getReturnType()))
+    Node::ValueTypes returnType = getReturnType();
+    //ToDO
+    if(!SimpleNode::canConvertTypes(returnType, NodeToAssign->getReturnType()))
     {
         qDebug() << "ERROR: TypeMismatch";
         return false;
     }
 
-    switch(VariableType)
+    //CAST
+    switch(returnType)
     {
     case Node::Integer:
-        newValueNode = std::move(ValueNode(std::move(NodeToAssign.visit()->getValue().value<int>())));
+        newValueNode.reset(new ValueNode(std::move(NodeToAssign->visit(StackToUse)->getValue().value<int>())));
                 break;
     case Node::Double:
-        newValueNode = std::move(ValueNode(std::move(NodeToAssign.visit()->getValue().value<double>())));
+        newValueNode.reset(new ValueNode(std::move(NodeToAssign->visit(StackToUse)->getValue().value<double>())));
                 break;
     case Node::Bool:
-        newValueNode = std::move(ValueNode(std::move(NodeToAssign.visit()->getValue().value<bool>())));
+        newValueNode.reset(new ValueNode(std::move(NodeToAssign->visit(StackToUse)->getValue().value<bool>())));
                 break;
     case Node::String:
-        newValueNode = std::move(ValueNode(std::move(NodeToAssign.visit()->getValue().value<QString>())));
+        newValueNode.reset(new ValueNode(std::move(NodeToAssign->visit(StackToUse)->getValue().value<QString>())));
                 break;
     case Node::Void:
     case Node::ErrorType:
     default:
-        newValueNode = std::move(ValueNode());
+        newValueNode.reset(new ValueNode());
     }
 
-    qDebug() << "Previous Value: " << AssignedNode.visit()->getValue();
+    size_t Address = AddressPerScope.back();
 
-    AssignedNode = std::move(newValueNode);
+    qDebug() << "Previous Value: " << StackToUse->StackAt(Address)->visit(StackToUse)->getValue();
 
-    qDebug() << "Value Assigned: " << AssignedNode.visit()->getValue();
+    StackToUse->StackReplaceAt(Address, std::move(newValueNode));
+
+    qDebug() << "Value Assigned: " << StackToUse->StackAt(Address)->visit(StackToUse)->getValue();
 
     return true;
 }
@@ -69,7 +72,7 @@ SimpleSymbolTableEntry::SymbolTableEntryType VariableSymbol::getType() const
 
 QString VariableSymbol::PrintToSymbolToString() const
 {
-    return QString("%1 %2").arg(SimpleNode::getHumanReadableTypeNameToValueType(getVariableType())).arg(identifier);
+    return QString("%1 %2").arg(SimpleNode::getHumanReadableTypeNameToValueType(getReturnType())).arg(getIdentifier());
 }
 
 QString VariableSymbol::PrintSymbolType() const
@@ -77,12 +80,90 @@ QString VariableSymbol::PrintSymbolType() const
     return QString("Variable");
 }
 
-Node::ValueTypes VariableSymbol::getReturnType() const
+std::unique_ptr<ValueNode> VariableSymbol::getValue(QSharedPointer<SimpleStack> StackToUse) const
 {
-    return VariableType;
+    return getAssignedValue(StackToUse);
 }
 
-Node::ValueTypes VariableSymbol::getVariableType() const
+bool VariableSymbol::VarEnterScope(QSharedPointer<SimpleStack> StackToUse)
 {
-    return VariableType;
+    qDebug() << "Scope entered";
+    //Push Symbol on Stack with default Value
+    //Enter new scope
+    AddressPerScope.push_back(
+                StackToUse->StackPush(
+                    ValueNode()
+                    )
+                );
+}
+
+bool VariableSymbol::VarExitScope(QSharedPointer<SimpleStack> StackToUse)
+{
+    qDebug() << "Scope exited";
+    //Delete Symbol from stack
+    AddressPerScope.pop_back();
+    //Delete Scope
+    StackToUse->StackPop();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ValueSymbol::ValueSymbol(const QString &identifier, const Node::ValueTypes ValueType) :
+    SimpleSymbol(identifier),
+    ValueType(ValueType)
+{
+
+}
+
+ValueSymbol::~ValueSymbol()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+Node::ValueTypes ValueSymbol::getReturnType() const
+{
+    return ValueType;
+}
+
+ConstantValueSymbol::ConstantValueSymbol(const QString &identifier, ValueNode value) :
+    ValueSymbol(identifier, value.getReturnType()),
+    ConstVal(value)
+{
+}
+
+ConstantValueSymbol::~ConstantValueSymbol()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+SimpleSymbolTableEntry::SymbolTableEntryType ConstantValueSymbol::getType() const
+{
+    return SimpleSymbolTableEntry::ConstantValue;
+}
+
+QString ConstantValueSymbol::PrintToSymbolToString() const
+{
+    return QString("%1 %2").arg(SimpleNode::getHumanReadableTypeNameToValueType(getReturnType())).arg(getIdentifier());
+}
+
+QString ConstantValueSymbol::PrintSymbolType() const
+{
+    return QString("ConstantValue");
+}
+
+std::unique_ptr<ValueNode> ConstantValueSymbol::getValue(QSharedPointer<SimpleStack> StackToUse) const
+{
+    Q_UNUSED(StackToUse)
+    return std::unique_ptr<ValueNode>(new ValueNode(ConstVal));
 }

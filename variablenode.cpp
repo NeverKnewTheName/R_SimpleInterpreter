@@ -3,8 +3,8 @@
 
 #include <QDebug>
 
-VariableNode::VariableNode(QSharedPointer<VariableSymbol> relatedVariableSymbol) :
-    SimpleNode(relatedVariableSymbol->getVariableType()),
+VariableNode::VariableNode(QSharedPointer<ValueSymbol> relatedVariableSymbol) :
+    SimpleNode(relatedVariableSymbol->getReturnType()),
     RelatedVariableSymbol(relatedVariableSymbol)
 {
 }
@@ -26,7 +26,7 @@ Node::ValueTypes VariableNode::getReturnType() const
 
 std::unique_ptr<ValueNode> VariableNode::visit(QSharedPointer<SimpleStack> StackToUse) const
 {
-    return RelatedVariableSymbol->getAssignedValue();
+    return RelatedVariableSymbol->getValue(StackToUse);
 }
 
 QString VariableNode::printValue() const
@@ -47,7 +47,7 @@ QString VariableNode::getVariableName() const
     return RelatedVariableSymbol->getIdentifier();
 }
 
-QSharedPointer<VariableSymbol> VariableNode::getRelatedVariableSymbol() const
+QSharedPointer<ValueSymbol> VariableNode::getRelatedVariableSymbol() const
 {
     return RelatedVariableSymbol;
 }

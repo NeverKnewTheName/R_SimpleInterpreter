@@ -38,5 +38,6 @@ std::unique_ptr<ValueNode> SimpleInterpreter::interpret()
     if(tree == nullptr)
         return std::unique_ptr<ValueNode>();
 
-    return tree->visit();
+    QSharedPointer<SimpleStack> RuntimeStack(new SimpleStack(100));
+    return tree->visit(RuntimeStack);
 }

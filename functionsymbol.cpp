@@ -22,7 +22,7 @@ FunctionSymbol::FunctionSymbol(
     for(int i = 0; i < NrOfFunctionParameters; i++)
     {
         QString paramIdentifier = FunctionParameters.at(i)->getIdentifier();
-        FunctionSymbolTable->addEntry(paramIdentifier,qSharedPointerDynamicCast<SimpleSymbolTableEntry>(FunctionParameters.at(i)));
+        FunctionSymbolTable->addEntry(qSharedPointerDynamicCast<SimpleSymbolTableEntry>(FunctionParameters.at(i)));
     }
 }
 
@@ -41,48 +41,85 @@ void FunctionSymbol::addFunctionReturnStatement(std::unique_ptr<SimpleNode> retu
     FunctionReturnNode = std::move(returnNode);
 }
 
-void FunctionSymbol::addVariableDefinition(QSharedPointer<VariableSymbol> newVariable)
-{
-    FunctionSymbolTable->addEntry(newVariable->getIdentifier(), newVariable);
-}
+//void FunctionSymbol::addVariableDefinition(QSharedPointer<VariableSymbol> newVariable)
+//{
+//    FunctionSymbolTable->addEntry(newVariable);
+//}
 
 std::unique_ptr<ValueNode> FunctionSymbol::CallFunction(
         const std::vector<std::unique_ptr<SimpleNode> > &FunctionArguments,
-        QSharedPointer<SimpleSymbolTable> CurrentSymbolTable
+        QSharedPointer<SimpleStack> StackToUse
         )
 {
-    //ToDO SOMEHOW SAVE THE VALUES AND REPRODUCE THEM WHEN THE FUNCTION RETURNS...
-//    QSharedPointer<SymbolTable> SavedFunctionSymbolTable = FunctionSymbolTable.data();
     const size_t NrOfParameters = FunctionParameters.size();
+
     if(NrOfParameters != FunctionArguments.size())
     {
         qDebug() << "Number of passed arguments does not match function parameters!";
         return std::unique_ptr<ValueNode>( new ValueNode());
     }
 
-    //Is this really needed?!
-    //qSharedPointerDynamicCast<SymbolTable>(CurrentSymbolTable)->addEntry(FunctionSymbolTable->getIdentifier(), SymbolTablePtr(&FunctionSymbolTable));
+    std::vector<std::unique_ptr<ValueNode>> EvaluatedFuncArgs;
+    for(size_t i = 0; i < NrOfParameters; i++)
+    {
+        EvaluatedFuncArgs.emplace_back(std::move(FunctionArguments.at(i)->visit(StackToUse)));
+    }
+    FunctionSymbolTable->EnterScope(StackToUse);
 
     for(size_t i = 0; i < NrOfParameters; i++)
     {
         QSharedPointer<VariableSymbol> &param = FunctionParameters.at(i);
-        const std::unique_ptr<SimpleNode> &argument = FunctionArguments.at(i);
-        param->assignValue(*(argument->visit().get()));
+        std::unique_ptr<ValueNode> &argument = EvaluatedFuncArgs.at(i);
+        param->assignValue(std::move(argument), StackToUse);
     }
 
-    FunctionSymbolTable->addParentSymbolTable(CurrentSymbolTable);
 
     for(std::unique_ptr<SimpleNode> &expression : FunctionExpressions)
     {
-        expression->visit();
+        expression->visit(StackToUse);
     }
 
-    return FunctionReturnNode->visit();
+    std::unique_ptr<ValueNode> returnValue = FunctionReturnNode->visit(StackToUse);
+
+    FunctionSymbolTable->ExitScope(StackToUse);
+    return returnValue;
 }
 
 QSharedPointer<SimpleSymbolTable> FunctionSymbol::getFunctionSymbolTable() const
 {
     return FunctionSymbolTable;
+}
+
+bool FunctionSymbol::BuildFunctionStack(QSharedPointer<SimpleStack> StackToUse) const
+{
+    bool IsSuccessfull = true;
+    const std::vector<QSharedPointer<SimpleSymbolTableEntry>> SymbolTableEntries = FunctionSymbolTable->getSymbolTableEntries();
+
+    for(auto & symbol: SymbolTableEntries)
+    {
+        if(symbol->getType() == SimpleSymbolTableEntry::Variable)
+        {
+            IsSuccessfull = IsSuccessfull || qSharedPointerDynamicCast<VariableSymbol>(symbol)->VarEnterScope(StackToUse);
+        }
+    }
+
+    return IsSuccessfull;
+}
+
+bool FunctionSymbol::DestroyFunctionStack(QSharedPointer<SimpleStack> StackToUse) const
+{
+    bool IsSuccessfull = true;
+    const std::vector<QSharedPointer<SimpleSymbolTableEntry>> SymbolTableEntries = FunctionSymbolTable->getSymbolTableEntries();
+
+    for(auto & symbol: SymbolTableEntries)
+    {
+        if(symbol->getType() == SimpleSymbolTableEntry::Variable)
+        {
+            IsSuccessfull = IsSuccessfull || qSharedPointerDynamicCast<VariableSymbol>(symbol)->VarEnterScope(StackToUse);
+        }
+    }
+
+    return IsSuccessfull;
 }
 
 bool FunctionSymbol::checkFunctionArguments(const QVector<std::unique_ptr<SimpleNode>> &FunctionArguments) const

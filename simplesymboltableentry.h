@@ -10,12 +10,13 @@ public:
     {
         SubSymbolTable,
         Variable,
+        ConstantValue,
         Function,
-        UNAssigned,
+        Keyword,
         ERRORType
     }SymbolTableEntryType;
 
-    SimpleSymbolTableEntry(QString const& identifier);
+    SimpleSymbolTableEntry(const QString & identifier);
     virtual ~SimpleSymbolTableEntry();
 
     virtual SymbolTableEntryType getType() const = 0;
@@ -23,9 +24,8 @@ public:
     virtual QString PrintSymbolType() const = 0;
     QString getIdentifier() const;
 
-protected:
+private:
     QString identifier;
-    bool isAssigned;
 };
 
 #endif // SIMPLESYMBOLTABLEENTRY_H

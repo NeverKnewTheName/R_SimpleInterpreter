@@ -138,7 +138,7 @@ private:
     std::unique_ptr<ProgramNode> Program();
     QSharedPointer<FunctionSymbol> FunctionDefinition();
     QSharedPointer<FunctionSymbol> FunctionDeclaration();
-    QSharedPointer<VariableSymbol> VarDefinition();
+    std::unique_ptr<SimpleNode> VarDefinition();
     QSharedPointer<VariableSymbol> VarDeclaration();
     std::unique_ptr<SimpleNode> ReturnStatement();
     std::unique_ptr<SimpleNode> Expression();
