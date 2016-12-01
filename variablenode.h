@@ -8,7 +8,7 @@
 class VariableNode : public SimpleNode
 {
 public:
-    VariableNode(QSharedPointer<VariableSymbol> relatedVariableSymbol);
+    VariableNode(QSharedPointer<ValueSymbol> relatedVariableSymbol);
     ~VariableNode();
     virtual Node::NodeType getNodeType() const;
     virtual Node::ValueTypes getReturnType() const;
@@ -20,10 +20,10 @@ public:
 
     QString getVariableName() const;
 
-    QSharedPointer<VariableSymbol> getRelatedVariableSymbol() const;
+    QSharedPointer<ValueSymbol> getRelatedVariableSymbol() const;
 
 private:
-    QSharedPointer<VariableSymbol> RelatedVariableSymbol;
+    QSharedPointer<ValueSymbol> RelatedVariableSymbol;
 };
 
 #endif // VARIABLENODE_H

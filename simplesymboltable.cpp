@@ -2,6 +2,11 @@
 
 #include "simplenode.h"
 
+#include "simplesymboltableentry.h"
+#include "variablesymbol.h"
+
+#include "simplestack.h"
+
 #include <QDebug>
 
 
@@ -21,7 +26,7 @@ SimpleSymbolTable::~SimpleSymbolTable()
     SymbolTableIndices.clear();
     if(!parentSymbolTable.isNull())
     {
-        parentSymbolTable->removeEntry(identifier);
+        parentSymbolTable->removeEntry(getIdentifier());
     }
     qDebug() << __PRETTY_FUNCTION__;
 }
@@ -42,27 +47,17 @@ QSharedPointer<SimpleSymbolTableEntry> SimpleSymbolTable::lookup(const QString &
     return entry;
 }
 
-bool SimpleSymbolTable::addEntry(const QString &identifier, QSharedPointer<SimpleSymbolTableEntry> entry)
+bool SimpleSymbolTable::addEntry(QSharedPointer<SimpleSymbolTableEntry> entry)
 {
+    const QString &identifier = entry->getIdentifier();
     if(SymbolTableIndices.contains(identifier))
     {
         qDebug() << "Identifier already taken!";
         return false;
     }
 
-//    if(entry->getType() == SymbolTableEntry::SubSymbolTable)
-//    {
-//        bool SetAsParentSuccess;
-//        SetAsParentSuccess = qSharedPointerDynamicCast<SymbolTable>(entry)->addParentSymbolTable(QSharedPointer<SymbolTable>(this));
-//        if(!SetAsParentSuccess)
-//        {
-//            qDebug() << "Set as parent failed!";
-//            return false;
-//        }
-//    }
-
+    SymbolTableIndices[identifier] = SymbolTableEntries.size();
     SymbolTableEntries.push_back(entry);
-    SymbolTableIndices[identifier] = SymbolTableEntries.size()-1;
 
     return true;
 }
@@ -106,7 +101,18 @@ bool SimpleSymbolTable::addParentSymbolTable(QSharedPointer<SimpleSymbolTable> p
 
 bool SimpleSymbolTable::addSubSymbolTable(QSharedPointer<SimpleSymbolTable> SubSymbolTable)
 {
-    return addEntry(SubSymbolTable->getIdentifier(), qSharedPointerDynamicCast<SimpleSymbolTableEntry>(SubSymbolTable));
+    return addEntry(qSharedPointerDynamicCast<SimpleSymbolTableEntry>(SubSymbolTable));
+}
+
+bool SimpleSymbolTable::removeSubSymbolTable(const QString &identifier)
+{
+    SimpleSymbolTableEntry::SymbolTableEntryType type = lookup(identifier)->getType();
+    if(type != SimpleSymbolTableEntry::SubSymbolTable || type != SimpleSymbolTableEntry::Function)
+    {
+        return false;
+    }
+
+    return removeEntry(identifier);
 }
 
 SimpleSymbolTableEntry::SymbolTableEntryType SimpleSymbolTable::getType() const
@@ -116,7 +122,7 @@ SimpleSymbolTableEntry::SymbolTableEntryType SimpleSymbolTable::getType() const
 
 QString SimpleSymbolTable::PrintToSymbolToString() const
 {
-    return identifier;
+    return getIdentifier();
 }
 
 QString SimpleSymbolTable::PrintSymbolType() const
@@ -127,4 +133,29 @@ QString SimpleSymbolTable::PrintSymbolType() const
 QSharedPointer<SimpleSymbolTableEntry> SimpleSymbolTable::getParentSymbolTable() const
 {
     return parentSymbolTable;
+}
+
+bool SimpleSymbolTable::EnterScope(QSharedPointer<SimpleStack> StackToUse)
+{
+    for( auto &entry : SymbolTableEntries )
+    {
+        if(entry->getType() == SimpleSymbolTableEntry::Variable)
+        {
+            qSharedPointerDynamicCast<VariableSymbol>(entry)->VarEnterScope(StackToUse);
+        }
+    }
+    return true;
+}
+
+bool SimpleSymbolTable::ExitScope(QSharedPointer<SimpleStack> StackToUse)
+{
+
+    for( auto &entry : SymbolTableEntries )
+    {
+        if(entry->getType() == SimpleSymbolTableEntry::Variable)
+        {
+            qSharedPointerDynamicCast<VariableSymbol>(entry)->VarExitScope(StackToUse);
+        }
+    }
+    return true;
 }

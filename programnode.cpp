@@ -28,12 +28,12 @@ void ProgramNode::addExpression(std::unique_ptr<SimpleNode> &newExpression)
 
 void ProgramNode::addFunctionDefinition(QSharedPointer<FunctionSymbol> newFunction)
 {
-    ProgramSymbolTable->addEntry(newFunction->getIdentifier(), newFunction);
+    ProgramSymbolTable->addEntry(newFunction);
 }
 
 void ProgramNode::addVariableDefinition(QSharedPointer<VariableSymbol> newVariable)
 {
-    ProgramSymbolTable->addEntry(newVariable->getIdentifier(), newVariable);
+    ProgramSymbolTable->addEntry(newVariable);
 }
 
 void ProgramNode::addReturnStatement(std::unique_ptr<SimpleNode> ReturnStatement)
@@ -62,14 +62,51 @@ QString ProgramNode::printNode() const
     return QString("{ProgramNode}:{%1}").arg(printValue());
 }
 
+bool ProgramNode::BuildProgramStack(QSharedPointer<SimpleStack> StackToUse) const
+{
+    bool IsSuccessfull = true;
+    const std::vector<QSharedPointer<SimpleSymbolTableEntry>> SymbolTableEntries = ProgramSymbolTable->getSymbolTableEntries();
+
+    for(auto & symbol: SymbolTableEntries)
+    {
+        if(symbol->getType() == SimpleSymbolTableEntry::Variable)
+        {
+            IsSuccessfull = IsSuccessfull || qSharedPointerDynamicCast<VariableSymbol>(symbol)->VarEnterScope(StackToUse);
+        }
+    }
+
+    return IsSuccessfull;
+}
+
+bool ProgramNode::DestroyProgramStack(QSharedPointer<SimpleStack> StackToUse) const
+{
+    bool IsSuccessfull = true;
+    const std::vector<QSharedPointer<SimpleSymbolTableEntry>> SymbolTableEntries = ProgramSymbolTable->getSymbolTableEntries();
+
+    for(auto & symbol: SymbolTableEntries)
+    {
+        if(symbol->getType() == SimpleSymbolTableEntry::Variable)
+        {
+            IsSuccessfull = IsSuccessfull || qSharedPointerDynamicCast<VariableSymbol>(symbol)->VarEnterScope(StackToUse);
+        }
+    }
+
+    return IsSuccessfull;
+}
+
+
 std::unique_ptr<ValueNode> ProgramNode::visit(QSharedPointer<SimpleStack> StackToUse) const
 {
+    ProgramSymbolTable->EnterScope(StackToUse);
     const int NrOfProgramExpression = ProgramExpressions.size();
 
     for(int i = 0; i < NrOfProgramExpression; i++)
     {
-        ProgramExpressions.at(i)->visit();
+        ProgramExpressions.at(i)->visit(StackToUse);
     }
 
-    return ProgramReturnStatement->visit();
+    std::unique_ptr<ValueNode> result = ProgramReturnStatement->visit(StackToUse);
+
+    ProgramSymbolTable->ExitScope(StackToUse);
+    return result;
 }

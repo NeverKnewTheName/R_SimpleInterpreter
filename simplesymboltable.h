@@ -8,6 +8,8 @@
 
 #include "simplesymboltableentry.h"
 
+class SimpleStack;
+
 class SimpleSymbolTable : public SimpleSymbolTableEntry
 {
 public:
@@ -15,8 +17,8 @@ public:
     ~SimpleSymbolTable();
 
     QSharedPointer<SimpleSymbolTableEntry> lookup(QString const& identifier);
-    bool addEntry(QString const& identifier, QSharedPointer<SimpleSymbolTableEntry> entry);
-    bool removeEntry(QString const& identifier);
+    bool addEntry(QSharedPointer<SimpleSymbolTableEntry> entry);
+    bool removeEntry(const QString &identifier);
 
     bool DoesIdentifierExistInCurrentScope(const QString &IdentifierToCheck) const;
 
@@ -24,8 +26,12 @@ public:
 
     bool addParentSymbolTable(QSharedPointer<SimpleSymbolTable> parent);
     bool addSubSymbolTable(QSharedPointer<SimpleSymbolTable> SubSymbolTable);
+    bool removeSubSymbolTable(const QString &identifier);
 
     QSharedPointer<SimpleSymbolTableEntry> getParentSymbolTable() const;
+
+    bool EnterScope(QSharedPointer<SimpleStack> StackToUse);
+    bool ExitScope(QSharedPointer<SimpleStack> StackToUse);
 
     // SymbolTableEntry interface
 public:

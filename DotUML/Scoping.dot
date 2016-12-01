@@ -1,0 +1,32 @@
+digraph Scoping {
+    fontname = "Bitstream Vera Sans mono"
+    fontsize = 8
+    //rankdir=LR
+    overlap=false
+    splines=true
+        
+    node [
+        fontname = "Bitstream Vera Sans mono"
+        fontsize = 8
+        shape=ellipse
+    ]
+    edge [
+        fontname = "Bitstream Vera Sans mono"
+        fontsize = 8
+        labeldistance=2
+    ]
+    
+    {rank=min RetrieveVar}
+    
+    VariableSymbol -> ScopeIndex -> Scope[dir=both label="RetrieveRuntimeStackIndex"]
+    VariableSymbol -> ScopeIndex[label="contains" headlabel="0.*"]
+    Scope -> RuntimeStackIndex[label="contains" headlabel="0..*"]
+    VariableSymbol -> { EnterScope ExitScope }[arrowhead="empty"]
+    
+    EnterScope -> IncrementScopeIndex
+    IncrementScopeIndex -> ScopeIndex[arrowhead="empty" label="affects"]
+    ExitScope -> DecrementScopeIndex
+    DecrementScopeIndex -> ScopeIndex[arrowhead="empty" label="affects"]
+    
+    RetrieveVar -> VariableSymbol[dir=both label="RetrieveRuntimeStackIndex"] RetrieveVar -> RuntimeStackIndex -> RuntimeStack[dir=both label="RetrieveValue"]
+}

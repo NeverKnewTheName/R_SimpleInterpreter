@@ -76,7 +76,7 @@ OperationNode::Precedence TypeCastNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> TypeCastNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit(StackToUse);
 
     switch(typeToCastTo)
     {
@@ -159,13 +159,18 @@ OperationNode::Precedence IncrementNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> IncrementNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit(StackToUse);
 
-    ValueNode Result = ValueNode(value->getValue().value<int>() + 1);
+    std::unique_ptr<ValueNode> Result( new ValueNode(value->getValue().value<int>() + 1) );
 
-    dynamic_cast<VariableNode*>(UnaryOPRightChild.get())->getRelatedVariableSymbol()->assignValue(Result);
+    QSharedPointer<ValueSymbol> relatedSymbol = dynamic_cast<VariableNode*>(UnaryOPRightChild.get())->getRelatedVariableSymbol();
 
-    return std::unique_ptr<ValueNode>( new ValueNode(Result));
+    if(relatedSymbol->getType() == SimpleSymbolTableEntry::Variable)
+    {
+        qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(Result), StackToUse);
+    }
+
+    return Result;
 }
 
 QString IncrementNode::printValue() const
@@ -212,13 +217,18 @@ OperationNode::Precedence DecrementNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> DecrementNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit(StackToUse);
 
-    ValueNode Result = ValueNode(value->getValue().value<int>() - 1);
+    std::unique_ptr<ValueNode> Result( new ValueNode(value->getValue().value<int>() - 1) );
 
-    dynamic_cast<VariableNode*>(UnaryOPRightChild.get())->getRelatedVariableSymbol()->assignValue(Result);
+    QSharedPointer<ValueSymbol> relatedSymbol = dynamic_cast<VariableNode*>(UnaryOPRightChild.get())->getRelatedVariableSymbol();
 
-    return std::unique_ptr<ValueNode>( new ValueNode(Result));
+    if(relatedSymbol->getType() == SimpleSymbolTableEntry::Variable)
+    {
+        qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(Result), StackToUse);
+    }
+
+    return Result;
 }
 
 QString DecrementNode::printValue() const
@@ -269,7 +279,7 @@ OperationNode::Precedence PositiveNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> PositiveNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit(StackToUse);
 
     switch(implicitCastRightChild)
     {
@@ -332,7 +342,7 @@ OperationNode::Precedence NegativeNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> NegativeNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit(StackToUse);
 
     switch(implicitCastRightChild)
     {
@@ -395,7 +405,7 @@ OperationNode::Precedence LogicalNegationNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> LogicalNegationNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit(StackToUse);
 
     bool IsTrue = value->getValue().value<bool>();
 
@@ -465,7 +475,7 @@ OperationNode::Precedence OnesComplementNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> OnesComplementNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit(StackToUse);
 
     return std::unique_ptr<ValueNode>( new ValueNode(~(value->getValue().value<int>())));
 }

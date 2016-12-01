@@ -42,8 +42,15 @@ QString AssignmentNode::printNode() const
 
 std::unique_ptr<ValueNode> AssignmentNode::visit(QSharedPointer<SimpleStack> StackToUse) const
 {
-    VariableToAssign->getRelatedVariableSymbol()->assignValue(*ValueToAssign);
+    std::unique_ptr<ValueNode> value = ValueToAssign->visit(StackToUse);
 
-    return VariableToAssign->visit();
+    QSharedPointer<ValueSymbol> relatedSymbol = VariableToAssign->getRelatedVariableSymbol();
+
+    if(relatedSymbol->getType() == SimpleSymbolTableEntry::Variable)
+    {
+        qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(value), StackToUse);
+    }
+
+    return relatedSymbol->getValue(StackToUse);
 }
 

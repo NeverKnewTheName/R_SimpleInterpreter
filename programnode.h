@@ -24,6 +24,9 @@ public:
     void addVariableDefinition(QSharedPointer<VariableSymbol> newVariable);
     void addReturnStatement(std::unique_ptr<SimpleNode> ReturnStatement);
 
+    bool BuildProgramStack(QSharedPointer<SimpleStack> StackToUse) const;
+    bool DestroyProgramStack(QSharedPointer<SimpleStack> StackToUse) const;
+
     // SimpleNode interface
 public:
     Node::NodeType getNodeType() const;

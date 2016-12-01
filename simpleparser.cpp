@@ -35,6 +35,7 @@ SimpleParser::SimpleParser(SimpleLexer *lexer, QSharedPointer<SimpleSymbolTable>
 SimpleParser::~SimpleParser()
 {
     qDebug() << __PRETTY_FUNCTION__;
+    ParentSymblTbl->removeSubSymbolTable(ProgramSymbolTable->getIdentifier());
 }
 
 std::unique_ptr<SimpleNode> SimpleParser::parse()
@@ -82,7 +83,7 @@ void SimpleParser::eat(SimpleToken::TokenType tokenType)
 std::unique_ptr<ProgramNode> SimpleParser::Program()
 {
     SharedSimpleTokenPtr token = CurrentToken;
-    //    QSharedPointer<SymbolTable> ProgramSymbolTable(new SymbolTable(QString("ProgramSymblTbl"), ParentSymblTbl));
+    QSharedPointer<SimpleSymbolTable> SavedSymbolTable = CurSymblTbl;
 
     std::unique_ptr<ProgramNode> programNode(new ProgramNode(QString("Program"), ProgramSymbolTable));
 
@@ -93,11 +94,12 @@ std::unique_ptr<ProgramNode> SimpleParser::Program()
     {
         // // // Variable Definition // // //
         token = CurrentToken;
-        QSharedPointer<VariableSymbol> newVarDefinition = VarDefinition();
+        std::unique_ptr<SimpleNode> newVarDefinition = VarDefinition();
         if(newVarDefinition == nullptr)
         {
-            if(ErrorOccured)
+            if(ErrorOccured==true)
             {
+                CurSymblTbl = SavedSymbolTable;
                 return nullptr;
             }
             lexer->ResetLexerToToken(token);
@@ -105,7 +107,7 @@ std::unique_ptr<ProgramNode> SimpleParser::Program()
         }
         else
         {
-            programNode->addVariableDefinition(newVarDefinition);
+            programNode->addExpression(newVarDefinition);
             continue;
         }
         // // // Function Definition // // //
@@ -122,8 +124,6 @@ std::unique_ptr<ProgramNode> SimpleParser::Program()
         }
     }
 
-    CurSymblTbl = ProgramSymbolTable;
-
     while(CurrentToken->getTokenType() != SimpleToken::ReturnKeyword)
     {
         token = CurrentToken;
@@ -131,6 +131,7 @@ std::unique_ptr<ProgramNode> SimpleParser::Program()
         if(ProgramExpression == nullptr)
         {
             SyntacticError(token, QString("Expected Expression!"));
+            CurSymblTbl = SavedSymbolTable;
             return Q_NULLPTR;
         }
         programNode->addExpression(ProgramExpression);
@@ -142,12 +143,13 @@ std::unique_ptr<ProgramNode> SimpleParser::Program()
     if(ProgramReturnStatement == nullptr)
     {
         SyntacticError(token, QString("Expected Return Statement!"));
+        CurSymblTbl = SavedSymbolTable;
         return Q_NULLPTR;
     }
     programNode->addReturnStatement(std::move(ProgramReturnStatement));
 
     qDebug() << __PRETTY_FUNCTION__ << ": " << programNode->printNode();
-
+    CurSymblTbl = SavedSymbolTable;
     return programNode;
 }
 
@@ -162,8 +164,6 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
         return QSharedPointer<FunctionSymbol>();
     }
     SharedSimpleTokenPtr token = CurrentToken;
-    QSharedPointer<SimpleSymbolTable> FuncSubSymblTbl = DeclaredFuncSymbol->getFunctionSymbolTable();
-    //    CurSymblTbl = FuncSubSymblTbl;
 
     if(CurrentToken->getTokenType() == SimpleToken::LCurlyParan)
     {
@@ -174,14 +174,12 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
         {
             // // // Variable Definition // // //
             token = CurrentToken;
-            QSharedPointer<VariableSymbol> newVarDefinition = VarDefinition();
+            std::unique_ptr<SimpleNode> newVarDefinition = VarDefinition();
             if(newVarDefinition == nullptr)
             {
-                SyntacticError(token, QString("Expected Variable definition after TypeName!"));
-                return QSharedPointer<FunctionSymbol>();
+                continue;
             }
-
-            DeclaredFuncSymbol->addVariableDefinition(newVarDefinition);
+            FuncExpressions.emplace_back(std::move(newVarDefinition));
         }
 
         std::unique_ptr<SimpleNode> ExpressionNode;
@@ -233,7 +231,7 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
     return DeclaredFuncSymbol;
 }
 
-QSharedPointer<FunctionSymbol> SimpleParser::FunctionDeclaration(/*SymbolTable *FuncSubSymblTbl*/)
+QSharedPointer<FunctionSymbol> SimpleParser::FunctionDeclaration()
 {
     QSharedPointer<FunctionSymbol> FuncSymbol;
     SharedSimpleTokenPtr token;
@@ -276,8 +274,8 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDeclaration(/*SymbolTable *
                         returnType
                         )
                     );
-        SavedSymbolTable->addEntry(FuncName, qSharedPointerDynamicCast<SimpleSymbolTableEntry>(FuncSymbol));
-        //        SymblTbl.addEntry(FuncName, FuncSymbol);
+        SavedSymbolTable->addEntry(qSharedPointerDynamicCast<SimpleSymbolTableEntry>(FuncSymbol));
+        functionSymbolTable->addParentSymbolTable(SavedSymbolTable);
     }
 
     if(FuncSymbol == nullptr)
@@ -289,13 +287,15 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDeclaration(/*SymbolTable *
     return FuncSymbol;
 }
 
-QSharedPointer<VariableSymbol> SimpleParser::VarDefinition()
+std::unique_ptr<SimpleNode> SimpleParser::VarDefinition()
 {
     QSharedPointer<VariableSymbol> VarDeclarationSymbol = VarDeclaration();
+
+    std::unique_ptr<SimpleNode> node;
     std::unique_ptr<SimpleNode> nodeTwo;
     if(VarDeclarationSymbol == nullptr)
     {
-        return QSharedPointer<VariableSymbol>();
+        return nullptr;
     }
 
     SharedSimpleTokenPtr token = CurrentToken;
@@ -305,7 +305,7 @@ QSharedPointer<VariableSymbol> SimpleParser::VarDefinition()
         nodeTwo = Expression();
         if(nodeTwo == nullptr)
         {
-            return QSharedPointer<VariableSymbol>();
+            return nullptr;
         }
         Node::ValueTypes exprReturnType = nodeTwo->getReturnType();
         if( ( exprReturnType == Node::ErrorType ) || ( !SimpleNode::canConvertTypes(VarDeclarationSymbol->getReturnType(), exprReturnType) ) )
@@ -316,17 +316,27 @@ QSharedPointer<VariableSymbol> SimpleParser::VarDefinition()
                         .arg(SimpleNode::getHumanReadableTypeNameToValueType(VarDeclarationSymbol->getReturnType()))
                         .arg(SimpleNode::getHumanReadableTypeNameToValueType(nodeTwo->getReturnType()))
                         );
-            return QSharedPointer<VariableSymbol>();
+            return nullptr;
         }
-        VarDeclarationSymbol->assignValue(*(nodeTwo.get()));
-        //        node = new AssignmentNode(dynamic_cast<VariableNode*>(node), nodeTwo);
-        //        dynamic_cast<VariableNode*>(node)->setAssignment(nodeTwo);
+
+        node = std::unique_ptr<SimpleNode>(
+                    new AssignmentNode(
+//                        std::move(
+                            std::unique_ptr<VariableNode>(
+                                new VariableNode(
+                                    VarDeclarationSymbol
+                                    )
+//                                )
+                            ),
+                        std::move(nodeTwo)
+                        )
+                    );
     }
 
     eat(SimpleToken::SemiColonDelim);
 
-    qDebug() << __PRETTY_FUNCTION__ << ": " << VarDeclarationSymbol->PrintToSymbolToString();
-    return VarDeclarationSymbol;
+    qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+    return node;
 }
 
 QSharedPointer<VariableSymbol> SimpleParser::VarDeclaration()
@@ -364,6 +374,8 @@ QSharedPointer<VariableSymbol> SimpleParser::VarDeclaration()
     {
         return QSharedPointer<VariableSymbol>();
     }
+
+    CurSymblTbl->addEntry(varDeclarationSymbol);
 
     qDebug() << __PRETTY_FUNCTION__ << ": " << varDeclarationSymbol->PrintToSymbolToString();
     return varDeclarationSymbol;

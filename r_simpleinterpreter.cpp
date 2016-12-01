@@ -29,43 +29,32 @@ R_SimpleInterpreter::R_SimpleInterpreter(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->textEdit->hide();
-    QSharedPointer<VariableSymbol> newVarSymbol(new VariableSymbol(QString("D0"), Node::Integer));
-    ValueNode assignValD0(10);
-    newVarSymbol->assignValue(assignValD0);
-    GlobalSymbolTable->addEntry(QString("D0"), newVarSymbol);
-    newVarSymbol = QSharedPointer<VariableSymbol>(new VariableSymbol(QString("D1"), Node::Integer));
-    ValueNode assignValD1(20);
-    newVarSymbol->assignValue(assignValD1);
-    GlobalSymbolTable->addEntry(QString("D1"), newVarSymbol);
-    newVarSymbol = QSharedPointer<VariableSymbol>(new VariableSymbol(QString("D2"), Node::Integer));
-    ValueNode assignValD2(30);
-    newVarSymbol->assignValue(assignValD2);
-    GlobalSymbolTable->addEntry(QString("D2"), newVarSymbol);
-    newVarSymbol = QSharedPointer<VariableSymbol>(new VariableSymbol(QString("D3"), Node::Integer));
-    ValueNode assignValD3(40);
-    newVarSymbol->assignValue(assignValD3);
-    GlobalSymbolTable->addEntry(QString("D3"), newVarSymbol);
-    newVarSymbol = QSharedPointer<VariableSymbol>(new VariableSymbol(QString("D4"), Node::Integer));
-    ValueNode assignValD4(50);
-    newVarSymbol->assignValue(assignValD4);
-    GlobalSymbolTable->addEntry(QString("D4"), newVarSymbol);
-    newVarSymbol = QSharedPointer<VariableSymbol>(new VariableSymbol(QString("D5"), Node::Integer));
-    ValueNode assignValD5(60);
-    newVarSymbol->assignValue(assignValD5);
-    GlobalSymbolTable->addEntry(QString("D5"), newVarSymbol);
-    newVarSymbol = QSharedPointer<VariableSymbol>(new VariableSymbol(QString("D6"), Node::Integer));
-    ValueNode assignValD6(70);
-    newVarSymbol->assignValue(assignValD6);
-    GlobalSymbolTable->addEntry(QString("D6"), newVarSymbol);
-    newVarSymbol = QSharedPointer<VariableSymbol>(new VariableSymbol(QString("D7"), Node::Integer));
-    ValueNode assignValD7(80);
-    newVarSymbol->assignValue(assignValD7);
-    GlobalSymbolTable->addEntry(QString("D7"), newVarSymbol);
-    newVarSymbol = QSharedPointer<VariableSymbol>(new VariableSymbol(QString("xxVARxx"), Node::Integer));
-    ValueNode assignValxxVARxx(1);
-    newVarSymbol->assignValue(assignValxxVARxx);
-    GlobalSymbolTable->addEntry(QString("xxVARxx"), newVarSymbol);
+    QSharedPointer<ConstantValueSymbol> newConstValSymbol(new ConstantValueSymbol(QString("D0"), ValueNode(10)));
+    GlobalSymbolTable->addEntry(newConstValSymbol);
 
+    newConstValSymbol = QSharedPointer<ConstantValueSymbol>(new ConstantValueSymbol(QString("D1"), ValueNode(20)));
+    GlobalSymbolTable->addEntry(newConstValSymbol);
+
+    newConstValSymbol = QSharedPointer<ConstantValueSymbol>(new ConstantValueSymbol(QString("D2"), ValueNode(30)));
+    GlobalSymbolTable->addEntry(newConstValSymbol);
+
+    newConstValSymbol = QSharedPointer<ConstantValueSymbol>(new ConstantValueSymbol(QString("D3"), ValueNode(40)));
+    GlobalSymbolTable->addEntry(newConstValSymbol);
+
+    newConstValSymbol = QSharedPointer<ConstantValueSymbol>(new ConstantValueSymbol(QString("D4"), ValueNode(50)));
+    GlobalSymbolTable->addEntry(newConstValSymbol);
+
+    newConstValSymbol = QSharedPointer<ConstantValueSymbol>(new ConstantValueSymbol(QString("D5"), ValueNode(60)));
+    GlobalSymbolTable->addEntry(newConstValSymbol);
+
+    newConstValSymbol = QSharedPointer<ConstantValueSymbol>(new ConstantValueSymbol(QString("D6"), ValueNode(70)));
+    GlobalSymbolTable->addEntry(newConstValSymbol);
+
+    newConstValSymbol = QSharedPointer<ConstantValueSymbol>(new ConstantValueSymbol(QString("D7"), ValueNode(80)));
+    GlobalSymbolTable->addEntry(newConstValSymbol);
+
+    newConstValSymbol = QSharedPointer<ConstantValueSymbol>(new ConstantValueSymbol(QString("xxVARxx"), ValueNode(1)));
+    GlobalSymbolTable->addEntry(newConstValSymbol);
 
     lex = new SimpleLexer(this->parent());
     interpr = NULL;

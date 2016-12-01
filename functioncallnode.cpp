@@ -50,5 +50,5 @@ QString FunctionCallNode::printNode() const
 
 std::unique_ptr<ValueNode> FunctionCallNode::visit(QSharedPointer<SimpleStack> StackToUse) const
 {
-    return RelatedSymbol->CallFunction(FuncArgs, CurrentSymbolTable);
+    return RelatedSymbol->CallFunction(FuncArgs, StackToUse);
 }

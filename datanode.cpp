@@ -7,7 +7,7 @@
 #include "simplestack.h"
 
 DataNode::DataNode(const unsigned int dataIndex, const QSharedPointer<SimpleSymbolTable> GlobalSymbolTable) :
-    VariableNode(qSharedPointerDynamicCast<VariableSymbol>(GlobalSymbolTable->lookup(QString("D%1").arg(dataIndex)))),
+    VariableNode(qSharedPointerDynamicCast<ConstantValueSymbol>(GlobalSymbolTable->lookup(QString("D%1").arg(dataIndex)))),
     dataIndex(dataIndex)
 {
     if( GlobalSymbolTable->getParentSymbolTable() != NULL )

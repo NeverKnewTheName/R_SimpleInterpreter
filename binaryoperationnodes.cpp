@@ -88,8 +88,8 @@ OperationNode::Precedence AdditionNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> AdditionNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
 
     switch(implicitCastLeftChild)
     {
@@ -193,8 +193,8 @@ OperationNode::Precedence SubtractionNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> SubtractionNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
 
     switch(implicitCastLeftChild)
     {
@@ -302,8 +302,8 @@ OperationNode::Precedence MultiplicationNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> MultiplicationNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
 
     switch(implicitCastLeftChild)
     {
@@ -418,8 +418,8 @@ OperationNode::Precedence DivisionNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> DivisionNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
 
     switch(implicitCastLeftChild)
     {
@@ -501,8 +501,8 @@ OperationNode::Precedence ModuloNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> ModuloNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
 
     return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<int>() % value2->getValue().value<int>()));
 }
@@ -589,8 +589,8 @@ OperationNode::Precedence LogicalANDNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> LogicalANDNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
 
     return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<bool>() && value2->getValue().value<bool>()));
 }
@@ -667,8 +667,8 @@ OperationNode::Precedence LogicalORNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> LogicalORNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
 
     return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<bool>() || value2->getValue().value<bool>()));
 }
@@ -745,8 +745,8 @@ OperationNode::Precedence LogicalXORNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> LogicalXORNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
 
     return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<bool>() != value2->getValue().value<bool>()));
 }
@@ -817,8 +817,8 @@ OperationNode::Precedence GreaterNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> GreaterNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
 
     return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<double>() > value2->getValue().value<double>()) ?  true : false ));
 }
@@ -889,8 +889,8 @@ OperationNode::Precedence LowerNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> LowerNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
     return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<double>() < value2->getValue().value<double>()) ?  true : false ));
 }
 
@@ -1003,8 +1003,8 @@ OperationNode::Precedence EqualNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> EqualNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
 
     switch(implicitCastLeftChild)
     {
@@ -1120,8 +1120,8 @@ OperationNode::Precedence EqualOrGreaterNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> EqualOrGreaterNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
 
     switch(implicitCastLeftChild)
     {
@@ -1220,8 +1220,8 @@ OperationNode::Precedence EqualOrLowerNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> EqualOrLowerNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
 
     switch(implicitCastLeftChild)
     {
@@ -1278,8 +1278,8 @@ OperationNode::Precedence UnequalNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> UnequalNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
 
     switch(implicitCastLeftChild)
     {
@@ -1386,8 +1386,8 @@ OperationNode::Precedence ANDNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> ANDNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
 
     return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<int>() & value2->getValue().value<int>()));
 }
@@ -1450,8 +1450,8 @@ OperationNode::Precedence ORNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> ORNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
 
     return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<int>() | value2->getValue().value<int>()));
 }
@@ -1514,8 +1514,8 @@ OperationNode::Precedence XORNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> XORNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
 
     return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<int>() ^ value2->getValue().value<int>()));
 }
@@ -1578,8 +1578,8 @@ OperationNode::Precedence LeftShiftNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> LeftShiftNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
 
     return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<int>() << value2->getValue().value<int>()));
 }
@@ -1642,8 +1642,8 @@ OperationNode::Precedence RightShiftNode::getPrecedence() const
 
 std::unique_ptr<ValueNode> RightShiftNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
 {
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit();
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit();
+    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
+    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
 
     return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<int>() >> value2->getValue().value<int>()));
 }
