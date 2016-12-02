@@ -57,16 +57,16 @@ QString SimpleToken::convertTokenTypeToString(SimpleToken::TokenType type)
         typeString = QString("Value");
         break;
     case LParan:
-        typeString = QString("LParan");
+        typeString = QString("(");
         break;
     case LCurlyParan:
-        typeString = QString("LCurlyParan");
+        typeString = QString("{");
         break;
     case RParan:
-        typeString = QString("RParan");
+        typeString = QString(")");
         break;
     case RCurlyParan:
-        typeString = QString("RCurlyParan");
+        typeString = QString("}");
         break;
     case Data:
         typeString = QString("Data");
@@ -78,91 +78,118 @@ QString SimpleToken::convertTokenTypeToString(SimpleToken::TokenType type)
         typeString = QString("TypeName");
         break;
     case Increment:
-        typeString = QString("Increment");
+        typeString = QString("++");
         break;
     case Decrement:
-        typeString = QString("Decrement");
+        typeString = QString("--");
         break;
     case Plus:
-        typeString = QString("Plus");
+        typeString = QString("+");
         break;
     case Minus:
-        typeString = QString("Minus");
+        typeString = QString("-");
         break;
     case LogicalNegation:
-        typeString = QString("LogicalNegation");
+        typeString = QString("!");
         break;
     case OnesComplement:
-        typeString = QString("OnesComplement");
+        typeString = QString("~");
         break;
     case Multiplication:
-        typeString = QString("Multiplication");
+        typeString = QString("*");
         break;
     case Division:
-        typeString = QString("Division");
+        typeString = QString("/");
         break;
     case Modulo:
-        typeString = QString("Modulo");
+        typeString = QString("%");
         break;
     case LogicalAND:
-        typeString = QString("LogicalAND");
+        typeString = QString("&&");
         break;
     case LogicalOR:
-        typeString = QString("LogicalOR");
+        typeString = QString("||");
         break;
     case LogicalXOR:
-        typeString = QString("LogicalXOR");
+        typeString = QString("^^");
         break;
     case Greater:
-        typeString = QString("Greater");
+        typeString = QString(">");
         break;
     case Lower:
-        typeString = QString("Lower");
+        typeString = QString("<");
         break;
     case Equal:
-        typeString = QString("Equal");
+        typeString = QString("==");
         break;
     case EqualOrGreater:
-        typeString = QString("EqualOrGreater");
+        typeString = QString(">=");
         break;
     case EqualOrLower:
-        typeString = QString("EqualOrLower");
+        typeString = QString("<=");
         break;
     case Unequal:
-        typeString = QString("Unequal");
+        typeString = QString("!=");
         break;
     case BitwiseAND:
-        typeString = QString("BitwiseAND");
+        typeString = QString("&");
         break;
     case BitwiseOR:
-        typeString = QString("BitwiseOR");
+        typeString = QString("|");
         break;
     case BitwiseXOR:
-        typeString = QString("BitwiseXOR");
+        typeString = QString("^");
         break;
     case LeftShift:
-        typeString = QString("LeftShift");
+        typeString = QString("<<");
         break;
     case RightShift:
-        typeString = QString("RightShift");
+        typeString = QString(">>");
         break;
     case Assign:
-        typeString = QString("Assign");
+        typeString = QString("=");
         break;
     case QMark:
-        typeString = QString("QMark");
+        typeString = QString("?");
         break;
     case Colon:
-        typeString = QString("Colon");
+        typeString = QString(":");
         break;
     case SemiColonDelim:
-        typeString = QString("SemiColonDelim");
+        typeString = QString(";");
+        break;
+    case If:
+        typeString = QString("if");
+        break;
+    case Else:
+        typeString = QString("else");
+        break;
+    case Switch:
+        typeString = QString("switch");
+        break;
+    case Case:
+        typeString = QString("case");
+        break;
+    case For:
+        typeString = QString("for");
+        break;
+    case While:
+        typeString = QString("while");
+        break;
+    case Do:
+        typeString = QString("do");
+        break;
+    case Break:
+        typeString = QString("break");
+        break;
+    case Continue:
+        typeString = QString("continue");
         break;
     case ReturnKeyword:
-        typeString = QString("ReturnKeyword");
+        typeString = QString("return");
         break;
     case EOFToken:
-        typeString = QString("EOFToken");
+        typeString = QString("EOF");
         break;
     }
     return typeString;
@@ -609,3 +636,13 @@ QString ColonToken::printToken() const
     return QString("{ColonToken}:{%1}").arg(printValue());
 }
 
+
+QString ControlToken::printValue() const
+{
+    return SimpleToken::convertTokenTypeToString(type);
+}
+
+QString ControlToken::printToken() const
+{
+    return QString("{ControlToken}:{%1}").arg(printValue());
+}

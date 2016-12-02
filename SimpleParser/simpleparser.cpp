@@ -1449,7 +1449,7 @@ std::unique_ptr<SimpleNode> SimpleParser::Symbol()
         }
         else
         {
-            node.reset(new VariableNode(qSharedPointerDynamicCast<VariableSymbol>(CurSymblTbl->lookup(varID))));
+            node.reset(new VariableNode(qSharedPointerDynamicCast<ValueSymbol>(CurSymblTbl->lookup(varID))));
             if(node->getReturnType() == Node::ErrorType)
             {
                 SyntacticError(token, QString("Variable \"%1\" not found!!!").arg(varID));

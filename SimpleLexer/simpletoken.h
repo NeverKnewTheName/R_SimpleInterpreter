@@ -52,6 +52,15 @@ public:
         QMark,
         Colon,
         SemiColonDelim,
+        If,
+        Else,
+        Switch,
+        Case,
+        For,
+        While,
+        Do,
+        Break,
+        Continue,
         ReturnKeyword,
         EOFToken
     }TokenType;
@@ -354,6 +363,18 @@ class ColonToken : public SimpleToken
 public:
     ColonToken(const int TokenPos, const int TokenLen);
     ~ColonToken();
+
+    // SimpleToken interface
+public:
+    QString printValue() const;
+    QString printToken() const;
+};
+
+class ControlToken : public SimpleToken
+{
+public:
+    ControlToken(SimpleToken::TokenType type, const int TokenPos, const int TokenLen);
+    ~ControlToken();
 
     // SimpleToken interface
 public:
