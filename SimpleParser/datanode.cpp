@@ -39,3 +39,8 @@ QString DataNode::printNode() const
 
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
+
+std::unique_ptr<SimpleNode> DataNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new DataNode(dataIndex, /*ToDo*/))
+}

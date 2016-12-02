@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   id="svg2"
+   viewBox="0 0 448 131"
+   height="131"
+   width="448"
+   class="railroad-diagram">
+  <metadata
+     id="metadata120">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs4">
+    <style
+       id="style6"
+       type="text/css"><![CDATA[
+        svg.railroad-diagram {
+        background-color: hsl(30,20%,95%);
+        }
+        svg.railroad-diagram path {
+            stroke-width: 3;
+            stroke: black;
+            fill: rgba(0,0,0,0);
+        }
+        svg.railroad-diagram text {
+            font: bold 14px monospace;
+            text-anchor: middle;
+        }
+        svg.railroad-diagram text.diagram-text {
+            font-size: 12px;
+        }
+        svg.railroad-diagram text.diagram-arrow {
+            font-size: 16px;
+        }
+        svg.railroad-diagram text.label {
+            text-anchor: start;
+        }
+        svg.railroad-diagram text.comment {
+            font: italic 12px monospace;
+        }
+        svg.railroad-diagram g.non-terminal text {
+            /*font-style: italic;*/
+        }
+        svg.railroad-diagram rect {
+            stroke-width: 3;
+            stroke: black;
+            fill: hsl(120,100%,90%);
+        }
+        svg.railroad-diagram path.diagram-text {
+            stroke-width: 3;
+            stroke: black;
+            fill: white;
+            cursor: help;
+        }
+        svg.railroad-diagram g.diagram-text:hover path.diagram-text {
+            fill: #eee;
+        }
+      ]]></style>
+  </defs>
+  <g
+     id="g8"
+     transform="translate(.5 .5)">
+    <path
+       id="path10"
+       d="M 20 30 v 20 m 10 -20 v 20 m -10 -10 h 20.5" />
+    <path
+       id="path12"
+       d="M40 40h10" />
+    <g
+       id="g14">
+      <path
+         id="path16"
+         d="M50 40h0" />
+      <path
+         id="path18"
+         d="M398 40h0" />
+      <g
+         id="g20">
+        <path
+           id="path22"
+           d="M50 40h0" />
+        <path
+           id="path24"
+           d="M134 40h0" />
+        <path
+           id="path26"
+           d="M50 40h20" />
+        <g
+           id="g28"
+           class="non-terminal">
+          <path
+             id="path30"
+             d="M70 40h0" />
+          <path
+             id="path32"
+             d="M114 40h0" />
+          <rect
+             id="rect34"
+             height="22"
+             width="44"
+             y="29"
+             x="70" />
+          <text
+             id="text36"
+             y="44"
+             x="92">a-z</text>
+        </g>
+        <path
+           id="path38"
+           d="M114 40h20" />
+        <path
+           id="path40"
+           d="M50 40a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10" />
+        <g
+           id="g42"
+           class="non-terminal">
+          <path
+             id="path44"
+             d="M70 70h0" />
+          <path
+             id="path46"
+             d="M114 70h0" />
+          <rect
+             id="rect48"
+             height="22"
+             width="44"
+             y="59"
+             x="70" />
+          <text
+             id="text50"
+             y="74"
+             x="92">A-Z</text>
+        </g>
+        <path
+           id="path52"
+           d="M114 70a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10" />
+        <path
+           id="path54"
+           d="M50 40a10 10 0 0 1 10 10v40a10 10 0 0 0 10 10" />
+        <g
+           id="g56"
+           class="non-terminal">
+          <path
+             id="path58"
+             d="M70 100h0" />
+          <path
+             id="path60"
+             d="M114 100h0" />
+          <rect
+             id="rect62"
+             height="22"
+             width="44"
+             y="89"
+             x="70" />
+          <text
+             id="text64"
+             y="104"
+             x="92">&quot;_&quot;</text>
+        </g>
+        <path
+           id="path66"
+           d="M114 100a10 10 0 0 0 10 -10v-40a10 10 0 0 1 10 -10" />
+      </g>
+      <g
+         id="g68">
+        <path
+           id="path70"
+           d="M134 40h0" />
+        <path
+           id="path72"
+           d="M398 40h0" />
+        <path
+           id="path74"
+           d="M134 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10" />
+        <g
+           id="g76">
+          <path
+             id="path78"
+             d="M154 20h224" />
+        </g>
+        <path
+           id="path80"
+           d="M378 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10" />
+        <path
+           id="path82"
+           d="M134 40h20" />
+        <g
+           id="g84">
+          <path
+             id="path86"
+             d="M154 40h0" />
+          <path
+             id="path88"
+             d="M378 40h0" />
+          <path
+             id="path90"
+             d="M154 40h10" />
+          <g
+             id="g92"
+             class="non-terminal">
+            <path
+               id="path94"
+               d="M164 40h0" />
+            <path
+               id="path96"
+               d="M368 40h0" />
+            <rect
+               id="rect98"
+               height="22"
+               width="204"
+               y="29"
+               x="164" />
+            <text
+               id="text100"
+               y="44"
+               x="266">AlphaNumericalCharacter</text>
+          </g>
+          <path
+             id="path102"
+             d="M368 40h10" />
+          <path
+             id="path104"
+             d="M164 40a10 10 0 0 0 -10 10v0a10 10 0 0 0 10 10" />
+          <g
+             id="g106">
+            <path
+               id="path108"
+               d="M164 60h204" />
+          </g>
+          <path
+             id="path110"
+             d="M368 60a10 10 0 0 0 10 -10v0a10 10 0 0 0 -10 -10" />
+        </g>
+        <path
+           id="path112"
+           d="M378 40h20" />
+      </g>
+    </g>
+    <path
+       id="path114"
+       d="M398 40h10" />
+    <path
+       id="path116"
+       d="M 408 40 h 20 m -10 -10 v 20 m 10 -20 v 20" />
+  </g>
+</svg>

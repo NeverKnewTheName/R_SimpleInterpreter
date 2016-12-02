@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="railroad-diagram"
+
+width="542" height="169" viewBox="0 0 542 169">
+
+ <defs>
+    <style type="text/css">
+      <![CDATA[
+        svg.railroad-diagram {
+        background-color: hsl(30,20%,95%);
+        }
+        svg.railroad-diagram path {
+            stroke-width: 3;
+            stroke: black;
+            fill: rgba(0,0,0,0);
+        }
+        svg.railroad-diagram text {
+            font: bold 14px monospace;
+            text-anchor: middle;
+        }
+        svg.railroad-diagram text.diagram-text {
+            font-size: 12px;
+        }
+        svg.railroad-diagram text.diagram-arrow {
+            font-size: 16px;
+        }
+        svg.railroad-diagram text.label {
+            text-anchor: start;
+        }
+        svg.railroad-diagram text.comment {
+            font: italic 12px monospace;
+        }
+        svg.railroad-diagram g.non-terminal text {
+            /*font-style: italic;*/
+        }
+        svg.railroad-diagram rect {
+            stroke-width: 3;
+            stroke: black;
+            fill: hsl(120,100%,90%);
+        }
+        svg.railroad-diagram path.diagram-text {
+            stroke-width: 3;
+            stroke: black;
+            fill: white;
+            cursor: help;
+        }
+        svg.railroad-diagram g.diagram-text:hover path.diagram-text {
+            fill: #eee;
+        }
+      ]]>
+    </style>
+  </defs>
+
+<g transform="translate(.5 .5)">
+<path d="M 20 30 v 20 m 10 -20 v 20 m -10 -10 h 20.5"></path>
+<path d="M40 40h10"></path>
+<g class="non-terminal">
+<path d="M50 40h0"></path>
+<path d="M190 40h0"></path>
+<rect x="50" y="29" width="140" height="22"></rect>
+<text x="120" y="44">ShiftExpression</text>
+</g>
+<path d="M190 40h10"></path>
+<g>
+<path d="M200 40h0"></path>
+<path d="M502 40h0"></path>
+<path d="M200 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
+<g>
+<path d="M220 20h262"></path>
+</g>
+<path d="M482 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
+<path d="M200 40h20"></path>
+<g>
+<path d="M220 40h0"></path>
+<path d="M482 40h0"></path>
+<path d="M220 40h10"></path>
+<g>
+<path d="M230 40h0"></path>
+<path d="M472 40h0"></path>
+<g>
+<path d="M230 40h0"></path>
+<path d="M322 40h0"></path>
+<path d="M230 40h20"></path>
+<g class="non-terminal">
+<path d="M250 40h4"></path>
+<path d="M298 40h4"></path>
+<rect x="254" y="29" width="44" height="22"></rect>
+<text x="276" y="44">"&#60;"</text>
+</g>
+<path d="M302 40h20"></path>
+<path d="M230 40a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="non-terminal">
+<path d="M250 70h4"></path>
+<path d="M298 70h4"></path>
+<rect x="254" y="59" width="44" height="22"></rect>
+<text x="276" y="74">">"</text>
+</g>
+<path d="M302 70a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+<path d="M230 40a10 10 0 0 1 10 10v40a10 10 0 0 0 10 10"></path>
+<g class="non-terminal">
+<path d="M250 100h0"></path>
+<path d="M302 100h0"></path>
+<rect x="250" y="89" width="52" height="22"></rect>
+<text x="276" y="104">"&#60;="</text>
+</g>
+<path d="M302 100a10 10 0 0 0 10 -10v-40a10 10 0 0 1 10 -10"></path>
+<path d="M230 40a10 10 0 0 1 10 10v70a10 10 0 0 0 10 10"></path>
+<g class="non-terminal">
+<path d="M250 130h0"></path>
+<path d="M302 130h0"></path>
+<rect x="250" y="119" width="52" height="22"></rect>
+<text x="276" y="134">">="</text>
+</g>
+<path d="M302 130a10 10 0 0 0 10 -10v-70a10 10 0 0 1 10 -10"></path>
+</g>
+<path d="M322 40h10"></path>
+<g class="non-terminal">
+<path d="M332 40h0"></path>
+<path d="M472 40h0"></path>
+<rect x="332" y="29" width="140" height="22"></rect>
+<text x="402" y="44">ShiftExpression</text>
+</g>
+</g>
+<path d="M472 40h10"></path>
+<path d="M230 40a10 10 0 0 0 -10 10v89a10 10 0 0 0 10 10"></path>
+<g>
+<path d="M230 149h242"></path>
+</g>
+<path d="M472 149a10 10 0 0 0 10 -10v-89a10 10 0 0 0 -10 -10"></path>
+</g>
+<path d="M482 40h20"></path>
+</g>
+<path d="M 502 40 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
+</g>
+
+</svg>

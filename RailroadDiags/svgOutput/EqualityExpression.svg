@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="railroad-diagram"
+
+width="622" height="109" viewBox="0 0 622 109">
+
+ <defs>
+    <style type="text/css">
+      <![CDATA[
+        svg.railroad-diagram {
+        background-color: hsl(30,20%,95%);
+        }
+        svg.railroad-diagram path {
+            stroke-width: 3;
+            stroke: black;
+            fill: rgba(0,0,0,0);
+        }
+        svg.railroad-diagram text {
+            font: bold 14px monospace;
+            text-anchor: middle;
+        }
+        svg.railroad-diagram text.diagram-text {
+            font-size: 12px;
+        }
+        svg.railroad-diagram text.diagram-arrow {
+            font-size: 16px;
+        }
+        svg.railroad-diagram text.label {
+            text-anchor: start;
+        }
+        svg.railroad-diagram text.comment {
+            font: italic 12px monospace;
+        }
+        svg.railroad-diagram g.non-terminal text {
+            /*font-style: italic;*/
+        }
+        svg.railroad-diagram rect {
+            stroke-width: 3;
+            stroke: black;
+            fill: hsl(120,100%,90%);
+        }
+        svg.railroad-diagram path.diagram-text {
+            stroke-width: 3;
+            stroke: black;
+            fill: white;
+            cursor: help;
+        }
+        svg.railroad-diagram g.diagram-text:hover path.diagram-text {
+            fill: #eee;
+        }
+      ]]>
+    </style>
+  </defs>
+
+<g transform="translate(.5 .5)">
+<path d="M 20 30 v 20 m 10 -20 v 20 m -10 -10 h 20.5"></path>
+<path d="M40 40h10"></path>
+<g class="non-terminal">
+<path d="M50 40h0"></path>
+<path d="M230 40h0"></path>
+<rect x="50" y="29" width="180" height="22"></rect>
+<text x="140" y="44">RelationalExpression</text>
+</g>
+<path d="M230 40h10"></path>
+<g>
+<path d="M240 40h0"></path>
+<path d="M582 40h0"></path>
+<path d="M240 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
+<g>
+<path d="M260 20h302"></path>
+</g>
+<path d="M562 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
+<path d="M240 40h20"></path>
+<g>
+<path d="M260 40h0"></path>
+<path d="M562 40h0"></path>
+<path d="M260 40h10"></path>
+<g>
+<path d="M270 40h0"></path>
+<path d="M552 40h0"></path>
+<g>
+<path d="M270 40h0"></path>
+<path d="M362 40h0"></path>
+<path d="M270 40h20"></path>
+<g class="non-terminal">
+<path d="M290 40h0"></path>
+<path d="M342 40h0"></path>
+<rect x="290" y="29" width="52" height="22"></rect>
+<text x="316" y="44">"=="</text>
+</g>
+<path d="M342 40h20"></path>
+<path d="M270 40a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="non-terminal">
+<path d="M290 70h0"></path>
+<path d="M342 70h0"></path>
+<rect x="290" y="59" width="52" height="22"></rect>
+<text x="316" y="74">"!="</text>
+</g>
+<path d="M342 70a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+<path d="M362 40h10"></path>
+<g class="non-terminal">
+<path d="M372 40h0"></path>
+<path d="M552 40h0"></path>
+<rect x="372" y="29" width="180" height="22"></rect>
+<text x="462" y="44">RelationalExpression</text>
+</g>
+</g>
+<path d="M552 40h10"></path>
+<path d="M270 40a10 10 0 0 0 -10 10v29a10 10 0 0 0 10 10"></path>
+<g>
+<path d="M270 89h282"></path>
+</g>
+<path d="M552 89a10 10 0 0 0 10 -10v-29a10 10 0 0 0 -10 -10"></path>
+</g>
+<path d="M562 40h20"></path>
+</g>
+<path d="M 582 40 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
+</g>
+
+</svg>

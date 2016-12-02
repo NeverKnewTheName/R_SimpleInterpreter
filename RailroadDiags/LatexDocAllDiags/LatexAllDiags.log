@@ -1,0 +1,1628 @@
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.10.29)  2 DEC 2016 18:10
+entering extended mode
+**LatexAllDiags.tex
+
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\LatexAll
+Diags.tex
+LaTeX2e <2011/06/27>
+Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
+abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
+croatian, czech, danish, dutch, esperanto, estonian, farsi, finnish, french, ga
+lician, german, german-x-2013-05-26, greek, gujarati, hindi, hungarian, iceland
+ic, indonesian, interlingua, irish, italian, kannada, kurmanji, latin, latvian,
+ lithuanian, malayalam, marathi, mongolian, mongolianlmc, monogreek, ngerman, n
+german-x-2013-05-26, nynorsk, oriya, panjabi, pinyin, polish, portuguese, roman
+ian, russian, sanskrit, serbian, slovak, slovenian, spanish, swedish, swissgerm
+an, tamil, telugu, turkish, turkmen, ukenglish, ukrainian, uppersorbian, usengl
+ishmax, welsh, loaded.
+
+(C:\Users\neubergerch50344\AppData\Roaming\MiKTeX\2.9\tex\latex\koma-script\scr
+artcl.cls
+Document Class: scrartcl 2015/10/03 v3.19a KOMA-Script document class (article)
+
+
+(C:\Users\neubergerch50344\AppData\Roaming\MiKTeX\2.9\tex\latex\koma-script\scr
+kbase.sty
+Package: scrkbase 2015/10/03 v3.19a KOMA-Script package (KOMA-Script-dependent 
+basics and keyval usage)
+
+(C:\Users\neubergerch50344\AppData\Roaming\MiKTeX\2.9\tex\latex\koma-script\scr
+base.sty
+Package: scrbase 2015/10/03 v3.19a KOMA-Script package (KOMA-Script-independent
+ basics and keyval usage)
+ ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\keyval.sty"
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+(C:\Users\neubergerch50344\AppData\Roaming\MiKTeX\2.9\tex\latex\koma-script\scr
+lfile.sty
+Package: scrlfile 2015/10/03 v3.19a KOMA-Script package (loading files)
+
+Package scrlfile, 2015/10/03 v3.19a KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+)))
+(C:\Users\neubergerch50344\AppData\Roaming\MiKTeX\2.9\tex\latex\koma-script\toc
+basic.sty
+Package: tocbasic 2015/10/03 v3.19a KOMA-Script package (handling toc-files)
+)
+Package tocbasic Info: omitting babel extension for `toc'
+(tocbasic)             because of feature `nobabel' available
+(tocbasic)             for `toc' on input line 123.
+Package tocbasic Info: omitting babel extension for `lof'
+(tocbasic)             because of feature `nobabel' available
+(tocbasic)             for `lof' on input line 124.
+Package tocbasic Info: omitting babel extension for `lot'
+(tocbasic)             because of feature `nobabel' available
+(tocbasic)             for `lot' on input line 125.
+Package scrartcl Info: You've used standard option `12pt'.
+(scrartcl)             This is correct!
+(scrartcl)             Internally I'm using `fontsize=12pt'.
+(scrartcl)             If you'd like to set the option with \KOMAoptions,
+(scrartcl)             you'd have to use `fontsize=12pt' there
+(scrartcl)             instead of `12pt', too.
+Class scrartcl Info: File `scrsize12pt.clo' used to setup font sizes on input l
+ine 2033.
+
+(C:\Users\neubergerch50344\AppData\Roaming\MiKTeX\2.9\tex\latex\koma-script\scr
+size12pt.clo
+File: scrsize12pt.clo 2015/10/03 v3.19a KOMA-Script font size class option (12p
+t)
+)
+(C:\Users\neubergerch50344\AppData\Roaming\MiKTeX\2.9\tex\latex\koma-script\typ
+earea.sty
+Package: typearea 2015/10/03 v3.19a KOMA-Script package (type area)
+
+Package typearea, 2015/10/03 v3.19a KOMA-Script package (type area)
+                  Copyright (C) Frank Neukam, 1992-1994
+                  Copyright (C) Markus Kohm, 1994-
+
+\ta@bcor=\skip41
+\ta@div=\count79
+Package typearea Info: You've used standard option `a4paper'.
+(typearea)             This is correct!
+(typearea)             Internally I'm using `paper=a4'.
+(typearea)             If you'd like to set the option with \KOMAoptions,
+(typearea)             you'd have to use `paper=a4' there
+(typearea)             instead of `a4paper', too.
+\ta@hblk=\skip42
+\ta@vblk=\skip43
+\ta@temp=\skip44
+\footheight=\skip45
+Package typearea Info: These are the values describing the layout:
+(typearea)             DIV  = 12
+(typearea)             BCOR = 0.0pt
+(typearea)             \paperwidth      = 597.50793pt
+(typearea)              \textwidth      = 448.13095pt
+(typearea)              DIV departure   = -6%
+(typearea)              \evensidemargin = 2.4185pt
+(typearea)              \oddsidemargin  = 2.4185pt
+(typearea)             \paperheight     = 845.04694pt
+(typearea)              \textheight     = 635.5pt
+(typearea)              \topmargin      = -41.72441pt
+(typearea)              \headheight     = 18.125pt
+(typearea)              \headsep        = 21.75pt
+(typearea)              \topskip        = 12.0pt
+(typearea)              \footskip       = 50.75pt
+(typearea)              \baselineskip   = 14.5pt
+(typearea)              on input line 1509.
+)
+\c@part=\count80
+\c@section=\count81
+\c@subsection=\count82
+\c@subsubsection=\count83
+\c@paragraph=\count84
+\c@subparagraph=\count85
+\abovecaptionskip=\skip46
+\belowcaptionskip=\skip47
+\c@pti@nb@sid@b@x=\box26
+\c@figure=\count86
+\c@table=\count87
+\bibindent=\dimen102
+) ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\inputenc.sty"
+Package: inputenc 2008/03/30 v1.1d Input encoding file
+\inpenc@prehook=\toks15
+\inpenc@posthook=\toks16
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\latin1.def"
+File: latin1.def 2008/03/30 v1.1d Input encoding file
+))
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsmath\amsmath.sty"
+Package: amsmath 2013/01/14 v2.14 AMS math features
+\@mathmargin=\skip48
+
+For additional information on amsmath, use the `?' option.
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsmath\amstext.sty"
+Package: amstext 2000/06/29 v2.01
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsmath\amsgen.sty"
+File: amsgen.sty 1999/11/30 v2.0
+\@emptytoks=\toks17
+\ex@=\dimen103
+))
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsmath\amsbsy.sty"
+Package: amsbsy 1999/11/29 v1.2d
+\pmbraise@=\dimen104
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsmath\amsopn.sty"
+Package: amsopn 1999/12/14 v2.01 operator names
+)
+\inf@bad=\count88
+LaTeX Info: Redefining \frac on input line 210.
+\uproot@=\count89
+\leftroot@=\count90
+LaTeX Info: Redefining \overline on input line 306.
+\classnum@=\count91
+\DOTSCASE@=\count92
+LaTeX Info: Redefining \ldots on input line 378.
+LaTeX Info: Redefining \dots on input line 381.
+LaTeX Info: Redefining \cdots on input line 466.
+\Mathstrutbox@=\box27
+\strutbox@=\box28
+\big@size=\dimen105
+LaTeX Font Info:    Redeclaring font encoding OML on input line 566.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 567.
+\macc@depth=\count93
+\c@MaxMatrixCols=\count94
+\dotsspace@=\muskip10
+\c@parentequation=\count95
+\dspbrk@lvl=\count96
+\tag@help=\toks18
+\row@=\count97
+\column@=\count98
+\maxfields@=\count99
+\andhelp@=\toks19
+\eqnshift@=\dimen106
+\alignsep@=\dimen107
+\tagshift@=\dimen108
+\tagwidth@=\dimen109
+\totwidth@=\dimen110
+\lineht@=\dimen111
+\@envbody=\toks20
+\multlinegap=\skip49
+\multlinetaggap=\skip50
+\mathdisplay@stack=\toks21
+LaTeX Info: Redefining \[ on input line 2665.
+LaTeX Info: Redefining \] on input line 2666.
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsfonts\amsfonts.sty"
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsfonts\amssymb.sty"
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\graphicx.sty"
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\graphics.sty"
+Package: graphics 2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\trig.sty"
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\00miktex\graphics.cfg"
+File: graphics.cfg 2007/01/18 v1.5 graphics configuration of teTeX/TeXLive
+)
+Package graphics Info: Driver file: pdftex.def on input line 91.
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\pdftex-def\pdftex.def"
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\infwarerr.sty"
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\ltxcmds.sty"
+Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
+)
+\Gread@gobject=\count100
+))
+\Gin@req@height=\dimen112
+\Gin@req@width=\dimen113
+)
+(C:\Users\neubergerch50344\AppData\Roaming\MiKTeX\2.9\tex\latex\blindtext\blind
+text.sty
+Package: blindtext 2012/01/06 V2.0 blindtext-Package
+ ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\tools\xspace.sty"
+Package: xspace 2009/10/20 v1.13 Space after command names (DPC,MH)
+)
+\c@blindtext=\count101
+\c@Blindtext=\count102
+\c@blind@countparstart=\count103
+\blind@countxx=\count104
+\blindtext@numBlindtext=\count105
+\blind@countyy=\count106
+\c@blindlist=\count107
+\c@blindlistlevel=\count108
+\c@blindlist@level=\count109
+\blind@listitem=\count110
+\c@blind@listcount=\count111
+\c@blind@levelcount=\count112
+\blind@mathformula=\count113
+\blind@Mathformula=\count114
+\c@blind@randomcount=\count115
+\c@blind@randommax=\count116
+\c@blind@pangramcount=\count117
+\c@blind@pangrammax=\count118
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\LatexAll
+Diags.aux)
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 24.
+LaTeX Font Info:    ... okay on input line 24.
+
+(C:\Users\neubergerch50344\AppData\Roaming\MiKTeX\2.9\tex\context\base\supp-pdf
+.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count119
+\scratchdimen=\dimen114
+\scratchbox=\box29
+\nofMPsegments=\count120
+\nofMParguments=\count121
+\everyMPshowfont=\toks22
+\MPscratchCnt=\count122
+\MPscratchDim=\dimen115
+\MPnumerator=\count123
+\makeMPintoPDFobject=\count124
+\everyMPtoPDFconversion=\toks23
+)
+LaTeX Font Info:    Try loading font information for U+msa on input line 33.
+ ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsfonts\umsa.fd"
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 33.
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\amsfonts\umsb.fd"
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\Function
+Definition.pdf_tex
+<FunctionDefinition.pdf, id=1, page=1, 831.105pt x 34.529pt>
+File: FunctionDefinition.pdf Graphic file (type pdf)
+
+<use FunctionDefinition.pdf, page 1>
+Package pdftex.def Info: FunctionDefinition.pdf, page1 used on input line 52.
+(pdftex.def)             Requested size: 448.13095pt x 18.61798pt.
+
+<FunctionDefinition.pdf, id=2, page=2, 831.105pt x 34.529pt>
+File: FunctionDefinition.pdf Graphic file (type pdf)
+
+<use FunctionDefinition.pdf, page 2>
+Package pdftex.def Info: FunctionDefinition.pdf, page2 used on input line 54.
+(pdftex.def)             Requested size: 448.13095pt x 18.61798pt.
+
+<FunctionDefinition.pdf, id=3, page=3, 831.105pt x 34.529pt>
+File: FunctionDefinition.pdf Graphic file (type pdf)
+
+<use FunctionDefinition.pdf, page 3>
+Package pdftex.def Info: FunctionDefinition.pdf, page3 used on input line 67.
+(pdftex.def)             Requested size: 448.13095pt x 18.61798pt.
+
+<FunctionDefinition.pdf, id=4, page=4, 831.105pt x 34.529pt>
+File: FunctionDefinition.pdf Graphic file (type pdf)
+
+<use FunctionDefinition.pdf, page 4>
+Package pdftex.def Info: FunctionDefinition.pdf, page4 used on input line 67.
+(pdftex.def)             Requested size: 448.13095pt x 18.61798pt.
+
+<FunctionDefinition.pdf, id=5, page=5, 831.105pt x 34.529pt>
+File: FunctionDefinition.pdf Graphic file (type pdf)
+
+<use FunctionDefinition.pdf, page 5>
+Package pdftex.def Info: FunctionDefinition.pdf, page5 used on input line 67.
+(pdftex.def)             Requested size: 448.13095pt x 18.61798pt.
+
+<FunctionDefinition.pdf, id=6, page=6, 831.105pt x 34.529pt>
+File: FunctionDefinition.pdf Graphic file (type pdf)
+
+<use FunctionDefinition.pdf, page 6>
+Package pdftex.def Info: FunctionDefinition.pdf, page6 used on input line 67.
+(pdftex.def)             Requested size: 448.13095pt x 18.61798pt.
+
+<FunctionDefinition.pdf, id=7, page=7, 831.105pt x 34.529pt>
+File: FunctionDefinition.pdf Graphic file (type pdf)
+
+<use FunctionDefinition.pdf, page 7>
+Package pdftex.def Info: FunctionDefinition.pdf, page7 used on input line 67.
+(pdftex.def)             Requested size: 448.13095pt x 18.61798pt.
+
+<FunctionDefinition.pdf, id=8, page=8, 831.105pt x 34.529pt>
+File: FunctionDefinition.pdf Graphic file (type pdf)
+
+<use FunctionDefinition.pdf, page 8>
+Package pdftex.def Info: FunctionDefinition.pdf, page8 used on input line 67.
+(pdftex.def)             Requested size: 448.13095pt x 18.61798pt.
+
+<FunctionDefinition.pdf, id=9, page=9, 831.105pt x 34.529pt>
+File: FunctionDefinition.pdf Graphic file (type pdf)
+
+<use FunctionDefinition.pdf, page 9>
+Package pdftex.def Info: FunctionDefinition.pdf, page9 used on input line 68.
+(pdftex.def)             Requested size: 448.13095pt x 18.61798pt.
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\Function
+Declaration.pdf_tex
+<FunctionDeclaration.pdf, id=10, page=1, 490.63298pt x 34.529pt>
+File: FunctionDeclaration.pdf Graphic file (type pdf)
+
+<use FunctionDeclaration.pdf, page 1>
+Package pdftex.def Info: FunctionDeclaration.pdf, page1 used on input line 52.
+(pdftex.def)             Requested size: 448.13095pt x 31.53787pt.
+
+<FunctionDeclaration.pdf, id=11, page=2, 490.63298pt x 34.529pt>
+File: FunctionDeclaration.pdf Graphic file (type pdf)
+
+<use FunctionDeclaration.pdf, page 2>
+Package pdftex.def Info: FunctionDeclaration.pdf, page2 used on input line 54.
+(pdftex.def)             Requested size: 448.13095pt x 31.53787pt.
+
+<FunctionDeclaration.pdf, id=12, page=3, 490.63298pt x 34.529pt>
+File: FunctionDeclaration.pdf Graphic file (type pdf)
+
+<use FunctionDeclaration.pdf, page 3>
+Package pdftex.def Info: FunctionDeclaration.pdf, page3 used on input line 56.
+(pdftex.def)             Requested size: 448.13095pt x 31.53787pt.
+
+<FunctionDeclaration.pdf, id=13, page=4, 490.63298pt x 34.529pt>
+File: FunctionDeclaration.pdf Graphic file (type pdf)
+
+<use FunctionDeclaration.pdf, page 4>
+Package pdftex.def Info: FunctionDeclaration.pdf, page4 used on input line 58.
+(pdftex.def)             Requested size: 448.13095pt x 31.53787pt.
+
+<FunctionDeclaration.pdf, id=14, page=5, 490.63298pt x 34.529pt>
+File: FunctionDeclaration.pdf Graphic file (type pdf)
+
+<use FunctionDeclaration.pdf, page 5>
+Package pdftex.def Info: FunctionDeclaration.pdf, page5 used on input line 60.
+(pdftex.def)             Requested size: 448.13095pt x 31.53787pt.
+
+<FunctionDeclaration.pdf, id=15, page=6, 490.63298pt x 34.529pt>
+File: FunctionDeclaration.pdf Graphic file (type pdf)
+
+<use FunctionDeclaration.pdf, page 6>
+Package pdftex.def Info: FunctionDeclaration.pdf, page6 used on input line 62.
+(pdftex.def)             Requested size: 448.13095pt x 31.53787pt.
+
+<FunctionDeclaration.pdf, id=16, page=7, 490.63298pt x 34.529pt>
+File: FunctionDeclaration.pdf Graphic file (type pdf)
+
+<use FunctionDeclaration.pdf, page 7>
+Package pdftex.def Info: FunctionDeclaration.pdf, page7 used on input line 64.
+(pdftex.def)             Requested size: 448.13095pt x 31.53787pt.
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\Variable
+Definition.pdf_tex
+<VariableDefinition.pdf, id=17, page=1, 403.909pt x 27.302pt>
+File: VariableDefinition.pdf Graphic file (type pdf)
+
+<use VariableDefinition.pdf, page 1>
+Package pdftex.def Info: VariableDefinition.pdf, page1 used on input line 52.
+(pdftex.def)             Requested size: 448.13095pt x 30.29099pt.
+
+<VariableDefinition.pdf, id=18, page=2, 403.909pt x 27.302pt>
+File: VariableDefinition.pdf Graphic file (type pdf)
+
+<use VariableDefinition.pdf, page 2>
+Package pdftex.def Info: VariableDefinition.pdf, page2 used on input line 54.
+(pdftex.def)             Requested size: 448.13095pt x 30.29099pt.
+
+<VariableDefinition.pdf, id=19, page=3, 403.909pt x 27.302pt>
+File: VariableDefinition.pdf Graphic file (type pdf)
+
+<use VariableDefinition.pdf, page 3>
+Package pdftex.def Info: VariableDefinition.pdf, page3 used on input line 56.
+(pdftex.def)             Requested size: 448.13095pt x 30.29099pt.
+
+<VariableDefinition.pdf, id=20, page=4, 403.909pt x 27.302pt>
+File: VariableDefinition.pdf Graphic file (type pdf)
+
+<use VariableDefinition.pdf, page 4>
+Package pdftex.def Info: VariableDefinition.pdf, page4 used on input line 58.
+(pdftex.def)             Requested size: 448.13095pt x 30.29099pt.
+
+<VariableDefinition.pdf, id=21, page=5, 403.909pt x 27.302pt>
+File: VariableDefinition.pdf Graphic file (type pdf)
+
+<use VariableDefinition.pdf, page 5>
+Package pdftex.def Info: VariableDefinition.pdf, page5 used on input line 60.
+(pdftex.def)             Requested size: 448.13095pt x 30.29099pt.
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\ReturnSt
+atement.pdf_tex <ReturnStatement.pdf, id=22, page=1, 281.85298pt x 27.302pt>
+File: ReturnStatement.pdf Graphic file (type pdf)
+
+<use ReturnStatement.pdf, page 1>
+Package pdftex.def Info: ReturnStatement.pdf, page1 used on input line 52.
+(pdftex.def)             Requested size: 448.13095pt x 43.40996pt.
+
+<ReturnStatement.pdf, id=23, page=2, 281.85298pt x 27.302pt>
+File: ReturnStatement.pdf Graphic file (type pdf)
+
+<use ReturnStatement.pdf, page 2>
+Package pdftex.def Info: ReturnStatement.pdf, page2 used on input line 54.
+(pdftex.def)             Requested size: 448.13095pt x 43.40996pt.
+
+<ReturnStatement.pdf, id=24, page=3, 281.85298pt x 27.302pt>
+File: ReturnStatement.pdf Graphic file (type pdf)
+
+<use ReturnStatement.pdf, page 3>
+Package pdftex.def Info: ReturnStatement.pdf, page3 used on input line 56.
+(pdftex.def)             Requested size: 448.13095pt x 43.40996pt.
+
+<ReturnStatement.pdf, id=25, page=4, 281.85298pt x 27.302pt>
+File: ReturnStatement.pdf Graphic file (type pdf)
+
+<use ReturnStatement.pdf, page 4>
+Package pdftex.def Info: ReturnStatement.pdf, page4 used on input line 58.
+(pdftex.def)             Requested size: 448.13095pt x 43.40996pt.
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\Expressi
+on.pdf_tex <Expression.pdf, id=26, page=1, 195.129pt x 20.075pt>
+File: Expression.pdf Graphic file (type pdf)
+
+<use Expression.pdf, page 1>
+Package pdftex.def Info: Expression.pdf, page1 used on input line 52.
+(pdftex.def)             Requested size: 448.13095pt x 46.1047pt.
+
+<Expression.pdf, id=27, page=2, 195.129pt x 20.075pt>
+File: Expression.pdf Graphic file (type pdf)
+
+<use Expression.pdf, page 2>
+Package pdftex.def Info: Expression.pdf, page2 used on input line 54.
+(pdftex.def)             Requested size: 448.13095pt x 46.1047pt.
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\Conditio
+nalExpression.pdf_tex
+<ConditionalExpression.pdf, id=28, page=1, 657.65701pt x 34.529pt>
+File: ConditionalExpression.pdf Graphic file (type pdf)
+
+<use ConditionalExpression.pdf, page 1>
+Package pdftex.def Info: ConditionalExpression.pdf, page1 used on input line 52
+.
+(pdftex.def)             Requested size: 448.13095pt x 23.52893pt.
+
+<ConditionalExpression.pdf, id=29, page=2, 657.65701pt x 34.529pt>
+File: ConditionalExpression.pdf Graphic file (type pdf)
+
+<use ConditionalExpression.pdf, page 2>
+Package pdftex.def Info: ConditionalExpression.pdf, page2 used on input line 54
+.
+(pdftex.def)             Requested size: 448.13095pt x 23.52893pt.
+
+<ConditionalExpression.pdf, id=30, page=3, 657.65701pt x 34.529pt>
+File: ConditionalExpression.pdf Graphic file (type pdf)
+
+<use ConditionalExpression.pdf, page 3>
+Package pdftex.def Info: ConditionalExpression.pdf, page3 used on input line 56
+.
+(pdftex.def)             Requested size: 448.13095pt x 23.52893pt.
+
+<ConditionalExpression.pdf, id=31, page=4, 657.65701pt x 34.529pt>
+File: ConditionalExpression.pdf Graphic file (type pdf)
+
+<use ConditionalExpression.pdf, page 4>
+Package pdftex.def Info: ConditionalExpression.pdf, page4 used on input line 58
+.
+(pdftex.def)             Requested size: 448.13095pt x 23.52893pt.
+
+<ConditionalExpression.pdf, id=32, page=5, 657.65701pt x 34.529pt>
+File: ConditionalExpression.pdf Graphic file (type pdf)
+
+<use ConditionalExpression.pdf, page 5>
+Package pdftex.def Info: ConditionalExpression.pdf, page5 used on input line 60
+.
+(pdftex.def)             Requested size: 448.13095pt x 23.52893pt.
+
+<ConditionalExpression.pdf, id=33, page=6, 657.65701pt x 34.529pt>
+File: ConditionalExpression.pdf Graphic file (type pdf)
+
+<use ConditionalExpression.pdf, page 6>
+Package pdftex.def Info: ConditionalExpression.pdf, page6 used on input line 62
+.
+(pdftex.def)             Requested size: 448.13095pt x 23.52893pt.
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\LogicalO
+RExpression.pdf_tex
+<LogicalORExpression.pdf, id=34, page=1, 445.665pt x 34.529pt>
+File: LogicalORExpression.pdf Graphic file (type pdf)
+
+<use LogicalORExpression.pdf, page 1>
+Package pdftex.def Info: LogicalORExpression.pdf, page1 used on input line 52.
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+
+<LogicalORExpression.pdf, id=35, page=2, 445.665pt x 34.529pt>
+File: LogicalORExpression.pdf Graphic file (type pdf)
+
+<use LogicalORExpression.pdf, page 2>
+Package pdftex.def Info: LogicalORExpression.pdf, page2 used on input line 54.
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+
+<LogicalORExpression.pdf, id=36, page=3, 445.665pt x 34.529pt>
+File: LogicalORExpression.pdf Graphic file (type pdf)
+
+<use LogicalORExpression.pdf, page 3>
+Package pdftex.def Info: LogicalORExpression.pdf, page3 used on input line 56.
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+
+<LogicalORExpression.pdf, id=37, page=4, 445.665pt x 34.529pt>
+File: LogicalORExpression.pdf Graphic file (type pdf)
+
+<use LogicalORExpression.pdf, page 4>
+Package pdftex.def Info: LogicalORExpression.pdf, page4 used on input line 58.
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\LogicalX
+ORExpression.pdf_tex
+<LogicalXORExpression.pdf, id=38, page=1, 445.665pt x 34.529pt>
+File: LogicalXORExpression.pdf Graphic file (type pdf)
+
+<use LogicalXORExpression.pdf, page 1>
+Package pdftex.def Info: LogicalXORExpression.pdf, page1 used on input line 52.
+
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+
+<LogicalXORExpression.pdf, id=39, page=2, 445.665pt x 34.529pt>
+File: LogicalXORExpression.pdf Graphic file (type pdf)
+
+<use LogicalXORExpression.pdf, page 2>
+Package pdftex.def Info: LogicalXORExpression.pdf, page2 used on input line 54.
+
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+
+<LogicalXORExpression.pdf, id=40, page=3, 445.665pt x 34.529pt>
+File: LogicalXORExpression.pdf Graphic file (type pdf)
+
+<use LogicalXORExpression.pdf, page 3>
+Package pdftex.def Info: LogicalXORExpression.pdf, page3 used on input line 56.
+
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+
+<LogicalXORExpression.pdf, id=41, page=4, 445.665pt x 34.529pt>
+File: LogicalXORExpression.pdf Graphic file (type pdf)
+
+<use LogicalXORExpression.pdf, page 4>
+Package pdftex.def Info: LogicalXORExpression.pdf, page4 used on input line 58.
+
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\LogicaAN
+DExpression.pdf_tex
+<LogicaANDExpression.pdf, id=42, page=1, 445.665pt x 34.529pt>
+File: LogicaANDExpression.pdf Graphic file (type pdf)
+
+<use LogicaANDExpression.pdf, page 1>
+Package pdftex.def Info: LogicaANDExpression.pdf, page1 used on input line 52.
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+
+<LogicaANDExpression.pdf, id=43, page=2, 445.665pt x 34.529pt>
+File: LogicaANDExpression.pdf Graphic file (type pdf)
+
+<use LogicaANDExpression.pdf, page 2>
+Package pdftex.def Info: LogicaANDExpression.pdf, page2 used on input line 54.
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+
+<LogicaANDExpression.pdf, id=44, page=3, 445.665pt x 34.529pt>
+File: LogicaANDExpression.pdf Graphic file (type pdf)
+
+<use LogicaANDExpression.pdf, page 3>
+Package pdftex.def Info: LogicaANDExpression.pdf, page3 used on input line 56.
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+
+<LogicaANDExpression.pdf, id=45, page=4, 445.665pt x 34.529pt>
+File: LogicaANDExpression.pdf Graphic file (type pdf)
+
+<use LogicaANDExpression.pdf, page 4>
+Package pdftex.def Info: LogicaANDExpression.pdf, page4 used on input line 58.
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\BitwiseO
+RExpression.pdf_tex
+<BitwiseORExpression.pdf, id=46, page=1, 445.665pt x 34.529pt>
+File: BitwiseORExpression.pdf Graphic file (type pdf)
+
+<use BitwiseORExpression.pdf, page 1>
+Package pdftex.def Info: BitwiseORExpression.pdf, page1 used on input line 52.
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+
+<BitwiseORExpression.pdf, id=47, page=2, 445.665pt x 34.529pt>
+File: BitwiseORExpression.pdf Graphic file (type pdf)
+
+<use BitwiseORExpression.pdf, page 2>
+Package pdftex.def Info: BitwiseORExpression.pdf, page2 used on input line 54.
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+
+<BitwiseORExpression.pdf, id=48, page=3, 445.665pt x 34.529pt>
+File: BitwiseORExpression.pdf Graphic file (type pdf)
+
+<use BitwiseORExpression.pdf, page 3>
+Package pdftex.def Info: BitwiseORExpression.pdf, page3 used on input line 56.
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+
+<BitwiseORExpression.pdf, id=49, page=4, 445.665pt x 34.529pt>
+File: BitwiseORExpression.pdf Graphic file (type pdf)
+
+<use BitwiseORExpression.pdf, page 4>
+Package pdftex.def Info: BitwiseORExpression.pdf, page4 used on input line 58.
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\BitwiseX
+ORExpression.pdf_tex
+<BitwiseXORExpression.pdf, id=50, page=1, 445.665pt x 34.529pt>
+File: BitwiseXORExpression.pdf Graphic file (type pdf)
+
+<use BitwiseXORExpression.pdf, page 1>
+Package pdftex.def Info: BitwiseXORExpression.pdf, page1 used on input line 52.
+
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+
+<BitwiseXORExpression.pdf, id=51, page=2, 445.665pt x 34.529pt>
+File: BitwiseXORExpression.pdf Graphic file (type pdf)
+
+<use BitwiseXORExpression.pdf, page 2>
+Package pdftex.def Info: BitwiseXORExpression.pdf, page2 used on input line 54.
+
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+
+<BitwiseXORExpression.pdf, id=52, page=3, 445.665pt x 34.529pt>
+File: BitwiseXORExpression.pdf Graphic file (type pdf)
+
+<use BitwiseXORExpression.pdf, page 3>
+Package pdftex.def Info: BitwiseXORExpression.pdf, page3 used on input line 56.
+
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+
+<BitwiseXORExpression.pdf, id=53, page=4, 445.665pt x 34.529pt>
+File: BitwiseXORExpression.pdf Graphic file (type pdf)
+
+<use BitwiseXORExpression.pdf, page 4>
+Package pdftex.def Info: BitwiseXORExpression.pdf, page4 used on input line 58.
+
+(pdftex.def)             Requested size: 448.13095pt x 34.72015pt.
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\Equality
+Expression.pdf_tex
+<EqualityExpression.pdf, id=54, page=1, 469.755pt x 57.816pt>
+File: EqualityExpression.pdf Graphic file (type pdf)
+
+<use EqualityExpression.pdf, page 1>
+Package pdftex.def Info: EqualityExpression.pdf, page1 used on input line 52.
+(pdftex.def)             Requested size: 448.13095pt x 55.15424pt.
+
+<EqualityExpression.pdf, id=55, page=2, 469.755pt x 57.816pt>
+File: EqualityExpression.pdf Graphic file (type pdf)
+
+<use EqualityExpression.pdf, page 2>
+Package pdftex.def Info: EqualityExpression.pdf, page2 used on input line 54.
+(pdftex.def)             Requested size: 448.13095pt x 55.15424pt.
+
+<EqualityExpression.pdf, id=56, page=3, 469.755pt x 57.816pt>
+File: EqualityExpression.pdf Graphic file (type pdf)
+
+<use EqualityExpression.pdf, page 3>
+Package pdftex.def Info: EqualityExpression.pdf, page3 used on input line 56.
+(pdftex.def)             Requested size: 448.13095pt x 55.15424pt.
+
+<EqualityExpression.pdf, id=57, page=4, 469.755pt x 57.816pt>
+File: EqualityExpression.pdf Graphic file (type pdf)
+
+<use EqualityExpression.pdf, page 4>
+Package pdftex.def Info: EqualityExpression.pdf, page4 used on input line 58.
+(pdftex.def)             Requested size: 448.13095pt x 55.15424pt.
+
+<EqualityExpression.pdf, id=58, page=5, 469.755pt x 57.816pt>
+File: EqualityExpression.pdf Graphic file (type pdf)
+
+<use EqualityExpression.pdf, page 5>
+Package pdftex.def Info: EqualityExpression.pdf, page5 used on input line 60.
+(pdftex.def)             Requested size: 448.13095pt x 55.15424pt.
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\Relation
+alExpression.pdf_tex
+<RelationalExpression.pdf, id=59, page=1, 405.515pt x 105.996pt>
+File: RelationalExpression.pdf Graphic file (type pdf)
+
+<use RelationalExpression.pdf, page 1>
+Package pdftex.def Info: RelationalExpression.pdf, page1 used on input line 52.
+
+(pdftex.def)             Requested size: 448.13095pt x 117.13776pt.
+
+<RelationalExpression.pdf, id=60, page=2, 405.515pt x 105.996pt>
+File: RelationalExpression.pdf Graphic file (type pdf)
+
+<use RelationalExpression.pdf, page 2>
+Package pdftex.def Info: RelationalExpression.pdf, page2 used on input line 54.
+
+(pdftex.def)             Requested size: 448.13095pt x 117.13776pt.
+
+<RelationalExpression.pdf, id=61, page=3, 405.515pt x 105.996pt>
+File: RelationalExpression.pdf Graphic file (type pdf)
+
+<use RelationalExpression.pdf, page 3>
+Package pdftex.def Info: RelationalExpression.pdf, page3 used on input line 56.
+
+(pdftex.def)             Requested size: 448.13095pt x 117.13776pt.
+
+<RelationalExpression.pdf, id=62, page=4, 405.515pt x 105.996pt>
+File: RelationalExpression.pdf Graphic file (type pdf)
+
+<use RelationalExpression.pdf, page 4>
+Package pdftex.def Info: RelationalExpression.pdf, page4 used on input line 58.
+
+(pdftex.def)             Requested size: 448.13095pt x 117.13776pt.
+
+<RelationalExpression.pdf, id=63, page=5, 405.515pt x 105.996pt>
+File: RelationalExpression.pdf Graphic file (type pdf)
+
+<use RelationalExpression.pdf, page 5>
+Package pdftex.def Info: RelationalExpression.pdf, page5 used on input line 60.
+
+(pdftex.def)             Requested size: 448.13095pt x 117.13776pt.
+
+<RelationalExpression.pdf, id=64, page=6, 405.515pt x 105.996pt>
+File: RelationalExpression.pdf Graphic file (type pdf)
+
+<use RelationalExpression.pdf, page 6>
+Package pdftex.def Info: RelationalExpression.pdf, page6 used on input line 62.
+
+(pdftex.def)             Requested size: 448.13095pt x 117.13776pt.
+
+<RelationalExpression.pdf, id=65, page=7, 405.515pt x 105.996pt>
+File: RelationalExpression.pdf Graphic file (type pdf)
+
+<use RelationalExpression.pdf, page 7>
+Package pdftex.def Info: RelationalExpression.pdf, page7 used on input line 64.
+
+(pdftex.def)             Requested size: 448.13095pt x 117.13776pt.
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\ShiftExp
+ression.pdf_tex <ShiftExpression.pdf, id=66, page=1, 444.05899pt x 57.816pt>
+File: ShiftExpression.pdf Graphic file (type pdf)
+
+<use ShiftExpression.pdf, page 1>
+Package pdftex.def Info: ShiftExpression.pdf, page1 used on input line 52.
+(pdftex.def)             Requested size: 448.13095pt x 58.34956pt.
+
+<ShiftExpression.pdf, id=67, page=2, 444.05899pt x 57.816pt>
+File: ShiftExpression.pdf Graphic file (type pdf)
+
+<use ShiftExpression.pdf, page 2>
+Package pdftex.def Info: ShiftExpression.pdf, page2 used on input line 54.
+(pdftex.def)             Requested size: 448.13095pt x 58.34956pt.
+
+<ShiftExpression.pdf, id=68, page=3, 444.05899pt x 57.816pt>
+File: ShiftExpression.pdf Graphic file (type pdf)
+
+<use ShiftExpression.pdf, page 3>
+Package pdftex.def Info: ShiftExpression.pdf, page3 used on input line 56.
+(pdftex.def)             Requested size: 448.13095pt x 58.34956pt.
+
+<ShiftExpression.pdf, id=69, page=4, 444.05899pt x 57.816pt>
+File: ShiftExpression.pdf Graphic file (type pdf)
+
+<use ShiftExpression.pdf, page 4>
+Package pdftex.def Info: ShiftExpression.pdf, page4 used on input line 58.
+(pdftex.def)             Requested size: 448.13095pt x 58.34956pt.
+
+<ShiftExpression.pdf, id=70, page=5, 444.05899pt x 57.816pt>
+File: ShiftExpression.pdf Graphic file (type pdf)
+
+<use ShiftExpression.pdf, page 5>
+Package pdftex.def Info: ShiftExpression.pdf, page5 used on input line 60.
+(pdftex.def)             Requested size: 448.13095pt x 58.34956pt.
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\Additive
+Expression.pdf_tex
+<AdditiveExpression.pdf, id=71, page=1, 514.72299pt x 57.816pt>
+File: AdditiveExpression.pdf Graphic file (type pdf)
+
+<use AdditiveExpression.pdf, page 1>
+Package pdftex.def Info: AdditiveExpression.pdf, page1 used on input line 52.
+(pdftex.def)             Requested size: 448.13095pt x 50.33566pt.
+
+<AdditiveExpression.pdf, id=72, page=2, 514.72299pt x 57.816pt>
+File: AdditiveExpression.pdf Graphic file (type pdf)
+
+<use AdditiveExpression.pdf, page 2>
+Package pdftex.def Info: AdditiveExpression.pdf, page2 used on input line 54.
+(pdftex.def)             Requested size: 448.13095pt x 50.33566pt.
+
+<AdditiveExpression.pdf, id=73, page=3, 514.72299pt x 57.816pt>
+File: AdditiveExpression.pdf Graphic file (type pdf)
+
+<use AdditiveExpression.pdf, page 3>
+Package pdftex.def Info: AdditiveExpression.pdf, page3 used on input line 56.
+(pdftex.def)             Requested size: 448.13095pt x 50.33566pt.
+
+<AdditiveExpression.pdf, id=74, page=4, 514.72299pt x 57.816pt>
+File: AdditiveExpression.pdf Graphic file (type pdf)
+
+<use AdditiveExpression.pdf, page 4>
+Package pdftex.def Info: AdditiveExpression.pdf, page4 used on input line 58.
+(pdftex.def)             Requested size: 448.13095pt x 50.33566pt.
+
+<AdditiveExpression.pdf, id=75, page=5, 514.72299pt x 57.816pt>
+File: AdditiveExpression.pdf Graphic file (type pdf)
+
+<use AdditiveExpression.pdf, page 5>
+Package pdftex.def Info: AdditiveExpression.pdf, page5 used on input line 60.
+(pdftex.def)             Requested size: 448.13095pt x 50.33566pt.
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\UnaryExp
+ression.pdf_tex <UnaryExpression.pdf, id=76, page=1, 450.48299pt x 178.266pt>
+File: UnaryExpression.pdf Graphic file (type pdf)
+
+<use UnaryExpression.pdf, page 1>
+Package pdftex.def Info: UnaryExpression.pdf, page1 used on input line 52.
+(pdftex.def)             Requested size: 448.13095pt x 177.33798pt.
+
+<UnaryExpression.pdf, id=77, page=2, 450.48299pt x 178.266pt>
+File: UnaryExpression.pdf Graphic file (type pdf)
+
+<use UnaryExpression.pdf, page 2>
+Package pdftex.def Info: UnaryExpression.pdf, page2 used on input line 54.
+(pdftex.def)             Requested size: 448.13095pt x 177.33798pt.
+
+<UnaryExpression.pdf, id=78, page=3, 450.48299pt x 178.266pt>
+File: UnaryExpression.pdf Graphic file (type pdf)
+
+<use UnaryExpression.pdf, page 3>
+Package pdftex.def Info: UnaryExpression.pdf, page3 used on input line 56.
+(pdftex.def)             Requested size: 448.13095pt x 177.33798pt.
+
+<UnaryExpression.pdf, id=79, page=4, 450.48299pt x 178.266pt>
+File: UnaryExpression.pdf Graphic file (type pdf)
+
+<use UnaryExpression.pdf, page 4>
+Package pdftex.def Info: UnaryExpression.pdf, page4 used on input line 58.
+(pdftex.def)             Requested size: 448.13095pt x 177.33798pt.
+
+<UnaryExpression.pdf, id=80, page=5, 450.48299pt x 178.266pt>
+File: UnaryExpression.pdf Graphic file (type pdf)
+
+<use UnaryExpression.pdf, page 5>
+Package pdftex.def Info: UnaryExpression.pdf, page5 used on input line 60.
+(pdftex.def)             Requested size: 448.13095pt x 177.33798pt.
+
+<UnaryExpression.pdf, id=81, page=6, 450.48299pt x 178.266pt>
+File: UnaryExpression.pdf Graphic file (type pdf)
+
+<use UnaryExpression.pdf, page 6>
+Package pdftex.def Info: UnaryExpression.pdf, page6 used on input line 62.
+(pdftex.def)             Requested size: 448.13095pt x 177.33798pt.
+
+<UnaryExpression.pdf, id=82, page=7, 450.48299pt x 178.266pt>
+File: UnaryExpression.pdf Graphic file (type pdf)
+
+<use UnaryExpression.pdf, page 7>
+Package pdftex.def Info: UnaryExpression.pdf, page7 used on input line 64.
+(pdftex.def)             Requested size: 448.13095pt x 177.33798pt.
+
+<UnaryExpression.pdf, id=83, page=8, 450.48299pt x 178.266pt>
+File: UnaryExpression.pdf Graphic file (type pdf)
+
+<use UnaryExpression.pdf, page 8>
+Package pdftex.def Info: UnaryExpression.pdf, page8 used on input line 66.
+(pdftex.def)             Requested size: 448.13095pt x 177.33798pt.
+
+<UnaryExpression.pdf, id=84, page=9, 450.48299pt x 178.266pt>
+File: UnaryExpression.pdf Graphic file (type pdf)
+
+<use UnaryExpression.pdf, page 9>
+Package pdftex.def Info: UnaryExpression.pdf, page9 used on input line 68.
+(pdftex.def)             Requested size: 448.13095pt x 177.33798pt.
+
+<UnaryExpression.pdf, id=85, page=10, 450.48299pt x 178.266pt>
+File: UnaryExpression.pdf Graphic file (type pdf)
+
+<use UnaryExpression.pdf, page 10>
+Package pdftex.def Info: UnaryExpression.pdf, page10 used on input line 70.
+(pdftex.def)             Requested size: 448.13095pt x 177.33798pt.
+
+<UnaryExpression.pdf, id=86, page=11, 450.48299pt x 178.266pt>
+File: UnaryExpression.pdf Graphic file (type pdf)
+
+<use UnaryExpression.pdf, page 11>
+Package pdftex.def Info: UnaryExpression.pdf, page11 used on input line 72.
+(pdftex.def)             Requested size: 448.13095pt x 177.33798pt.
+
+<UnaryExpression.pdf, id=87, page=12, 450.48299pt x 178.266pt>
+File: UnaryExpression.pdf Graphic file (type pdf)
+
+<use UnaryExpression.pdf, page 12>
+Package pdftex.def Info: UnaryExpression.pdf, page12 used on input line 74.
+(pdftex.def)             Requested size: 448.13095pt x 177.33798pt.
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\PostFixE
+xpression.pdf_tex
+<PostFixExpression.pdf, id=88, page=1, 235.27899pt x 68.255pt>
+File: PostFixExpression.pdf Graphic file (type pdf)
+
+<use PostFixExpression.pdf, page 1>
+Package pdftex.def Info: PostFixExpression.pdf, page1 used on input line 52.
+(pdftex.def)             Requested size: 448.13095pt x 130.01909pt.
+
+<PostFixExpression.pdf, id=89, page=2, 235.27899pt x 68.255pt>
+File: PostFixExpression.pdf Graphic file (type pdf)
+
+<use PostFixExpression.pdf, page 2>
+Package pdftex.def Info: PostFixExpression.pdf, page2 used on input line 54.
+(pdftex.def)             Requested size: 448.13095pt x 130.01909pt.
+
+<PostFixExpression.pdf, id=90, page=3, 235.27899pt x 68.255pt>
+File: PostFixExpression.pdf Graphic file (type pdf)
+
+<use PostFixExpression.pdf, page 3>
+Package pdftex.def Info: PostFixExpression.pdf, page3 used on input line 56.
+(pdftex.def)             Requested size: 448.13095pt x 130.01909pt.
+
+<PostFixExpression.pdf, id=91, page=4, 235.27899pt x 68.255pt>
+File: PostFixExpression.pdf Graphic file (type pdf)
+
+<use PostFixExpression.pdf, page 4>
+Package pdftex.def Info: PostFixExpression.pdf, page4 used on input line 58.
+(pdftex.def)             Requested size: 448.13095pt x 130.01909pt.
+
+<PostFixExpression.pdf, id=92, page=5, 235.27899pt x 68.255pt>
+File: PostFixExpression.pdf Graphic file (type pdf)
+
+<use PostFixExpression.pdf, page 5>
+Package pdftex.def Info: PostFixExpression.pdf, page5 used on input line 60.
+(pdftex.def)             Requested size: 448.13095pt x 130.01909pt.
+)
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\PrimaryE
+xpression.pdf_tex <PrimaryExpression.pdf, id=93, page=1, 249.733pt x 92.345pt>
+File: PrimaryExpression.pdf Graphic file (type pdf)
+
+<use PrimaryExpression.pdf, page 1>
+Package pdftex.def Info: PrimaryExpression.pdf, page1 used on input line 52.
+(pdftex.def)             Requested size: 448.13095pt x 165.71638pt.
+
+<PrimaryExpression.pdf, id=94, page=2, 249.733pt x 92.345pt>
+File: PrimaryExpression.pdf Graphic file (type pdf)
+
+<use PrimaryExpression.pdf, page 2>
+Package pdftex.def Info: PrimaryExpression.pdf, page2 used on input line 54.
+(pdftex.def)             Requested size: 448.13095pt x 165.71638pt.
+
+<PrimaryExpression.pdf, id=95, page=3, 249.733pt x 92.345pt>
+File: PrimaryExpression.pdf Graphic file (type pdf)
+
+<use PrimaryExpression.pdf, page 3>
+Package pdftex.def Info: PrimaryExpression.pdf, page3 used on input line 56.
+(pdftex.def)             Requested size: 448.13095pt x 165.71638pt.
+
+<PrimaryExpression.pdf, id=96, page=4, 249.733pt x 92.345pt>
+File: PrimaryExpression.pdf Graphic file (type pdf)
+
+<use PrimaryExpression.pdf, page 4>
+Package pdftex.def Info: PrimaryExpression.pdf, page4 used on input line 58.
+(pdftex.def)             Requested size: 448.13095pt x 165.71638pt.
+
+<PrimaryExpression.pdf, id=97, page=5, 249.733pt x 92.345pt>
+File: PrimaryExpression.pdf Graphic file (type pdf)
+
+<use PrimaryExpression.pdf, page 5>
+Package pdftex.def Info: PrimaryExpression.pdf, page5 used on input line 60.
+(pdftex.def)             Requested size: 448.13095pt x 165.71638pt.
+
+<PrimaryExpression.pdf, id=98, page=6, 249.733pt x 92.345pt>
+File: PrimaryExpression.pdf Graphic file (type pdf)
+
+<use PrimaryExpression.pdf, page 6>
+Package pdftex.def Info: PrimaryExpression.pdf, page6 used on input line 62.
+(pdftex.def)             Requested size: 448.13095pt x 165.71638pt.
+
+<PrimaryExpression.pdf, id=99, page=7, 249.733pt x 92.345pt>
+File: PrimaryExpression.pdf Graphic file (type pdf)
+
+<use PrimaryExpression.pdf, page 7>
+Package pdftex.def Info: PrimaryExpression.pdf, page7 used on input line 64.
+(pdftex.def)             Requested size: 448.13095pt x 165.71638pt.
+) [1
+
+
+{C:/Users/neubergerch50344/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map} <
+C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/FunctionD
+efinition.pdf> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAl
+lDiags/FunctionDefinition.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/FunctionDefinition.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Functi
+onDefinition.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/FunctionDefinition.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Functi
+onDefinition.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/FunctionDefinition.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Functi
+onDefinition.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/FunctionDefinition.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Functi
+onDefinition.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/FunctionDefinition.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Functi
+onDefinition.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/FunctionDefinition.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Functi
+onDefinition.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/FunctionDefinition.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Functi
+onDefinition.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/FunctionDefinition.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+>] [2 <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Fu
+nctionDeclaration.pdf> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/La
+texDocAllDiags/FunctionDeclaration.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/FunctionDeclaration.pdf): PDF inclusion: multiple pdf
+s with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Functi
+onDeclaration.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/FunctionDeclaration.pdf): PDF inclusion: multiple pdf
+s with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Functi
+onDeclaration.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/FunctionDeclaration.pdf): PDF inclusion: multiple pdf
+s with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Functi
+onDeclaration.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/FunctionDeclaration.pdf): PDF inclusion: multiple pdf
+s with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Functi
+onDeclaration.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/FunctionDeclaration.pdf): PDF inclusion: multiple pdf
+s with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Functi
+onDeclaration.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/FunctionDeclaration.pdf): PDF inclusion: multiple pdf
+s with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Variab
+leDefinition.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/VariableDefinition.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Variab
+leDefinition.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/VariableDefinition.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Variab
+leDefinition.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/VariableDefinition.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Variab
+leDefinition.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/VariableDefinition.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Variab
+leDefinition.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/VariableDefinition.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Return
+Statement.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/ReturnStatement.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Return
+Statement.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/ReturnStatement.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Return
+Statement.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/ReturnStatement.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Return
+Statement.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/ReturnStatement.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Expres
+sion.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/Expression.pdf): PDF inclusion: multiple pdfs with pa
+ge group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Expres
+sion.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/Expression.pdf): PDF inclusion: multiple pdfs with pa
+ge group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Condit
+ionalExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/ConditionalExpression.pdf): PDF inclusion: multiple p
+dfs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Condit
+ionalExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/ConditionalExpression.pdf): PDF inclusion: multiple p
+dfs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Condit
+ionalExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/ConditionalExpression.pdf): PDF inclusion: multiple p
+dfs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Condit
+ionalExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/ConditionalExpression.pdf): PDF inclusion: multiple p
+dfs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Condit
+ionalExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/ConditionalExpression.pdf): PDF inclusion: multiple p
+dfs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Condit
+ionalExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/ConditionalExpression.pdf): PDF inclusion: multiple p
+dfs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Logica
+lORExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/LogicalORExpression.pdf): PDF inclusion: multiple pdf
+s with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Logica
+lORExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/LogicalORExpression.pdf): PDF inclusion: multiple pdf
+s with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Logica
+lORExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/LogicalORExpression.pdf): PDF inclusion: multiple pdf
+s with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Logica
+lORExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/LogicalORExpression.pdf): PDF inclusion: multiple pdf
+s with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Logica
+lXORExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/LogicalXORExpression.pdf): PDF inclusion: multiple pd
+fs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Logica
+lXORExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/LogicalXORExpression.pdf): PDF inclusion: multiple pd
+fs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Logica
+lXORExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/LogicalXORExpression.pdf): PDF inclusion: multiple pd
+fs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Logica
+lXORExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/LogicalXORExpression.pdf): PDF inclusion: multiple pd
+fs with page group included in a single page
+>] [3 <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Lo
+gicaANDExpression.pdf> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/La
+texDocAllDiags/LogicaANDExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/LogicaANDExpression.pdf): PDF inclusion: multiple pdf
+s with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Logica
+ANDExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/LogicaANDExpression.pdf): PDF inclusion: multiple pdf
+s with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Logica
+ANDExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/LogicaANDExpression.pdf): PDF inclusion: multiple pdf
+s with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Bitwis
+eORExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/BitwiseORExpression.pdf): PDF inclusion: multiple pdf
+s with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Bitwis
+eORExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/BitwiseORExpression.pdf): PDF inclusion: multiple pdf
+s with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Bitwis
+eORExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/BitwiseORExpression.pdf): PDF inclusion: multiple pdf
+s with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Bitwis
+eORExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/BitwiseORExpression.pdf): PDF inclusion: multiple pdf
+s with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Bitwis
+eXORExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/BitwiseXORExpression.pdf): PDF inclusion: multiple pd
+fs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Bitwis
+eXORExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/BitwiseXORExpression.pdf): PDF inclusion: multiple pd
+fs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Bitwis
+eXORExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/BitwiseXORExpression.pdf): PDF inclusion: multiple pd
+fs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Bitwis
+eXORExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/BitwiseXORExpression.pdf): PDF inclusion: multiple pd
+fs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Equali
+tyExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/EqualityExpression.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Equali
+tyExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/EqualityExpression.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Equali
+tyExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/EqualityExpression.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Equali
+tyExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/EqualityExpression.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Equali
+tyExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/EqualityExpression.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Relati
+onalExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/RelationalExpression.pdf): PDF inclusion: multiple pd
+fs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Relati
+onalExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/RelationalExpression.pdf): PDF inclusion: multiple pd
+fs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Relati
+onalExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/RelationalExpression.pdf): PDF inclusion: multiple pd
+fs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Relati
+onalExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/RelationalExpression.pdf): PDF inclusion: multiple pd
+fs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Relati
+onalExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/RelationalExpression.pdf): PDF inclusion: multiple pd
+fs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Relati
+onalExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/RelationalExpression.pdf): PDF inclusion: multiple pd
+fs with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Relati
+onalExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/RelationalExpression.pdf): PDF inclusion: multiple pd
+fs with page group included in a single page
+>] [4 <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Sh
+iftExpression.pdf> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexD
+ocAllDiags/ShiftExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/ShiftExpression.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/ShiftE
+xpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/ShiftExpression.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/ShiftE
+xpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/ShiftExpression.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/ShiftE
+xpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/ShiftExpression.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Additi
+veExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/AdditiveExpression.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Additi
+veExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/AdditiveExpression.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Additi
+veExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/AdditiveExpression.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Additi
+veExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/AdditiveExpression.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Additi
+veExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/AdditiveExpression.pdf): PDF inclusion: multiple pdfs
+ with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/UnaryE
+xpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/UnaryExpression.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/UnaryE
+xpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/UnaryExpression.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/UnaryE
+xpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/UnaryExpression.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/UnaryE
+xpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/UnaryExpression.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/UnaryE
+xpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/UnaryExpression.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/UnaryE
+xpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/UnaryExpression.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/UnaryE
+xpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/UnaryExpression.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/UnaryE
+xpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/UnaryExpression.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/UnaryE
+xpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/UnaryExpression.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/UnaryE
+xpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/UnaryExpression.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/UnaryE
+xpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/UnaryExpression.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/UnaryE
+xpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/UnaryExpression.pdf): PDF inclusion: multiple pdfs wi
+th page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/PostFi
+xExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/PostFixExpression.pdf): PDF inclusion: multiple pdfs 
+with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/PostFi
+xExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/PostFixExpression.pdf): PDF inclusion: multiple pdfs 
+with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/PostFi
+xExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/PostFixExpression.pdf): PDF inclusion: multiple pdfs 
+with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/PostFi
+xExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/PostFixExpression.pdf): PDF inclusion: multiple pdfs 
+with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/PostFi
+xExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/PostFixExpression.pdf): PDF inclusion: multiple pdfs 
+with page group included in a single page
+>] [5 <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Pr
+imaryExpression.pdf> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/Late
+xDocAllDiags/PrimaryExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/PrimaryExpression.pdf): PDF inclusion: multiple pdfs 
+with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Primar
+yExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/PrimaryExpression.pdf): PDF inclusion: multiple pdfs 
+with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Primar
+yExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/PrimaryExpression.pdf): PDF inclusion: multiple pdfs 
+with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Primar
+yExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/PrimaryExpression.pdf): PDF inclusion: multiple pdfs 
+with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Primar
+yExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/PrimaryExpression.pdf): PDF inclusion: multiple pdfs 
+with page group included in a single page
+> <C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/RailroadDiags/LatexDocAllDiags/Primar
+yExpression.pdf
+
+pdfTeX warning: pdflatex.exe (file C:/LabWrk/QTWrkSpc/R_SimpleInterpreter/Railr
+oadDiags/LatexDocAllDiags/PrimaryExpression.pdf): PDF inclusion: multiple pdfs 
+with page group included in a single page
+>]
+(C:\LabWrk\QTWrkSpc\R_SimpleInterpreter\RailroadDiags\LatexDocAllDiags\LatexAll
+Diags.aux) ) 
+Here is how much of TeX's memory you used:
+ 4144 strings out of 493921
+ 71483 string characters out of 3144842
+ 189241 words of memory out of 3000000
+ 7369 multiletter control sequences out of 15000+200000
+ 8341 words of font info for 32 fonts, out of 3000000 for 9000
+ 841 hyphenation exceptions out of 8191
+ 43i,8n,50p,256b,312s stack positions out of 5000i,500n,10000p,200000b,50000s
+<C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/c
+mbx12.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr
+12.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.
+pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmssbx10.
+pfb>
+Output written on LatexAllDiags.pdf (5 pages, 124548 bytes).
+PDF statistics:
+ 156 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 496 words of extra memory for PDF output out of 10000 (max. 10000000)
+

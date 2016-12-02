@@ -9,6 +9,9 @@
 
 #include "simplestack.h"
 
+#include <memory>
+#include <vector>
+
 SimpleNode::SimpleNode(Node::ValueTypes valueType) :
     valueType(valueType)
 {
@@ -102,9 +105,9 @@ QString SimpleNode::printNode() const
 
 std::unique_ptr<ValueNode> SimpleNode::visit(QSharedPointer<SimpleStack> StackToUse) const
 {
+    Q_UNUSED(StackToUse)
     return std::unique_ptr<ValueNode>( new ValueNode());
 }
-
 
 EOFNode::EOFNode()
 {
@@ -138,7 +141,20 @@ QString EOFNode::printNode() const
 
 std::unique_ptr<ValueNode> EOFNode::visit(QSharedPointer<SimpleStack> StackToUse) const
 {
+    Q_UNUSED(StackToUse)
     return std::unique_ptr<ValueNode>(new ValueNode());
+}
+
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > EOFNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, QSharedPointer<SimpleStack> StackToUse) const
+{
+    Q_UNUSED(StackToUse)
+    FlatAST->emplace_back(deepCopy());
+    return FlatAST;
+}
+
+std::unique_ptr<SimpleNode> EOFNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new EOFNode());
 }
 
 

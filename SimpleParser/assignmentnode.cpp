@@ -54,3 +54,20 @@ std::unique_ptr<ValueNode> AssignmentNode::visit(QSharedPointer<SimpleStack> Sta
     return relatedSymbol->getValue(StackToUse);
 }
 
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > AssignmentNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, QSharedPointer<SimpleStack> StackToUse) const
+{
+    Q_UNUSED(StackToUse)
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
+}
+
+std::unique_ptr<SimpleNode> AssignmentNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(
+                new AssignmentNode(
+                    VariableToAssign->deepCopy(),
+                    ValueToAssign->deepCopy()
+                    )
+                );
+}
+

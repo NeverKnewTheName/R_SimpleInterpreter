@@ -1,0 +1,308 @@
+\documentclass[12pt,a4paper]{scrartcl}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx,epstopdf}
+\epstopdfsetup{update}
+\DeclareGraphicsExtensions{.ps}
+\epstopdfDeclareGraphicsRule{.ps}{pdf}{.pdf}{ps2pdf -dEPSCrop -dNOSAFER #1 \OutputFile}
+\usepackage{blindtext}
+
+\author{Christian Neuberger}
+\title{SPAM}
+
+\newcommand{\executeiffilenewer}[3]{ %
+	\ifnum\pdfstrcmp{\pdffilemoddate{#1}} %
+	{\pdffilemoddate{#2}}>0 %
+	{\immediate\write18{#3}}\fi %
+}
+\newcommand{\includesvg}[1]{ %
+	\executeiffilenewer{#1.svg}{#1.pdf} %
+	{inkscape -z -D --file=#1.svg %
+	--export-pdf=#1.pdf --export-latex} %
+	\input{#1.pdf_tex} %
+}
+
+\begin{document}
+\maketitle
+%	\begin{figure}
+%		\centering
+%		\def\svgwidth{\columnwidth}
+%		\includesvg{Program}
+%		\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+%	\end{figure}
+%
+
+%\blindtext
+\begin{figure}
+\centering
+\def\svgwidth{\columnwidth}
+\includesvg{FunctionDefinition}
+\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+\end{figure}
+
+SPAM
+
+\begin{figure}
+\centering
+\def\svgwidth{\columnwidth}
+\includesvg{FunctionDeclaration}
+\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+\end{figure}
+
+SPAM
+
+\begin{figure}
+\centering
+\def\svgwidth{\columnwidth}
+\includesvg{VariableDefinition}
+\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+\end{figure}
+
+SPAM
+
+%%\blindtext
+%\begin{figure}
+%\centering
+%\def\svgwidth{\columnwidth}
+%\includesvg{VariableDeclaration}
+%\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+%\end{figure}
+
+SPAM
+
+%\blindtext
+\begin{figure}
+\centering
+\def\svgwidth{\columnwidth}
+\includesvg{ReturnStatement}
+\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+\end{figure}
+
+SPAM
+
+\begin{figure}
+\centering
+\def\svgwidth{\columnwidth}
+\includesvg{Expression}
+\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+\end{figure}
+
+SPAM
+
+%\begin{figure}
+%\centering
+%\def\svgwidth{\columnwidth}
+%\includesvg{AssignmentExpression}
+%\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+%\end{figure}
+
+SPAM
+
+\begin{figure}
+\centering
+\def\svgwidth{\columnwidth}
+\includesvg{ConditionalExpression}
+\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+\end{figure}
+
+SPAM
+
+%\blindtext
+\begin{figure}
+\centering
+\def\svgwidth{\columnwidth}
+\includesvg{LogicalORExpression}
+\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+\end{figure}
+
+SPAM
+
+\begin{figure}
+\centering
+\def\svgwidth{\columnwidth}
+\includesvg{LogicalXORExpression}
+\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+\end{figure}
+
+SPAM
+
+\begin{figure}
+\centering
+\def\svgwidth{\columnwidth}
+\includesvg{LogicaANDExpression}
+\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+\end{figure}
+
+SPAM
+
+\begin{figure}
+\centering
+\def\svgwidth{\columnwidth}
+\includesvg{BitwiseORExpression}
+\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+\end{figure}
+
+SPAM
+
+%\blindtext
+\begin{figure}
+\centering
+\def\svgwidth{\columnwidth}
+\includesvg{BitwiseXORExpression}
+\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+\end{figure}
+
+SPAM
+
+%\begin{figure}
+%\centering
+%\def\svgwidth{\columnwidth}
+%\includesvg{BitwiseANDExpression}
+%\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+%\end{figure}
+
+SPAM
+
+\begin{figure}
+\centering
+\def\svgwidth{\columnwidth}
+\includesvg{EqualityExpression}
+\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+\end{figure}
+
+SPAM
+
+\begin{figure}
+\centering
+\def\svgwidth{\columnwidth}
+\includesvg{RelationalExpression}
+\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+\end{figure}
+
+SPAM
+
+%\blindtext
+\begin{figure}
+\centering
+\def\svgwidth{\columnwidth}
+\includesvg{ShiftExpression}
+\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+\end{figure}
+
+SPAM
+
+\begin{figure}
+\centering
+\def\svgwidth{\columnwidth}
+\includesvg{AdditiveExpression}
+\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+\end{figure}
+
+SPAM
+
+%\begin{figure}
+%\centering
+%\def\svgwidth{\columnwidth}
+%\includesvg{MultiplicativeExpression}
+%\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+%\end{figure}
+
+SPAM
+
+\begin{figure}
+\centering
+\def\svgwidth{\columnwidth}
+\includesvg{UnaryExpression}
+\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+\end{figure}
+
+SPAM
+
+%\blindtext
+\begin{figure}
+\centering
+\def\svgwidth{\columnwidth}
+\includesvg{PostFixExpression}
+\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+\end{figure}
+
+SPAM
+
+\begin{figure}
+\centering
+\def\svgwidth{\columnwidth}
+\includesvg{PrimaryExpression}
+\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+\end{figure}
+
+SPAM
+
+%\begin{figure}
+%\centering
+%\def\svgwidth{\columnwidth}
+%\includesvg{Value}
+%\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+%\end{figure}
+%
+%SPAM
+%
+%\begin{figure}
+%\centering
+%\def\svgwidth{\columnwidth}
+%\includesvg{Symbol}
+%\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+%\end{figure}
+%
+%SPAM
+%
+%%\blindtext
+%\begin{figure}
+%\centering
+%\def\svgwidth{\columnwidth}
+%\includesvg{Data}
+%\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+%\end{figure}
+%
+%SPAM
+%
+%\begin{figure}
+%\centering
+%\def\svgwidth{\columnwidth}
+%\includesvg{VariableID}
+%\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+%\end{figure}
+%
+%SPAM
+%
+%\begin{figure}
+%\centering
+%\def\svgwidth{\columnwidth}
+%\includesvg{ID}
+%\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+%\end{figure}
+%
+%SPAM
+%
+%\begin{figure}
+%\centering
+%\def\svgwidth{\columnwidth}
+%\includesvg{TypeName}
+%\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+%\end{figure}
+
+SPAM
+
+%%\blindtext
+%\begin{figure}
+%\centering
+%\def\svgwidth{\columnwidth}
+%\includesvg{ReturnType}
+%\caption{This is a SVG image rendered to a pdf, but the font will be set by latex!}
+%\end{figure}
+
+SPAM
+
+%\blindtext
+\end{document}

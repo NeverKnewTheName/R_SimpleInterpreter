@@ -10,20 +10,23 @@ class VariableNode : public SimpleNode
 public:
     VariableNode(QSharedPointer<ValueSymbol> relatedVariableSymbol);
     ~VariableNode();
+
+    QString getVariableName() const;
+    QSharedPointer<ValueSymbol> getRelatedVariableSymbol() const;
+
+    // SimpleNode interface
+public:
+
     virtual Node::NodeType getNodeType() const;
     virtual Node::ValueTypes getReturnType() const;
-
-    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
-
     QString printValue() const;
     virtual QString printNode() const;
 
-    QString getVariableName() const;
-
-    QSharedPointer<ValueSymbol> getRelatedVariableSymbol() const;
+    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, QSharedPointer<SimpleStack> StackToUse) const;
 
 private:
-    QSharedPointer<ValueSymbol> RelatedVariableSymbol;
+    QSharedPointer<ValueSymbol> RelatedVariableSymbol;    
 };
 
 #endif // VARIABLENODE_H

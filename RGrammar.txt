@@ -1,5 +1,5 @@
 Program                  :   (VarDefinition)* (FunctionDefinition)* (Expression ";")* ReturnStatement
-FunctionDefinition       :   FunctionDeclaration "{" (VarDefinition)* (Expression ";")* ReturnStatement "}" ";"
+FunctionDefinition       :   FunctionDeclaration "{" (VarDefinition)* (Expression ";")* ReturnStatement "}"
 FunctionDeclaration      :   ReturnType ID "("(VarDeclaration)*")"
 ReturnType               :   TypeName | "Void"
 VarDefinition            :   VarDeclaration ("=" Expression)? ";"
@@ -7,7 +7,7 @@ VarDeclaration           :   TypeName VariableID
 ReturnStatement          :   "return"  Expression? ";"
 Expression               :   AssignmentExpression 
 AssignmentExpression     :   (VariableID ( "=" | "+=" | "-=" | "*=" | "/=" | "%="  | ">>="  | "<<="  | "&="  | "|="  | "^=" ))? ConditionalExpression
-ConditionalExpression    :   LogicalORExpression         ( "?" Expression ":" AssignmentExpression )*
+ConditionalExpression    :   LogicalORExpression  ( "?" ConditionalExpression ":" ConditionalExpression )*
 LogicalORExpression      :   LogicalXORExpression        ( "||" LogicalXORExpression )*
 LogicalXORExpression     :   LogicalANDExpression        ( "^^" LogicalANDExpression )*
 LogicalANDExpression     :   BitwiseORExpression         ( "&&" BitwiseORExpression )*

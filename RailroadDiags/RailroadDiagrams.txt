@@ -1,0 +1,371 @@
+//Program
+Diagram(
+  OptionalSequence(
+      ZeroOrMore(
+          NonTerminal('Variable Definition'),
+          NonTerminal(';')
+      ),
+
+      ZeroOrMore(
+          NonTerminal('Function Definition'),
+          NonTerminal(';')
+      ),
+
+      ZeroOrMore(
+          NonTerminal('Expression'),
+          NonTerminal(';')
+      ) 
+  ),
+  Terminal('Return Statement')
+)
+
+//FunctionDefinition
+Diagram(
+    NonTerminal('FunctionDeclaration'),
+    NonTerminal('"{"'),
+    ZeroOrMore(
+        Sequence(
+            NonTerminal('VariableDefinition'),
+            NonTerminal('";"')
+        )
+    ),
+    ZeroOrMore(
+        Sequence(
+            NonTerminal('Expression'),
+            NonTerminal('";"')
+        )
+    ),
+    NonTerminal('ReturnStatement'),
+    Terminal('"}"')
+)
+
+//FunctionDeclaration
+Diagram(
+    NonTerminal('ReturnType'),
+    NonTerminal('ID'),
+    NonTerminal('('),
+    ZeroOrMore(
+        Sequence(
+            NonTerminal('VariableDeclaration'),
+            NonTerminal('","')
+        )
+    ),
+    Terminal(')')
+)
+
+//VariableDefinition
+Diagram(
+    NonTerminal('VariableDeclaration'),
+    Optional(
+        Sequence(
+            NonTerminal('"="'),
+            NonTerminal('Expression')
+        )
+    ),
+    Terminal('";"')
+)
+
+//VariableDeclaration
+Diagram(
+    NonTerminal('TypeName'),
+    Terminal('ID')
+)
+
+//ReturnStatement
+Diagram(
+  NonTerminal('"return"'),
+  Optional(
+    NonTerminal('Expression')
+    ),
+  Terminal('";"')
+)
+
+//Expression
+Diagram(
+    Terminal('AssignmentExpression')
+)
+
+//AssignmentExpression
+Diagram(
+    Optional(
+        Sequence(
+            NonTerminal('VariableID'),
+            Choice(0,
+                NonTerminal('"="'),
+                NonTerminal('"+="'),
+                NonTerminal('"-="'),
+                NonTerminal('"*="'),
+                NonTerminal('"/="'),
+                NonTerminal('"%="'),
+                NonTerminal('">>="'),
+                NonTerminal('"<<="'),
+                NonTerminal('"&="'),
+                NonTerminal('"|="'),
+                NonTerminal('"^="')
+            )
+        )
+    ),
+    Terminal('ConditionalExpression')
+)
+
+//ConditionalExpression
+Diagram(
+    NonTerminal('LogicalORExpression'),
+    ZeroOrMore(
+        Sequence(
+        NonTerminal('"?"'),
+        NonTerminal('ConditionalExpression'),
+        NonTerminal('":"'),
+        NonTerminal('ConditionalExpression')
+    )
+    )
+)
+
+//LogicalORExpression
+Diagram(
+    NonTerminal('LogicalXORExpression'),
+    ZeroOrMore(
+        Sequence(
+            NonTerminal('||'),
+            NonTerminal('LogicalXORExpression')
+        )
+    )
+)
+
+//LogicalXORExpression
+Diagram(
+    NonTerminal('LogicalANDExpression'),
+    ZeroOrMore(
+        Sequence(
+            NonTerminal('^^'),
+            NonTerminal('LogicalANDExpression')
+        )
+    )
+)
+
+//LogicalANDExpression
+Diagram(
+    NonTerminal('BitwiseORExpression'),
+    ZeroOrMore(
+        Sequence(
+            NonTerminal('&&'),
+            NonTerminal('BitwiseORExpression')
+        )
+    )
+)
+
+//BitwiseORExpression
+Diagram(
+    NonTerminal('BitwiseXORExpression'),
+    ZeroOrMore(
+        Sequence(
+            NonTerminal('|'),
+            NonTerminal('BitwiseXORExpression')
+        )
+    )
+)
+
+//BitwiseXORExpression
+Diagram(
+    NonTerminal('BitwiseANDExpression'),
+    ZeroOrMore(
+        Sequence(
+            NonTerminal('^'),
+            NonTerminal('BitwiseANDExpression')
+        )
+    )
+)
+
+//BitwiseANDExpression
+Diagram(
+    NonTerminal('EqualityExpression'),
+    ZeroOrMore(
+        Sequence(
+            NonTerminal('&'),
+            NonTerminal('EqualityExpression')
+        )
+    )
+)
+
+//EqualityExpression
+Diagram(
+    NonTerminal('RelationalExpression'),
+    ZeroOrMore(
+        Sequence(
+            Choice(0,
+                NonTerminal('"=="'),
+                NonTerminal('"!="')
+            ),
+            NonTerminal('RelationalExpression')
+        )
+    )
+)
+
+//RelationalExpression
+Diagram(
+    NonTerminal('ShiftExpression'),
+    ZeroOrMore(
+        Sequence(
+            Choice(0,
+                NonTerminal('"<"'),
+                NonTerminal('">"'),
+                NonTerminal('"<="'),
+                NonTerminal('">="')
+            ),
+            NonTerminal('ShiftExpression')
+        )
+    )
+)
+
+//ShiftExpression
+Diagram(
+    NonTerminal('AdditiveExpression'),
+    ZeroOrMore(
+        Sequence(
+            Choice(0,
+                NonTerminal('"<<"'),
+                NonTerminal('">>"')
+            ),
+            NonTerminal('AdditiveExpression')
+        )
+    )
+)
+
+//AdditiveExpression
+Diagram(
+    NonTerminal('MultiplicativeExpression'),
+    ZeroOrMore(
+        Sequence(
+            Choice(0,
+                NonTerminal('"+"'),
+                NonTerminal('"-"')
+            ),
+            NonTerminal('MultiplicativeExpression')
+        )
+    )
+)
+
+//MultiplicativeExpression
+Diagram(
+    NonTerminal('UnaryExpression'),
+    ZeroOrMore(
+        Sequence(
+            Choice(0,
+                NonTerminal('"*"'),
+                NonTerminal('"/"'),
+                NonTerminal('"%"')
+            ),
+            NonTerminal('UnaryExpression')
+        )
+    )
+)
+
+//UnaryExpression
+Diagram(
+    Choice(1,
+        Sequence(
+            Choice(0,
+                NonTerminal('"++"'),
+                NonTerminal('"--"')
+            ),
+            NonTerminal('Variable ID')
+        ),
+        Sequence(
+            ZeroOrMore(
+                Choice(0,
+                    NonTerminal('"+"'),
+                    NonTerminal('"-"'),
+                    NonTerminal('"~"'),
+                    NonTerminal('"!"'),
+                    Sequence(
+                        NonTerminal('"("'),
+                        NonTerminal('TypeName'),
+                        NonTerminal('")"')
+                    )
+                )
+            ),
+            NonTerminal('PostFixExpression')
+        )
+    )
+)
+
+//PostFixExpression
+Diagram(
+    Choice(0,
+        NonTerminal('PrimaryExpression'),
+        Sequence(
+            Choice(0,
+                NonTerminal('"++"'),
+                NonTerminal('"--"')
+            ),
+            NonTerminal('Variable ID')
+        )
+    )
+)
+
+//PrimaryExpression
+Diagram(
+    Choice(0,
+        NonTerminal('Value'),
+        NonTerminal('Symbol'),
+        Sequence(
+            NonTerminal('"("'),
+            NonTerminal('Expression'),
+            NonTerminal('")"')
+        ),
+        NonTerminal('FunctionInvocation')
+    )
+)
+
+//Value
+Diagram(
+    Choice(0,
+        NonTerminal('Integer'),
+        NonTerminal('Double'),
+        NonTerminal('Bool'),
+        NonTerminal('String')
+    )
+)
+
+//Symbol
+Diagram(
+    Choice(0,
+        NonTerminal('Variable ID'),
+        NonTerminal('Data')
+    )
+)
+
+//Symbol
+Diagram(
+    NonTerminal('"D"'),
+    Terminal('Integer')
+)
+
+//VariableID
+Diagram(
+    Terminal('ID')
+)
+
+//ID
+Diagram(
+    Sequence(
+    Choice(0,
+        NonTerminal('a-z'),
+        NonTerminal('A-Z'),
+        NonTerminal('"_"')
+    ),
+        ZeroOrMore(
+          NonTerminal('AlphaNumericalCharacter')
+        )
+    )
+)
+
+//TypeName
+Diagram(
+    Choice(0,
+        NonTerminal('"Integer"'),
+        NonTerminal('"Double"'),
+        NonTerminal('"Bool"'),
+        NonTerminal('"String"')
+    )
+)

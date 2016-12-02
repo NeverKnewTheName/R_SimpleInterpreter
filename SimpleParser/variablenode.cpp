@@ -3,6 +3,9 @@
 
 #include <QDebug>
 
+#include <vector>
+#include <memory>
+
 VariableNode::VariableNode(QSharedPointer<ValueSymbol> relatedVariableSymbol) :
     SimpleNode(relatedVariableSymbol->getReturnType()),
     RelatedVariableSymbol(relatedVariableSymbol)
@@ -27,6 +30,12 @@ Node::ValueTypes VariableNode::getReturnType() const
 std::unique_ptr<ValueNode> VariableNode::visit(QSharedPointer<SimpleStack> StackToUse) const
 {
     return RelatedVariableSymbol->getValue(StackToUse);
+}
+
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > VariableNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, QSharedPointer<SimpleStack> StackToUse) const
+{
+    FlatAst->emplace_back(std::unique_ptr(new VariableNode(RelatedVariableSymbol)));
+    return std::move(FlatAST);
 }
 
 QString VariableNode::printValue() const

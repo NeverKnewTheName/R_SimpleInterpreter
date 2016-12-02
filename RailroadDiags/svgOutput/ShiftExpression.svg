@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="railroad-diagram"
+
+width="590" height="109" viewBox="0 0 590 109">
+
+ <defs>
+    <style type="text/css">
+      <![CDATA[
+        svg.railroad-diagram {
+        background-color: hsl(30,20%,95%);
+        }
+        svg.railroad-diagram path {
+            stroke-width: 3;
+            stroke: black;
+            fill: rgba(0,0,0,0);
+        }
+        svg.railroad-diagram text {
+            font: bold 14px monospace;
+            text-anchor: middle;
+        }
+        svg.railroad-diagram text.diagram-text {
+            font-size: 12px;
+        }
+        svg.railroad-diagram text.diagram-arrow {
+            font-size: 16px;
+        }
+        svg.railroad-diagram text.label {
+            text-anchor: start;
+        }
+        svg.railroad-diagram text.comment {
+            font: italic 12px monospace;
+        }
+        svg.railroad-diagram g.non-terminal text {
+            /*font-style: italic;*/
+        }
+        svg.railroad-diagram rect {
+            stroke-width: 3;
+            stroke: black;
+            fill: hsl(120,100%,90%);
+        }
+        svg.railroad-diagram path.diagram-text {
+            stroke-width: 3;
+            stroke: black;
+            fill: white;
+            cursor: help;
+        }
+        svg.railroad-diagram g.diagram-text:hover path.diagram-text {
+            fill: #eee;
+        }
+      ]]>
+    </style>
+  </defs>
+
+<g transform="translate(.5 .5)">
+<path d="M 20 30 v 20 m 10 -20 v 20 m -10 -10 h 20.5"></path>
+<path d="M40 40h10"></path>
+<g class="non-terminal">
+<path d="M50 40h0"></path>
+<path d="M214 40h0"></path>
+<rect x="50" y="29" width="164" height="22"></rect>
+<text x="132" y="44">AdditiveExpression</text>
+</g>
+<path d="M214 40h10"></path>
+<g>
+<path d="M224 40h0"></path>
+<path d="M550 40h0"></path>
+<path d="M224 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
+<g>
+<path d="M244 20h286"></path>
+</g>
+<path d="M530 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
+<path d="M224 40h20"></path>
+<g>
+<path d="M244 40h0"></path>
+<path d="M530 40h0"></path>
+<path d="M244 40h10"></path>
+<g>
+<path d="M254 40h0"></path>
+<path d="M520 40h0"></path>
+<g>
+<path d="M254 40h0"></path>
+<path d="M346 40h0"></path>
+<path d="M254 40h20"></path>
+<g class="non-terminal">
+<path d="M274 40h0"></path>
+<path d="M326 40h0"></path>
+<rect x="274" y="29" width="52" height="22"></rect>
+<text x="300" y="44">"&#60;&#60;"</text>
+</g>
+<path d="M326 40h20"></path>
+<path d="M254 40a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="non-terminal">
+<path d="M274 70h0"></path>
+<path d="M326 70h0"></path>
+<rect x="274" y="59" width="52" height="22"></rect>
+<text x="300" y="74">">>"</text>
+</g>
+<path d="M326 70a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+</g>
+<path d="M346 40h10"></path>
+<g class="non-terminal">
+<path d="M356 40h0"></path>
+<path d="M520 40h0"></path>
+<rect x="356" y="29" width="164" height="22"></rect>
+<text x="438" y="44">AdditiveExpression</text>
+</g>
+</g>
+<path d="M520 40h10"></path>
+<path d="M254 40a10 10 0 0 0 -10 10v29a10 10 0 0 0 10 10"></path>
+<g>
+<path d="M254 89h266"></path>
+</g>
+<path d="M520 89a10 10 0 0 0 10 -10v-29a10 10 0 0 0 -10 -10"></path>
+</g>
+<path d="M530 40h20"></path>
+</g>
+<path d="M 550 40 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
+</g>
+
+</svg>

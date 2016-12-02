@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="railroad-diagram"
+
+width="448" height="131" viewBox="0 0 448 131">
+
+ <defs>
+    <style type="text/css">
+      <![CDATA[
+        svg.railroad-diagram {
+        background-color: hsl(30,20%,95%);
+        }
+        svg.railroad-diagram path {
+            stroke-width: 3;
+            stroke: black;
+            fill: rgba(0,0,0,0);
+        }
+        svg.railroad-diagram text {
+            font: bold 14px monospace;
+            text-anchor: middle;
+        }
+        svg.railroad-diagram text.diagram-text {
+            font-size: 12px;
+        }
+        svg.railroad-diagram text.diagram-arrow {
+            font-size: 16px;
+        }
+        svg.railroad-diagram text.label {
+            text-anchor: start;
+        }
+        svg.railroad-diagram text.comment {
+            font: italic 12px monospace;
+        }
+        svg.railroad-diagram g.non-terminal text {
+            /*font-style: italic;*/
+        }
+        svg.railroad-diagram rect {
+            stroke-width: 3;
+            stroke: black;
+            fill: hsl(120,100%,90%);
+        }
+        svg.railroad-diagram path.diagram-text {
+            stroke-width: 3;
+            stroke: black;
+            fill: white;
+            cursor: help;
+        }
+        svg.railroad-diagram g.diagram-text:hover path.diagram-text {
+            fill: #eee;
+        }
+      ]]>
+    </style>
+  </defs>
+
+<g transform="translate(.5 .5)">
+<path d="M 20 30 v 20 m 10 -20 v 20 m -10 -10 h 20.5"></path>
+<path d="M40 40h10"></path>
+<g>
+<path d="M50 40h0"></path>
+<path d="M398 40h0"></path>
+<g>
+<path d="M50 40h0"></path>
+<path d="M134 40h0"></path>
+<path d="M50 40h20"></path>
+<g class="non-terminal">
+<path d="M70 40h0"></path>
+<path d="M114 40h0"></path>
+<rect x="70" y="29" width="44" height="22"></rect>
+<text x="92" y="44">a-z</text>
+</g>
+<path d="M114 40h20"></path>
+<path d="M50 40a10 10 0 0 1 10 10v10a10 10 0 0 0 10 10"></path>
+<g class="non-terminal">
+<path d="M70 70h0"></path>
+<path d="M114 70h0"></path>
+<rect x="70" y="59" width="44" height="22"></rect>
+<text x="92" y="74">A-Z</text>
+</g>
+<path d="M114 70a10 10 0 0 0 10 -10v-10a10 10 0 0 1 10 -10"></path>
+<path d="M50 40a10 10 0 0 1 10 10v40a10 10 0 0 0 10 10"></path>
+<g class="non-terminal">
+<path d="M70 100h0"></path>
+<path d="M114 100h0"></path>
+<rect x="70" y="89" width="44" height="22"></rect>
+<text x="92" y="104">"&#95;"</text>
+</g>
+<path d="M114 100a10 10 0 0 0 10 -10v-40a10 10 0 0 1 10 -10"></path>
+</g>
+<g>
+<path d="M134 40h0"></path>
+<path d="M398 40h0"></path>
+<path d="M134 40a10 10 0 0 0 10 -10v0a10 10 0 0 1 10 -10"></path>
+<g>
+<path d="M154 20h224"></path>
+</g>
+<path d="M378 20a10 10 0 0 1 10 10v0a10 10 0 0 0 10 10"></path>
+<path d="M134 40h20"></path>
+<g>
+<path d="M154 40h0"></path>
+<path d="M378 40h0"></path>
+<path d="M154 40h10"></path>
+<g class="non-terminal">
+<path d="M164 40h0"></path>
+<path d="M368 40h0"></path>
+<rect x="164" y="29" width="204" height="22"></rect>
+<text x="266" y="44">AlphaNumericalCharacter</text>
+</g>
+<path d="M368 40h10"></path>
+<path d="M164 40a10 10 0 0 0 -10 10v0a10 10 0 0 0 10 10"></path>
+<g>
+<path d="M164 60h204"></path>
+</g>
+<path d="M368 60a10 10 0 0 0 10 -10v0a10 10 0 0 0 -10 -10"></path>
+</g>
+<path d="M378 40h20"></path>
+</g>
+</g>
+<path d="M398 40h10"></path>
+<path d="M 408 40 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
+</g>
+
+</svg>

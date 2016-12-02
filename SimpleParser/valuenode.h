@@ -16,9 +16,6 @@ public:
     ValueNode(QString const &value);
     virtual ~ValueNode();
 
-    Node::NodeType getNodeType() const;
-    Node::ValueTypes getReturnType() const;
-
     ValueNode &operator=(const ValueNode &value);
     ValueNode &operator=(ValueNode &&value);
 
@@ -26,9 +23,14 @@ public:
 
     Node::ValueTypes getValueType() const;
 
+    // SimpleNode interface
+public:
+    Node::NodeType getNodeType() const;
+    Node::ValueTypes getReturnType() const;
     QString printValue() const;
     QString printNode() const;
     std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, QSharedPointer<SimpleStack> StackToUse) const;
 
 private:
     Node::ValueTypes valueType;

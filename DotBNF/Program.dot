@@ -1,0 +1,58 @@
+digraph Scoping {
+    fontname = "Bitstream Vera Sans mono"
+    fontsize = 8
+    rankdir=LR
+    edgesep=5
+    overlap=false
+    splines=polyline//ortho
+    
+    node [fontname = "Bitstream Vera Sans mono"]
+    node [fontsize = 8]
+    node [style=filled]
+    node [fillcolor="#EEEEEE"]
+    node [color="#EEEEEE"]
+    edge [color="#31CEF0"]
+ 
+    Program [
+        label="Program"
+    ]
+    
+    VarDefinition [
+        label="VariableDefinition"
+        shape=box
+    ]
+    FuncDefinition [
+        label="FunctionDefinition"
+        shape=box
+    ]
+    Expression [
+        label="Expression"
+        shape=box
+    ]
+    ReturnStatement [
+        label="ReturnStatement"
+        shape=box
+    ]
+    
+    SemColDelim [
+        label=";"
+        shape=circle
+    ]
+    
+    start[shape=point]
+    end[shape=point]
+    { rank=min start }
+    { rank=max end }
+    
+    start -> VarDefinition -> SemColDelim -> FuncDefinition -> Expression -> SemColDelim -> ReturnStatement -> end[weight=100]
+    start -> FuncDefinition
+    start -> Expression
+    start -> ReturnStatement
+    VarDefinition -> VarDefinition[splines=polyline]
+    FuncDefinition -> FuncDefinition[splines=polyline]
+    Expression -> SemColDelim -> Expression[splines=polyline]
+    VarDefinition -> Expression
+    VarDefinition -> ReturnStatement    
+    FuncDefinition -> ReturnStatement
+        
+}
