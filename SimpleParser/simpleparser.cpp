@@ -335,6 +335,11 @@ std::unique_ptr<SimpleNode> SimpleParser::VarDefinition()
 
     eat(SimpleToken::SemiColonDelim);
 
+    if(node == nullptr)
+    {
+        return nullptr;
+    }
+
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
     return node;
 }
@@ -1159,7 +1164,7 @@ std::unique_ptr<SimpleNode> SimpleParser::UnaryExpression()
                 SyntacticError(CurrentToken, QString("Expected Variable!"));
                 return Q_NULLPTR;
             }
-            node.reset(new IncrementNode(std::move(node)));
+            node.reset(new IncrementNode(std::move(node), true));
             if(node->getReturnType() == Node::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer Variable"));
@@ -1188,7 +1193,7 @@ std::unique_ptr<SimpleNode> SimpleParser::UnaryExpression()
                 SyntacticError(CurrentToken, QString("Expected Variable!"));
                 return Q_NULLPTR;
             }
-            node.reset(new DecrementNode(std::move(node)));
+            node.reset(new DecrementNode(std::move(node), true));
             if(node->getReturnType() == Node::ErrorType)
             {
                 TypeError(token, QString("Expected: Integer Variable"));
@@ -1322,7 +1327,7 @@ std::unique_ptr<SimpleNode> SimpleParser::PostFixExpression()
             case SimpleToken::Increment:
                 token = CurrentToken;
                 eat(SimpleToken::Increment);
-                node.reset(new IncrementNode(std::move(node)));
+                node.reset(new IncrementNode(std::move(node), false));
                 if(node->getReturnType() == Node::ErrorType)
                 {
                     TypeError(token, QString("Expected: Variable | IncrementExpression!"));
@@ -1332,7 +1337,7 @@ std::unique_ptr<SimpleNode> SimpleParser::PostFixExpression()
             case SimpleToken::Decrement:
                 token = CurrentToken;
                 eat(SimpleToken::Decrement);
-                node.reset(new DecrementNode(std::move(node)));
+                node.reset(new DecrementNode(std::move(node), false));
                 if(node->getReturnType() == Node::ErrorType)
                 {
                     TypeError(token, QString("Expected: Variable | DecrementExpression!"));

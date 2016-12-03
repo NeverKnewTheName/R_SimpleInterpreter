@@ -177,3 +177,13 @@ Node::ValueTypes FunctionSymbol::getReturnType() const
     return ReturnType;
 }
 
+const std::vector<std::unique_ptr<SimpleNode> > &FunctionSymbol::getFunctionExpressions() const
+{
+    return FunctionExpressions;
+}
+
+const std::unique_ptr<SimpleNode> &FunctionSymbol::getFunctionReturnNode() const
+{
+    return FunctionReturnNode;
+}
+

@@ -48,6 +48,10 @@ public:
 public:
     Node::ValueTypes getReturnType() const;
 
+    const std::vector<std::unique_ptr<SimpleNode> > &getFunctionExpressions() const;
+
+    const std::unique_ptr<SimpleNode> &getFunctionReturnNode() const;
+
 private:
     QSharedPointer<SimpleSymbolTable> FunctionSymbolTable;
     Node::ValueTypes ReturnType;

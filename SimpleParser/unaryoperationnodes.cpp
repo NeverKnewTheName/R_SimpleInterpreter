@@ -140,14 +140,9 @@ std::unique_ptr<SimpleNode> TypeCastNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new TypeCastNode(*this));
 }
 
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > TypeCastNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
-{
-    FlatAST->emplace_back(deepCopy());
-    return std::move(FlatAST);
-}
-
-IncrementNode::IncrementNode(std::unique_ptr<SimpleNode> rightChild) :
-    UnaryArithmeticOperationNode(std::move(rightChild))
+IncrementNode::IncrementNode(std::unique_ptr<SimpleNode> rightChild, const bool isPre) :
+    UnaryArithmeticOperationNode(std::move(rightChild)),
+    IsPre(isPre)
 {
     returnType = UnaryOPRightChild->getReturnType();
     if(returnType == Node::Integer)
@@ -158,6 +153,13 @@ IncrementNode::IncrementNode(std::unique_ptr<SimpleNode> rightChild) :
     {
         returnType = Node::ErrorType;
     }
+}
+
+IncrementNode::IncrementNode(const IncrementNode &ToCopy) :
+    UnaryArithmeticOperationNode(ToCopy),
+    IsPre(ToCopy.IsPre)
+{
+
 }
 
 OperationNode::Operation IncrementNode::getOp() const
@@ -188,7 +190,7 @@ std::unique_ptr<ValueNode> IncrementNode::DoOperation(QSharedPointer<SimpleStack
         qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(Result), StackToUse);
     }
 
-    return Result;
+    return (IsPre) ? UnaryOPRightChild->visit(StackToUse)/*PreIncrement*/ : std::move(value)/*PostIncrement*/;
 }
 
 QString IncrementNode::printValue() const
@@ -201,7 +203,7 @@ QString IncrementNode::printNode() const
     QString NodeType = "IncrementNode";
     QString value = printValue();
 
-    return QString("{(%1):(%2)}").arg(NodeType).arg(value);
+    return QString("{(%1%2):(%4)}").arg(IsPre ? QString("Pre") : QString("Post")).arg(NodeType).arg(value);
 }
 
 std::unique_ptr<SimpleNode> IncrementNode::deepCopy() const
@@ -209,14 +211,9 @@ std::unique_ptr<SimpleNode> IncrementNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new IncrementNode(*this));
 }
 
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > IncrementNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
-{
-    FlatAST->emplace_back(deepCopy());
-    return std::move(FlatAST);
-}
-
-DecrementNode::DecrementNode(std::unique_ptr<SimpleNode> rightChild) :
-    UnaryArithmeticOperationNode(std::move(rightChild))
+DecrementNode::DecrementNode(std::unique_ptr<SimpleNode> rightChild, const bool isPre) :
+    UnaryArithmeticOperationNode(std::move(rightChild)),
+    IsPre(isPre)
 {
     returnType = UnaryOPRightChild->getReturnType();
     if(returnType == Node::Integer)
@@ -227,6 +224,13 @@ DecrementNode::DecrementNode(std::unique_ptr<SimpleNode> rightChild) :
     {
         returnType = Node::ErrorType;
     }
+}
+
+DecrementNode::DecrementNode(const DecrementNode &ToCopy) :
+    UnaryArithmeticOperationNode(ToCopy),
+    IsPre(ToCopy.IsPre)
+{
+
 }
 
 OperationNode::Operation DecrementNode::getOp() const
@@ -257,7 +261,7 @@ std::unique_ptr<ValueNode> DecrementNode::DoOperation(QSharedPointer<SimpleStack
         qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(Result), StackToUse);
     }
 
-    return Result;
+    return (IsPre) ? UnaryOPRightChild->visit(StackToUse)/*PreIncrement*/ : std::move(value)/*PostIncrement*/;
 }
 
 QString DecrementNode::printValue() const
@@ -270,18 +274,12 @@ QString DecrementNode::printNode() const
     QString NodeType = "DecrementNode";
     QString value = printValue();
 
-    return QString("{(%1):(%2)}").arg(NodeType).arg(value);
+    return QString("{(%1%2):(%4)}").arg(IsPre ? QString("Pre") : QString("Post")).arg(NodeType).arg(value);
 }
 
 std::unique_ptr<SimpleNode> DecrementNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new DecrementNode(*this));
-}
-
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > DecrementNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
-{
-    FlatAST->emplace_back(deepCopy());
-    return std::move(FlatAST);
 }
 
 PositiveNode::PositiveNode(std::unique_ptr<SimpleNode> rightChild) :
@@ -352,12 +350,6 @@ std::unique_ptr<SimpleNode> PositiveNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new PositiveNode(*this));
 }
 
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > PositiveNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
-{
-    FlatAST->emplace_back(deepCopy());
-    return std::move(FlatAST);
-}
-
 NegativeNode::NegativeNode(std::unique_ptr<SimpleNode> rightChild) :
     UnaryArithmeticOperationNode(std::move(rightChild))
 {
@@ -424,12 +416,6 @@ QString NegativeNode::printNode() const
 std::unique_ptr<SimpleNode> NegativeNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new NegativeNode(*this));
-}
-
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > NegativeNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
-{
-    FlatAST->emplace_back(deepCopy());
-    return std::move(FlatAST);
 }
 
 UnaryLogicalOperationNode::UnaryLogicalOperationNode(std::unique_ptr<SimpleNode> rightChild) :
@@ -510,12 +496,6 @@ std::unique_ptr<SimpleNode> LogicalNegationNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new LogicalNegationNode(*this));
 }
 
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > LogicalNegationNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
-{
-    FlatAST->emplace_back(deepCopy());
-    return std::move(FlatAST);
-}
-
 UnaryBitwiseOperationNode::UnaryBitwiseOperationNode(std::unique_ptr<SimpleNode> rightChild) :
     UnaryOperationNode(std::move(rightChild))
 {
@@ -581,8 +561,3 @@ std::unique_ptr<SimpleNode> OnesComplementNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new OnesComplementNode(*this));
 }
 
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > OnesComplementNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
-{
-    FlatAST->emplace_back(deepCopy());
-    return std::move(FlatAST);
-}

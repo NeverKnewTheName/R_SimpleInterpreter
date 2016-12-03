@@ -51,6 +51,16 @@ OperationNode::ArityTypes UnaryOperationNode::getArityType() const
     return OperationNode::Unary;
 }
 
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > UnaryOperationNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const
+{
+    FlatAST = UnaryOPRightChild->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
+
+    FlatAST->emplace_back(deepCopy());
+    CurrentPosition++;
+
+    return std::move(FlatAST);
+}
+
 
 BinaryOperationNode::BinaryOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryOPLeftChild(std::move(leftChild)),
@@ -72,6 +82,17 @@ BinaryOperationNode::~BinaryOperationNode()
 OperationNode::ArityTypes BinaryOperationNode::getArityType() const
 {
     return OperationNode::Binary;
+}
+
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > BinaryOperationNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const
+{
+    FlatAST = BinaryOPRightChild->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
+    FlatAST = BinaryOPLeftChild->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
+
+    FlatAST->emplace_back(deepCopy());
+    CurrentPosition++;
+
+    return std::move(FlatAST);
 }
 
 TernaryOperationNode::TernaryOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> midChild, std::unique_ptr<SimpleNode> rightChild) :
@@ -97,4 +118,24 @@ TernaryOperationNode::~TernaryOperationNode()
 OperationNode::ArityTypes TernaryOperationNode::getArityType() const
 {
     return OperationNode::Ternary;
+}
+
+/*
+ * When parsing the tree temp variables will store immediate values
+ *
+ * as long as the walker does not catch a node that requires the previous value, it will keep it and simply use another temporary storage
+ * -> might be an array with a reasonable size (3 for ternary operations?? what about nesting?)
+ */
+
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > TernaryOperationNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const
+{
+    //The special operation node has already been put into the FlatAST -> Add children from here on!
+    FlatAST = TernaryOPRightChild->FlatCompile(std::move(FlatAST),maxStackSize, CurrentPosition);
+    FlatAST = TernaryOPMidChild->FlatCompile(std::move(FlatAST),maxStackSize, CurrentPosition);
+    FlatAST = TernaryOPLeftChild->FlatCompile(std::move(FlatAST),maxStackSize, CurrentPosition);
+
+    FlatAST->emplace_back(deepCopy());
+    CurrentPosition++;
+
+    return std::move(FlatAST);
 }

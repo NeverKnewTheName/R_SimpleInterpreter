@@ -20,11 +20,6 @@ public:
     // SimpleNode interface
 public:
     virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
-
-
-    // SimpleNode interface
-public:
-    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const = 0;
 };
 
 class TypeCastNode : public UnaryArithmeticOperationNode
@@ -57,17 +52,13 @@ private:
     // SimpleNode interface
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-
-    // SimpleNode interface
-public:
-    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class IncrementNode : public UnaryArithmeticOperationNode
 {
 public:
-    IncrementNode(std::unique_ptr<SimpleNode> RightChild);
+    IncrementNode(std::unique_ptr<SimpleNode> RightChild, const bool isPre);
+    IncrementNode(const IncrementNode &ToCopy);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
@@ -93,15 +84,15 @@ public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
 
-    // SimpleNode interface
-public:
-    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
+private:
+    const bool IsPre;
 };
 
 class DecrementNode : public UnaryArithmeticOperationNode
 {
 public:
-    DecrementNode(std::unique_ptr<SimpleNode> RightChild);
+    DecrementNode(std::unique_ptr<SimpleNode> RightChild, const bool isPre);
+    DecrementNode(const DecrementNode &ToCopy);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
@@ -126,10 +117,8 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
-
-    // SimpleNode interface
-public:
-    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
+private:
+    const bool IsPre;
 };
 
 class PositiveNode : public UnaryArithmeticOperationNode
@@ -160,10 +149,6 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
-
-    // SimpleNode interface
-public:
-    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class NegativeNode : public UnaryArithmeticOperationNode
@@ -194,10 +179,6 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
-
-    // SimpleNode interface
-public:
-    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class UnaryLogicalOperationNode : public UnaryOperationNode
@@ -218,10 +199,6 @@ public:
 public:
     virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
 
-
-    // SimpleNode interface
-public:
-    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const = 0;
 };
 
 class LogicalNegationNode : public UnaryLogicalOperationNode
@@ -253,10 +230,6 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
-
-    // SimpleNode interface
-public:
-    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class UnaryBitwiseOperationNode : public UnaryOperationNode
@@ -277,10 +250,6 @@ public:
 public:
     virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
 
-
-    // SimpleNode interface
-public:
-    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const = 0;
 };
 
 class OnesComplementNode : public UnaryBitwiseOperationNode
@@ -311,10 +280,6 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
-
-    // SimpleNode interface
-public:
-    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 #endif // UNARYOPERATIONNODES_H

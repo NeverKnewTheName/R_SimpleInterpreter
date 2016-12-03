@@ -127,12 +127,22 @@ std::unique_ptr<SimpleNode> ProgramNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new ProgramNode(*this));
 }
 
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > ProgramNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > ProgramNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const
 {
-    for(const std::unique_ptr<SimpleNode> &expr : ProgramExpressions)
+    //ToDO increase maxStackSize -> Enter/Exit program scope! stack build up/destruction!
+
+
+    std::vector<std::unique_ptr<SimpleNode>>::const_iterator it = ProgramExpressions.begin();
+    std::vector<std::unique_ptr<SimpleNode>>::const_iterator itEnd = ProgramExpressions.end();
+    for( ;it != itEnd; ++it)
     {
-        FlatAST.reset(expr->FlatCompile(std::move(FlatAST),maxStackSize).release());
+        FlatAST = (*it)->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
     }
 
-    return ProgramReturnStatement->FlatCompile(std::move(FlatAST),maxStackSize);
+    FlatAST = ProgramReturnStatement->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
+
+    FlatAST->emplace_back(deepCopy());
+    CurrentPosition++;
+
+    return std::move(FlatAST);
 }

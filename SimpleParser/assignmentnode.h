@@ -26,6 +26,10 @@ private:
     std::unique_ptr<VariableNode> VariableToAssign;
     std::unique_ptr<SimpleNode> ValueToAssign;
 
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
 };
 
 #endif // ASSIGNMENTNODE_H

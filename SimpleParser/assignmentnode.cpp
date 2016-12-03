@@ -66,3 +66,14 @@ std::unique_ptr<SimpleNode> AssignmentNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new AssignmentNode(*this));
 }
 
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > AssignmentNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const
+{
+    FlatAST = ValueToAssign->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
+    FlatAST = VariableToAssign->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
+
+    FlatAST->emplace_back(new AssignmentNode(*this));
+    CurrentPosition++;
+
+    return std::move(FlatAST);
+}
+

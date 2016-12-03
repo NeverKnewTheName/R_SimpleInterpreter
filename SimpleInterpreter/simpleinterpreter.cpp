@@ -39,10 +39,11 @@ std::unique_ptr<ValueNode> SimpleInterpreter::interpret()
         return std::unique_ptr<ValueNode>();
 
 
-    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode>>> tmpFlatAST(new std::vector<std::unique_ptr<SimpleNode>>());
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode>>> FlatAST(new std::vector<std::unique_ptr<SimpleNode>>());
     int stackSize = 0;
+    int CurrentPosition = 0;
 
-    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode>>> FlatAST = tree->FlatCompile(std::move(tmpFlatAST), stackSize);
+    FlatAST = tree->FlatCompile(std::move(FlatAST), stackSize, CurrentPosition);
 
     const int flatASTSize = FlatAST->size();
     qDebug() << "FlatAST size: " << flatASTSize;

@@ -67,10 +67,30 @@ std::unique_ptr<ValueNode> FunctionCallNode::visit(QSharedPointer<SimpleStack> S
 
 std::unique_ptr<SimpleNode> FunctionCallNode::deepCopy() const
 {
-
+    return std::unique_ptr<SimpleNode>(new FunctionCallNode(*this));
 }
 
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FunctionCallNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FunctionCallNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const
 {
+    //ToDO Increment maxStackSize! -> Scope!
+    //Maybe add extra value node for scope stack size?? to enter/exit scope with stack build up/destruction...//ToTHINK
 
+    const std::vector<std::unique_ptr<SimpleNode>> &FunctionExpressions = RelatedSymbol->getFunctionExpressions();
+    std::vector<std::unique_ptr<SimpleNode>>::const_iterator it = FunctionExpressions.begin();
+    std::vector<std::unique_ptr<SimpleNode>>::const_iterator itEnd = FunctionExpressions.end();
+    for( ;it != itEnd; ++it)
+    {
+        FlatAST = (*it)->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
+    }
+//    for(const std::unique_ptr<SimpleNode> &expr : FunctionExpressions)
+//    {
+//        FlatAST = expr->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
+//    }
+
+    FlatAST = RelatedSymbol->getFunctionReturnNode()->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
+
+    FlatAST->emplace_back(deepCopy());
+    CurrentPosition++;
+
+    return std::move(FlatAST);
 }

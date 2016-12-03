@@ -109,11 +109,12 @@ std::unique_ptr<ValueNode> SimpleNode::visit(QSharedPointer<SimpleStack> StackTo
     return std::unique_ptr<ValueNode>( new ValueNode());
 }
 
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > SimpleNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > SimpleNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const
 {
     Q_UNUSED(maxStackSize)
     FlatAST->emplace_back(deepCopy());
-    return FlatAST;
+    CurrentPosition++;
+    return std::move(FlatAST);
 }
 
 EOFNode::EOFNode()

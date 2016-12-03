@@ -36,7 +36,7 @@ private:
     // SimpleNode interface
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
 };
 
 #endif // FUNCTIONCALLNODE_H

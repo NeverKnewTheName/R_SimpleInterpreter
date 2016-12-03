@@ -53,7 +53,7 @@ public:
 
     virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
 
-    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode>>> FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode>>> FlatAST, int &maxStackSize) const;
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode>>> FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode>>> FlatAST, int &maxStackSize, int &CurrentPosition) const;
 
     static QString getHumanReadableTypeNameToValueType(const Node::ValueTypes type);
     static bool canConvertTypes(const Node::ValueTypes OrigType, const Node::ValueTypes NewType);
