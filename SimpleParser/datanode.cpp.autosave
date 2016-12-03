@@ -39,13 +39,3 @@ QString DataNode::printNode() const
 
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
-
-std::unique_ptr<SimpleNode> DataNode::deepCopy() const
-{
-    return std::unique_ptr<SimpleNode>(VariableNode::deepCopy());
-}
-
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > DataNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
-{
-    return deepCopy();
-}

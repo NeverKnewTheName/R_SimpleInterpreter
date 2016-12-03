@@ -23,6 +23,18 @@ FunctionCallNode::FunctionCallNode(
 
 }
 
+FunctionCallNode::FunctionCallNode(const FunctionCallNode &ToCopy) :
+    FunctionName(ToCopy.FunctionName),
+    RelatedSymbol(ToCopy.RelatedSymbol),
+    CurrentSymbolTable(ToCopy.CurrentSymbolTable),
+    returnType(RelatedSymbol->getReturnType())
+{
+    for(const SimpleNode &arg : ToCopy.FuncArgs)
+    {
+        this->FuncArgs.emplace_back(ToCopy.FuncArgs->deepCopy());
+    }
+}
+
 FunctionCallNode::~FunctionCallNode()
 {
     qDebug() << __PRETTY_FUNCTION__;
@@ -51,4 +63,14 @@ QString FunctionCallNode::printNode() const
 std::unique_ptr<ValueNode> FunctionCallNode::visit(QSharedPointer<SimpleStack> StackToUse) const
 {
     return RelatedSymbol->CallFunction(FuncArgs, StackToUse);
+}
+
+std::unique_ptr<SimpleNode> FunctionCallNode::deepCopy() const
+{
+
+}
+
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FunctionCallNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+
 }

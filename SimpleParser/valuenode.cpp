@@ -123,8 +123,8 @@ std::unique_ptr<ValueNode> ValueNode::visit(QSharedPointer<SimpleStack> StackToU
     return std::unique_ptr<ValueNode>( new ValueNode(*this));
 }
 
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > ValueNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, QSharedPointer<SimpleStack> StackToUse) const
+//ToThink... visit?..
+std::unique_ptr<SimpleNode> ValueNode::deepCopy() const
 {
-    FlatAst->emplace_back(std::unique_ptr<SimpleNode>(new ValueNode(*this)));
-    return std::move(FlatAst);
+    return std::unique_ptr<SimpleNode>(new ValueNode(*this));
 }

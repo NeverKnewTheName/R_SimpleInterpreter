@@ -16,6 +16,10 @@ public:
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<SimpleNode> deepCopy() const;
 };
 
 class TernaryLogicalOperationNode : public TernaryOperationNode
@@ -31,6 +35,10 @@ public:
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<SimpleNode> deepCopy() const;
 };
 
 class ConditionalNode : public TernaryLogicalOperationNode
@@ -45,6 +53,10 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
 };
 
 class TernaryBitwiseOperationNode : public TernaryOperationNode
@@ -60,6 +72,10 @@ public:
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<SimpleNode> deepCopy() const;
 };
 
 #endif // TERNARYOPERATIONNODES_H

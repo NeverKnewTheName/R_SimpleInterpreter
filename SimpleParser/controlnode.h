@@ -43,11 +43,17 @@ public:
 
     // SimpleNode interface
 public:
-    Node::NodeType getNodeType() const;
-    Node::ValueTypes getReturnType() const = 0;
-    QString printValue() const = 0;
-    QString printNode() const = 0;
-    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const = 0;
+    virtual Node::NodeType getNodeType() const;
+    virtual Node::ValueTypes getReturnType() const = 0;
+    virtual QString printValue() const = 0;
+    virtual QString printNode() const = 0;
+    virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const = 0;
+
+    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 // // // // // // // // // // // // // // // //
@@ -56,6 +62,7 @@ class ScopedControlNode : public ControlNode
 {
 public:
     ScopedControlNode();
+    ScopedControlNode(const ScopedControlNode &ToCopy);
     virtual ~ScopedControlNode();
 
     QSharedPointer<SimpleSymbolTable> &getScopedControlNodeSymbolTable() const;
@@ -74,10 +81,18 @@ public:
     virtual QString printNode() const = 0;
     virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const = 0;
 
+    //Must copy shared pointer to ScopeSymbolTable
+    virtual std::unique_ptr<SimpleNode> deepCopy() const;
+
     // ControlNode interface
 public:
     virtual ControlNode::ControlType getControlType() const = 0;
     virtual ControlNode::SpecificControlType getSpecificControlType() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
+    static unsigned int ScopeCntr;
 };
 
 // // // // // // // // // // // // // // // //
@@ -90,11 +105,12 @@ public:
 
     // SimpleNode interface
 public:
-    Node::NodeType getNodeType() const;
-    Node::ValueTypes getReturnType() const;
     QString printValue() const;
     QString printNode() const;
-    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
+    virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const = 0;
+
+    //Must redirect call to ScopeControlNode... copy shared scope symbol table
+    virtual std::unique_ptr<SimpleNode> deepCopy() const;
 
     // ControlNode interface
 public:
@@ -104,25 +120,6 @@ public:
 
 // // // // // // // // // // // // // // // //
 
-
-class IterationControlNode : public ScopedControlNode
-{
-public:
-    IterationControlNode();
-    virtual ~IterationControlNode();
-    // SimpleNode interface
-public:
-    Node::NodeType getNodeType() const;
-    Node::ValueTypes getReturnType() const;
-    QString printValue() const;
-    QString printNode() const;
-    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
-
-    // ControlNode interface
-public:
-    ControlNode::ControlType getControlType() const;
-    ControlNode::SpecificControlType getSpecificControlType() const;
-};
 
 // // // // // // // // // // // // // // // //
 
@@ -136,7 +133,15 @@ public:
     // ControlNode interface
 public:
     ControlNode::ControlType getControlType() const;
-    ControlNode::SpecificControlType getSpecificControlType() const;
+    virtual ControlNode::SpecificControlType getSpecificControlType() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual Node::ValueTypes getReturnType() const;
+    virtual QString printValue() const;
+    virtual QString printNode() const;
+    virtual std::unique_ptr<SimpleNode> deepCopy() const;
+    virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const = 0;
 };
 
 // // // // // // // // // // // // // // // //

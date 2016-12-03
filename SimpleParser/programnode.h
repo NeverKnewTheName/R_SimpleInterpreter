@@ -17,6 +17,7 @@ public:
             const QString &ProgramName,
             QSharedPointer<SimpleSymbolTable> SymbolTableToUse
             );
+    ProgramNode(const ProgramNode &ToCopy);
     ~ProgramNode();
 
     void addExpression(std::unique_ptr<SimpleNode> &newExpression);
@@ -42,6 +43,11 @@ private:
     std::unique_ptr<SimpleNode> ProgramReturnStatement;
     QSharedPointer<SimpleSymbolTable> ParentSymbolTable;
     QSharedPointer<SimpleSymbolTable> ProgramSymbolTable;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 

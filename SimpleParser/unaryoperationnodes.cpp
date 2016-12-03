@@ -18,6 +18,11 @@ OperationNode::OperationTypes UnaryArithmeticOperationNode::getOpType() const
     return OperationNode::Arithmetic;
 }
 
+std::unique_ptr<SimpleNode> UnaryArithmeticOperationNode::deepCopy() const
+{
+
+}
+
 TypeCastNode::TypeCastNode(std::unique_ptr<SimpleNode> rightChild, Node::ValueTypes typeToCastTo) :
     UnaryArithmeticOperationNode(std::move(rightChild)),
     typeToCastTo(typeToCastTo)
@@ -57,6 +62,13 @@ TypeCastNode::TypeCastNode(std::unique_ptr<SimpleNode> rightChild, Node::ValueTy
         returnType = Node::ErrorType;
         break;
     }
+}
+
+TypeCastNode::TypeCastNode(const TypeCastNode &ToCopy) :
+    UnaryArithmeticOperationNode(ToCopy),
+    typeToCastTo(ToCopy.typeToCastTo)
+{
+
 }
 
 OperationNode::Operation TypeCastNode::getOp() const
@@ -128,6 +140,11 @@ QString TypeCastNode::printNode() const
     return QString("{(TypeCast):(%1)}").arg(printValue());
 }
 
+std::unique_ptr<SimpleNode> TypeCastNode::deepCopy() const
+{
+    return std::unique_ptr(new TypeCastNode(*this));
+}
+
 IncrementNode::IncrementNode(std::unique_ptr<SimpleNode> rightChild) :
     UnaryArithmeticOperationNode(std::move(rightChild))
 {
@@ -186,6 +203,11 @@ QString IncrementNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
+std::unique_ptr<SimpleNode> IncrementNode::deepCopy() const
+{
+    return std::unique_ptr(new IncrementNode(*this));
+}
+
 DecrementNode::DecrementNode(std::unique_ptr<SimpleNode> rightChild) :
     UnaryArithmeticOperationNode(std::move(rightChild))
 {
@@ -242,6 +264,11 @@ QString DecrementNode::printNode() const
     QString value = printValue();
 
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
+}
+
+std::unique_ptr<SimpleNode> DecrementNode::deepCopy() const
+{
+    return std::unique_ptr(new DecrementNode(*this));
 }
 
 PositiveNode::PositiveNode(std::unique_ptr<SimpleNode> rightChild) :
@@ -307,6 +334,11 @@ QString PositiveNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
+std::unique_ptr<SimpleNode> PositiveNode::deepCopy() const
+{
+    return std::unique_ptr(new PositiveNode(*this));
+}
+
 NegativeNode::NegativeNode(std::unique_ptr<SimpleNode> rightChild) :
     UnaryArithmeticOperationNode(std::move(rightChild))
 {
@@ -370,6 +402,11 @@ QString NegativeNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
+std::unique_ptr<SimpleNode> NegativeNode::deepCopy() const
+{
+    return std::unique_ptr(new NegativeNode(*this));
+}
+
 UnaryLogicalOperationNode::UnaryLogicalOperationNode(std::unique_ptr<SimpleNode> rightChild) :
     UnaryOperationNode(std::move(rightChild))
 {
@@ -378,6 +415,11 @@ UnaryLogicalOperationNode::UnaryLogicalOperationNode(std::unique_ptr<SimpleNode>
 OperationNode::OperationTypes UnaryLogicalOperationNode::getOpType() const
 {
     return OperationNode::Logical;
+}
+
+std::unique_ptr<SimpleNode> UnaryLogicalOperationNode::deepCopy() const
+{
+
 }
 
 LogicalNegationNode::LogicalNegationNode(std::unique_ptr<SimpleNode> rightChild) :
@@ -438,6 +480,11 @@ QString LogicalNegationNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
+std::unique_ptr<SimpleNode> LogicalNegationNode::deepCopy() const
+{
+    return std::unique_ptr(new LogicalNegationNode(*this));
+}
+
 UnaryBitwiseOperationNode::UnaryBitwiseOperationNode(std::unique_ptr<SimpleNode> rightChild) :
     UnaryOperationNode(std::move(rightChild))
 {
@@ -446,6 +493,11 @@ UnaryBitwiseOperationNode::UnaryBitwiseOperationNode(std::unique_ptr<SimpleNode>
 OperationNode::OperationTypes UnaryBitwiseOperationNode::getOpType() const
 {
     return OperationNode::Bitwise;
+}
+
+std::unique_ptr<SimpleNode> UnaryBitwiseOperationNode::deepCopy() const
+{
+
 }
 
 OnesComplementNode::OnesComplementNode(std::unique_ptr<SimpleNode> rightChild) :
@@ -491,4 +543,9 @@ QString OnesComplementNode::printNode() const
     QString value = printValue();
 
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
+}
+
+std::unique_ptr<SimpleNode> OnesComplementNode::deepCopy() const
+{
+    return std::unique_ptr(new OnesComplementNode(*this));
 }

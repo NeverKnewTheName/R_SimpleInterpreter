@@ -12,6 +12,12 @@ VariableNode::VariableNode(QSharedPointer<ValueSymbol> relatedVariableSymbol) :
 {
 }
 
+VariableNode::VariableNode(const VariableNode &ToCopy) :
+    RelatedVariableSymbol(ToCopy.RelatedVariableSymbol)
+{
+
+}
+
 VariableNode::~VariableNode()
 {
     qDebug() << __PRETTY_FUNCTION__;
@@ -32,10 +38,9 @@ std::unique_ptr<ValueNode> VariableNode::visit(QSharedPointer<SimpleStack> Stack
     return RelatedVariableSymbol->getValue(StackToUse);
 }
 
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > VariableNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, QSharedPointer<SimpleStack> StackToUse) const
+std::unique_ptr<SimpleNode> VariableNode::deepCopy() const
 {
-    FlatAst->emplace_back(std::unique_ptr(new VariableNode(RelatedVariableSymbol)));
-    return std::move(FlatAST);
+    return std::unique_ptr<SimpleNode>(new VariableNode(*this));
 }
 
 QString VariableNode::printValue() const

@@ -16,12 +16,18 @@ public:
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class TypeCastNode : public UnaryArithmeticOperationNode
 {
 public:
     TypeCastNode(std::unique_ptr<SimpleNode> RightChild, Node::ValueTypes typeToCastTo);
+    TypeCastNode(const TypeCastNode &ToCopy);
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
@@ -43,6 +49,11 @@ public:
     QString printNode() const;
 private:
     Node::ValueTypes typeToCastTo;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class IncrementNode : public UnaryArithmeticOperationNode
@@ -68,6 +79,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class DecrementNode : public UnaryArithmeticOperationNode
@@ -93,6 +109,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class PositiveNode : public UnaryArithmeticOperationNode
@@ -118,6 +139,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class NegativeNode : public UnaryArithmeticOperationNode
@@ -143,6 +169,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class UnaryLogicalOperationNode : public UnaryOperationNode
@@ -158,6 +189,11 @@ public:
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class LogicalNegationNode : public UnaryLogicalOperationNode
@@ -184,6 +220,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class UnaryBitwiseOperationNode : public UnaryOperationNode
@@ -199,6 +240,11 @@ public:
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class OnesComplementNode : public UnaryBitwiseOperationNode
@@ -224,6 +270,11 @@ public:
 
     virtual QString printValue() const;
     virtual QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 #endif // UNARYOPERATIONNODES_H

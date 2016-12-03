@@ -6,6 +6,7 @@
 #include <memory>
 
 class ValueNode;
+class SimpleSymbolTable;
 class SimpleStack;
 
 namespace Node {
@@ -35,38 +36,6 @@ typedef enum _ValueTypes
 }ValueTypes;
 }
 
-//namespace R_CCompiler {
-//typedef enum _Instruction {
-//    StackPush,
-//    StackPop,
-//    Load,
-//    Store,
-//    Branch
-//}Instruction;
-//typedef enum _Data {
-//    Address,
-//    Function,
-//    Value
-//}Data;
-//typedef enum _Register {
-//    R0,//!< Work register 0
-//    R1,//!< Work register 1
-//    R2,//!< Work register 2
-//    R3,//!< Work register 3
-//    PC,//!< Program counter
-//    LR,//!< Link register
-//    SP,//!< Stack pointer
-//    XR//!< Special purpose register
-//}Register;
-//typedef enum _XRFlags
-//{
-//    Negative,
-//    Zero,
-//    Carry,
-//    Overflow
-//}XRFlags;
-//}
-
 class SimpleNode
 {
 public:
@@ -84,7 +53,7 @@ public:
 
     virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
 
-    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode>>> FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode>>> FlatAST, QSharedPointer<SimpleStack> StackToUse) const = 0;
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode>>> FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode>>> FlatAST, int &maxStackSize) const;
 
     static QString getHumanReadableTypeNameToValueType(const Node::ValueTypes type);
     static bool canConvertTypes(const Node::ValueTypes OrigType, const Node::ValueTypes NewType);
@@ -94,6 +63,25 @@ protected:
 };
 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
+class ScopedNode : public SimpleNode
+{
+    ScopedNode(QSharedPointer<SimpleSymbolTable> ScopedSymbolTable);
+    virtual ~ScopedNode();
+
+    // SimpleNode interface
+public:
+    virtual Node::NodeType getNodeType() const = 0;
+    virtual Node::ValueTypes getReturnType() const = 0;
+    virtual QString printValue() const = 0;
+    virtual QString printNode() const = 0;
+    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
+    virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const = 0;
+
+private:
+    QSharedPointer<SimpleSymbolTable> ScopedSymbolTable;
+};
+
+// // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 class EOFNode : public SimpleNode
 {
 public:
@@ -108,8 +96,6 @@ public:
     QString printNode() const;
 
     std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;    
-
-    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, QSharedPointer<SimpleStack> StackToUse) const;
 
     std::unique_ptr<SimpleNode> deepCopy() const;
 };

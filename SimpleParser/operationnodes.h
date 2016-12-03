@@ -90,12 +90,17 @@ public:
     std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
 protected:
     Node::ValueTypes returnType;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
 };
 
 class UnaryOperationNode : public OperationNode
 {
 public:
     UnaryOperationNode(std::unique_ptr<SimpleNode> RightChild);
+    UnaryOperationNode(const UnaryOperationNode &ToCopy);
     virtual ~UnaryOperationNode();
     ArityTypes getArityType() const;
     virtual OperationTypes getOpType() const = 0;
@@ -110,6 +115,10 @@ public:
 protected:
     std::unique_ptr<SimpleNode> UnaryOPRightChild;
     Node::ValueTypes implicitCastRightChild;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
 };
 
 
@@ -118,6 +127,7 @@ class BinaryOperationNode : public OperationNode
 {
 public:
     BinaryOperationNode(std::unique_ptr<SimpleNode> LeftChild, std::unique_ptr<SimpleNode> RightChild);
+    BinaryOperationNode(const BinaryOperationNode &ToCopy);
     virtual ~BinaryOperationNode();
     ArityTypes getArityType() const;
     virtual OperationTypes getOpType() const = 0;
@@ -134,6 +144,10 @@ protected:
     std::unique_ptr<SimpleNode> BinaryOPRightChild;
     Node::ValueTypes implicitCastLeftChild;
     Node::ValueTypes implicitCastRightChild;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
 };
 
 
@@ -141,6 +155,7 @@ class TernaryOperationNode : public OperationNode
 {
 public:
     TernaryOperationNode(std::unique_ptr<SimpleNode> LeftChild, std::unique_ptr<SimpleNode> midChild ,std::unique_ptr<SimpleNode> rightChild);
+    TernaryOperationNode(const TernaryOperationNode &ToCopy);
     virtual ~TernaryOperationNode();
     ArityTypes getArityType() const;
     virtual OperationTypes getOpType() const = 0;
@@ -159,6 +174,10 @@ protected:
     Node::ValueTypes implicitCastLeftChild;
     Node::ValueTypes implicitCastMidChild;
     Node::ValueTypes implicitCastRightChild;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
 };
 
 #endif // OPERATIONNODES_H

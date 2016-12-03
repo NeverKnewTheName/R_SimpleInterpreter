@@ -171,6 +171,11 @@ QString ConditionalNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
+std::unique_ptr<SimpleNode> ConditionalNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new ConditionalNode(*this));
+}
+
 TernaryBitwiseOperationNode::TernaryBitwiseOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> midChild, std::unique_ptr<SimpleNode> rightChild) :
     TernaryOperationNode(std::move(leftChild), std::move(midChild), std::move(rightChild))
 {

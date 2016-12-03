@@ -16,11 +16,9 @@ public:
     Node::NodeType getNodeType() const;
     Node::ValueTypes getReturnType() const;
     QString printNode() const;
-    std::unique_ptr<SimpleNode> deepCopy() const;
 
 private:
     const unsigned int dataIndex;
-
 };
 
 #endif // DATANODE_H

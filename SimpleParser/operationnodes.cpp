@@ -35,6 +35,12 @@ UnaryOperationNode::UnaryOperationNode(std::unique_ptr<SimpleNode> rightChild) :
 {
 }
 
+UnaryOperationNode::UnaryOperationNode(const UnaryOperationNode &ToCopy) :
+    UnaryOPRightChild(ToCopy.UnaryOPRightChild->deepCopy())
+{
+
+}
+
 UnaryOperationNode::~UnaryOperationNode()
 {
     qDebug() << __PRETTY_FUNCTION__;
@@ -49,6 +55,12 @@ OperationNode::ArityTypes UnaryOperationNode::getArityType() const
 BinaryOperationNode::BinaryOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryOPLeftChild(std::move(leftChild)),
     BinaryOPRightChild(std::move(rightChild))
+{
+}
+
+BinaryOperationNode::BinaryOperationNode(const BinaryOperationNode &ToCopy) :
+    BinaryOPLeftChild(std::unique_ptr<SimpleNode>(ToCopy.BinaryOPLeftChild->deepCopy())),
+    BinaryOPRightChild(std::unique_ptr<SimpleNode>(ToCopy.BinaryOPRightChild->deepCopy()))
 {
 }
 
@@ -67,6 +79,14 @@ TernaryOperationNode::TernaryOperationNode(std::unique_ptr<SimpleNode> leftChild
     TernaryOPMidChild(std::move(midChild)),
     TernaryOPRightChild(std::move(rightChild))
 {
+}
+
+TernaryOperationNode::TernaryOperationNode(const TernaryOperationNode &ToCopy) :
+    TernaryOPLeftChild(ToCopy.TernaryOPLeftChild->deepCopy()),
+    TernaryOPMidChild(ToCopy.TernaryOPMidChild->deepCopy()),
+    TernaryOPRightChild(ToCopy.TernaryOPRightChild->deepCopy())
+{
+
 }
 
 TernaryOperationNode::~TernaryOperationNode()

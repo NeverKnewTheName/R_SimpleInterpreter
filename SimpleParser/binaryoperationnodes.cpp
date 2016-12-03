@@ -129,6 +129,12 @@ QString AdditionNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
+std::unique_ptr<SimpleNode> AdditionNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new AdditionNode(*this));
+}
+
+
 SubtractionNode::SubtractionNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryArithmeticOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -227,6 +233,11 @@ QString SubtractionNode::printNode() const
     QString value = printValue();
 
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
+}
+
+std::unique_ptr<SimpleNode> SubtractionNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new SubtractionNode(*this));
 }
 
 MultiplicationNode::MultiplicationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
@@ -354,6 +365,11 @@ QString MultiplicationNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
+std::unique_ptr<SimpleNode> MultiplicationNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new MultiplicationNode(*this));
+}
+
 DivisionNode::DivisionNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryArithmeticOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -454,6 +470,11 @@ QString DivisionNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
+std::unique_ptr<SimpleNode> DivisionNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new DivisionNode(*this));
+}
+
 ModuloNode::ModuloNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryArithmeticOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -518,6 +539,11 @@ QString ModuloNode::printNode() const
     QString value = printValue();
 
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
+}
+
+std::unique_ptr<SimpleNode> ModuloNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new ModuloNode(*this));
 }
 
 BinaryLogicalOperationNode::BinaryLogicalOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
@@ -608,6 +634,11 @@ QString LogicalANDNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
+std::unique_ptr<SimpleNode> LogicalANDNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new LogicalANDNode(*this));
+}
+
 LogicalORNode::LogicalORNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryLogicalOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -684,6 +715,11 @@ QString LogicalORNode::printNode() const
     QString value = printValue();
 
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
+}
+
+std::unique_ptr<SimpleNode> LogicalORNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new LogicalORNode(*this));
 }
 
 LogicalXORNode::LogicalXORNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
@@ -764,6 +800,11 @@ QString LogicalXORNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
+std::unique_ptr<SimpleNode> LogicalXORNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new LogicalXORNode(*this));
+}
+
 GreaterNode::GreaterNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryLogicalOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -836,6 +877,11 @@ QString GreaterNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
+std::unique_ptr<SimpleNode> GreaterNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new GreaterNode(*this));
+}
+
 LowerNode::LowerNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryLogicalOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -905,6 +951,11 @@ QString LowerNode::printNode() const
     QString value = printValue();
 
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
+}
+
+std::unique_ptr<SimpleNode> LowerNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new LowerNode(*this));
 }
 
 EqualNode::EqualNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
@@ -1056,6 +1107,11 @@ QString EqualNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
+std::unique_ptr<SimpleNode> EqualNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new EqualNode(*this));
+}
+
 EqualOrGreaterNode::EqualOrGreaterNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryLogicalOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -1154,6 +1210,11 @@ QString EqualOrGreaterNode::printNode() const
     QString value = printValue();
 
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
+}
+
+std::unique_ptr<SimpleNode> EqualOrGreaterNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new EqualOrGreaterNode(*this));
 }
 
 EqualOrLowerNode::EqualOrLowerNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
@@ -1256,6 +1317,11 @@ QString EqualOrLowerNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
+std::unique_ptr<SimpleNode> EqualOrLowerNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new EqualOrLowerNode(*this));
+}
+
 UnequalNode::UnequalNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryLogicalOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -1329,6 +1395,11 @@ QString UnequalNode::printNode() const
     QString value = printValue();
 
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
+}
+
+std::unique_ptr<SimpleNode> UnequalNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new UnequalNode(*this));
 }
 
 BinaryBitwiseOperationNode::BinaryBitwiseOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
@@ -1405,6 +1476,11 @@ QString ANDNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
+std::unique_ptr<SimpleNode> ANDNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new ANDNode(*this));
+}
+
 ORNode::ORNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryBitwiseOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -1467,6 +1543,11 @@ QString ORNode::printNode() const
     QString value = printValue();
 
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
+}
+
+std::unique_ptr<SimpleNode> ORNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new ORNode(*this));
 }
 
 XORNode::XORNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
@@ -1533,6 +1614,11 @@ QString XORNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
+std::unique_ptr<SimpleNode> XORNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new XORNode(*this));
+}
+
 LeftShiftNode::LeftShiftNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryBitwiseOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -1597,6 +1683,11 @@ QString LeftShiftNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
+std::unique_ptr<SimpleNode> LeftShiftNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new LeftShiftNode(*this));
+}
+
 RightShiftNode::RightShiftNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryBitwiseOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -1659,4 +1750,9 @@ QString RightShiftNode::printNode() const
     QString value = printValue();
 
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
+}
+
+std::unique_ptr<SimpleNode> RightShiftNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new RightShiftNode(*this));
 }

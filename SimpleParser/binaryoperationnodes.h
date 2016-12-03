@@ -16,6 +16,11 @@ public:
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
+
 };
 
 class AdditionNode : public BinaryArithmeticOperationNode
@@ -30,6 +35,10 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
 };
 
 class SubtractionNode : public BinaryArithmeticOperationNode
@@ -44,6 +53,10 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
 };
 
 class MultiplicationNode : public BinaryArithmeticOperationNode
@@ -58,6 +71,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class DivisionNode : public BinaryArithmeticOperationNode
@@ -72,6 +90,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class ModuloNode : public BinaryArithmeticOperationNode
@@ -86,6 +109,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class BinaryLogicalOperationNode : public BinaryOperationNode
@@ -101,6 +129,11 @@ public:
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
+
 };
 
 class LogicalANDNode : public BinaryLogicalOperationNode
@@ -127,6 +160,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class LogicalORNode : public BinaryLogicalOperationNode
@@ -153,6 +191,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class LogicalXORNode : public BinaryLogicalOperationNode
@@ -167,6 +210,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class GreaterNode : public BinaryLogicalOperationNode
@@ -181,6 +229,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class LowerNode : public BinaryLogicalOperationNode
@@ -195,6 +248,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class EqualNode : public BinaryLogicalOperationNode
@@ -209,6 +267,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class EqualOrGreaterNode : public BinaryLogicalOperationNode
@@ -223,6 +286,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class EqualOrLowerNode : public BinaryLogicalOperationNode
@@ -237,6 +305,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class UnequalNode : public BinaryLogicalOperationNode
@@ -251,6 +324,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class BinaryBitwiseOperationNode : public BinaryOperationNode
@@ -267,6 +345,11 @@ public:
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
+
 };
 
 class ANDNode : public BinaryBitwiseOperationNode
@@ -281,6 +364,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class ORNode : public BinaryBitwiseOperationNode
@@ -295,6 +383,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class XORNode : public BinaryBitwiseOperationNode
@@ -309,6 +402,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class LeftShiftNode : public BinaryBitwiseOperationNode
@@ -323,6 +421,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 class RightShiftNode : public BinaryBitwiseOperationNode
@@ -337,6 +440,11 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 };
 
 

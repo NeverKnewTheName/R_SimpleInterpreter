@@ -15,6 +15,7 @@ public:
             QSharedPointer<SimpleSymbolTable> CurSymblTable,
             std::vector<std::unique_ptr<SimpleNode>> &FunctionArguments
             );
+    FunctionCallNode(const FunctionCallNode &ToCopy);
     virtual ~FunctionCallNode();
 
     // SimpleNode interface
@@ -31,6 +32,11 @@ private:
     QSharedPointer<FunctionSymbol> RelatedSymbol;
     QSharedPointer<SimpleSymbolTable> CurrentSymbolTable;
     Node::ValueTypes returnType;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<SimpleNode> deepCopy() const;
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 #endif // FUNCTIONCALLNODE_H

@@ -16,6 +16,17 @@ ProgramNode::ProgramNode(const QString &ProgramName,
 
 }
 
+ProgramNode::ProgramNode(const ProgramNode &ToCopy) :
+    ProgramName(ToCopy.ProgramName),
+    ProgramSymbolTable(ToCopy.ParentSymbolTable),
+    ProgramReturnStatement(ToCopy.ProgramReturnStatement->deepCopy())
+{
+    for(const std::unique_ptr<SimpleNode> &expr : ToCopy.ProgramExpressions)
+    {
+        this->ProgramExpressions.emplace_back(expr->deepCopy());
+    }
+}
+
 ProgramNode::~ProgramNode()
 {
     qDebug() << __PRETTY_FUNCTION__;
@@ -109,4 +120,14 @@ std::unique_ptr<ValueNode> ProgramNode::visit(QSharedPointer<SimpleStack> StackT
 
     ProgramSymbolTable->ExitScope(StackToUse);
     return result;
+}
+
+std::unique_ptr<SimpleNode> ProgramNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new ProgramNode(*this));
+}
+
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > ProgramNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+
 }
