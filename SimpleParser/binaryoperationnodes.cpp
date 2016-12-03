@@ -134,6 +134,12 @@ std::unique_ptr<SimpleNode> AdditionNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new AdditionNode(*this));
 }
 
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > AdditionNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
+}
+
 
 SubtractionNode::SubtractionNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryArithmeticOperationNode(std::move(leftChild), std::move(rightChild))
@@ -238,6 +244,12 @@ QString SubtractionNode::printNode() const
 std::unique_ptr<SimpleNode> SubtractionNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new SubtractionNode(*this));
+}
+
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > SubtractionNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
 }
 
 MultiplicationNode::MultiplicationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
@@ -370,6 +382,12 @@ std::unique_ptr<SimpleNode> MultiplicationNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new MultiplicationNode(*this));
 }
 
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > MultiplicationNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
+}
+
 DivisionNode::DivisionNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryArithmeticOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -475,6 +493,12 @@ std::unique_ptr<SimpleNode> DivisionNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new DivisionNode(*this));
 }
 
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > DivisionNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
+}
+
 ModuloNode::ModuloNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryArithmeticOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -544,6 +568,12 @@ QString ModuloNode::printNode() const
 std::unique_ptr<SimpleNode> ModuloNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new ModuloNode(*this));
+}
+
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > ModuloNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
 }
 
 BinaryLogicalOperationNode::BinaryLogicalOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
@@ -639,6 +669,12 @@ std::unique_ptr<SimpleNode> LogicalANDNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new LogicalANDNode(*this));
 }
 
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > LogicalANDNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
+}
+
 LogicalORNode::LogicalORNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryLogicalOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -720,6 +756,12 @@ QString LogicalORNode::printNode() const
 std::unique_ptr<SimpleNode> LogicalORNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new LogicalORNode(*this));
+}
+
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > LogicalORNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
 }
 
 LogicalXORNode::LogicalXORNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
@@ -805,6 +847,12 @@ std::unique_ptr<SimpleNode> LogicalXORNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new LogicalXORNode(*this));
 }
 
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > LogicalXORNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
+}
+
 GreaterNode::GreaterNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryLogicalOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -882,6 +930,12 @@ std::unique_ptr<SimpleNode> GreaterNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new GreaterNode(*this));
 }
 
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > GreaterNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
+}
+
 LowerNode::LowerNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryLogicalOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -956,6 +1010,12 @@ QString LowerNode::printNode() const
 std::unique_ptr<SimpleNode> LowerNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new LowerNode(*this));
+}
+
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > LowerNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
 }
 
 EqualNode::EqualNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
@@ -1112,6 +1172,12 @@ std::unique_ptr<SimpleNode> EqualNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new EqualNode(*this));
 }
 
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > EqualNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
+}
+
 EqualOrGreaterNode::EqualOrGreaterNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryLogicalOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -1215,6 +1281,12 @@ QString EqualOrGreaterNode::printNode() const
 std::unique_ptr<SimpleNode> EqualOrGreaterNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new EqualOrGreaterNode(*this));
+}
+
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > EqualOrGreaterNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
 }
 
 EqualOrLowerNode::EqualOrLowerNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
@@ -1322,6 +1394,12 @@ std::unique_ptr<SimpleNode> EqualOrLowerNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new EqualOrLowerNode(*this));
 }
 
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > EqualOrLowerNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
+}
+
 UnequalNode::UnequalNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryLogicalOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -1400,6 +1478,12 @@ QString UnequalNode::printNode() const
 std::unique_ptr<SimpleNode> UnequalNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new UnequalNode(*this));
+}
+
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > UnequalNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
 }
 
 BinaryBitwiseOperationNode::BinaryBitwiseOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
@@ -1481,6 +1565,12 @@ std::unique_ptr<SimpleNode> ANDNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new ANDNode(*this));
 }
 
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > ANDNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
+}
+
 ORNode::ORNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryBitwiseOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -1548,6 +1638,12 @@ QString ORNode::printNode() const
 std::unique_ptr<SimpleNode> ORNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new ORNode(*this));
+}
+
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > ORNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
 }
 
 XORNode::XORNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
@@ -1619,6 +1715,12 @@ std::unique_ptr<SimpleNode> XORNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new XORNode(*this));
 }
 
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > XORNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
+}
+
 LeftShiftNode::LeftShiftNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryBitwiseOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -1688,6 +1790,12 @@ std::unique_ptr<SimpleNode> LeftShiftNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new LeftShiftNode(*this));
 }
 
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > LeftShiftNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
+}
+
 RightShiftNode::RightShiftNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryBitwiseOperationNode(std::move(leftChild), std::move(rightChild))
 {
@@ -1755,4 +1863,10 @@ QString RightShiftNode::printNode() const
 std::unique_ptr<SimpleNode> RightShiftNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new RightShiftNode(*this));
+}
+
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > RightShiftNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
 }

@@ -29,9 +29,9 @@ FunctionCallNode::FunctionCallNode(const FunctionCallNode &ToCopy) :
     CurrentSymbolTable(ToCopy.CurrentSymbolTable),
     returnType(RelatedSymbol->getReturnType())
 {
-    for(const SimpleNode &arg : ToCopy.FuncArgs)
+    for(const std::unique_ptr<SimpleNode> &arg : ToCopy.FuncArgs)
     {
-        this->FuncArgs.emplace_back(ToCopy.FuncArgs->deepCopy());
+        this->FuncArgs.emplace_back(arg->deepCopy());
     }
 }
 

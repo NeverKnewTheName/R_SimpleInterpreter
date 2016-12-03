@@ -53,7 +53,7 @@ public:
 
     // SimpleNode interface
 public:
-    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const = 0;
 };
 
 // // // // // // // // // // // // // // // //
@@ -65,7 +65,7 @@ public:
     ScopedControlNode(const ScopedControlNode &ToCopy);
     virtual ~ScopedControlNode();
 
-    QSharedPointer<SimpleSymbolTable> &getScopedControlNodeSymbolTable() const;
+    const QSharedPointer<SimpleSymbolTable> &getScopedControlNodeSymbolTable() const;
 
 protected:
     bool EnterScope(QSharedPointer<SimpleStack> StackToUse) const;
@@ -82,7 +82,7 @@ public:
     virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const = 0;
 
     //Must copy shared pointer to ScopeSymbolTable
-    virtual std::unique_ptr<SimpleNode> deepCopy() const;
+    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
 
     // ControlNode interface
 public:

@@ -7,6 +7,7 @@
 
 #include "simpletoken.h"
 
+#include "simplenode.h"
 #include "valuenode.h"
 
 
@@ -94,6 +95,7 @@ void R_SimpleInterpreter::on_pushButton_clicked()
     QStandardItemModel *SymbolTableModel = new QStandardItemModel(this);
     populateSymbolTableView(GlobalSymbolTable, SymbolTableModel->invisibleRootItem());
     ui->SymbolTableView->setModel(SymbolTableModel);
+
 
     ui->lineEdit_2->setText(result->getValue().value<QString>());
 }

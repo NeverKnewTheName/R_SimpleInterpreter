@@ -129,5 +129,10 @@ std::unique_ptr<SimpleNode> ProgramNode::deepCopy() const
 
 std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > ProgramNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
 {
+    for(const std::unique_ptr<SimpleNode> &expr : ProgramExpressions)
+    {
+        FlatAST.reset(expr->FlatCompile(std::move(FlatAST),maxStackSize).release());
+    }
 
+    return ProgramReturnStatement->FlatCompile(std::move(FlatAST),maxStackSize);
 }

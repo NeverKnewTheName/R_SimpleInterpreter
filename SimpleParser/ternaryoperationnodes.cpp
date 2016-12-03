@@ -176,6 +176,12 @@ std::unique_ptr<SimpleNode> ConditionalNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new ConditionalNode(*this));
 }
 
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > ConditionalNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    FlatAST->emplace_back(deepCopy());
+    return std::move(FlatAST);
+}
+
 TernaryBitwiseOperationNode::TernaryBitwiseOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> midChild, std::unique_ptr<SimpleNode> rightChild) :
     TernaryOperationNode(std::move(leftChild), std::move(midChild), std::move(rightChild))
 {

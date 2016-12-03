@@ -19,7 +19,11 @@ public:
 
     // SimpleNode interface
 public:
-    virtual std::unique_ptr<SimpleNode> deepCopy() const;
+    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const = 0;
 };
 
 class TernaryLogicalOperationNode : public TernaryOperationNode
@@ -38,7 +42,11 @@ public:
 
     // SimpleNode interface
 public:
-    virtual std::unique_ptr<SimpleNode> deepCopy() const;
+    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const = 0;
 };
 
 class ConditionalNode : public TernaryLogicalOperationNode
@@ -57,6 +65,10 @@ public:
     // SimpleNode interface
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class TernaryBitwiseOperationNode : public TernaryOperationNode
@@ -75,7 +87,11 @@ public:
 
     // SimpleNode interface
 public:
-    virtual std::unique_ptr<SimpleNode> deepCopy() const;
+    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const = 0;
 };
 
 #endif // TERNARYOPERATIONNODES_H

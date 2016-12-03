@@ -4,19 +4,16 @@
 #include "simplesymboltable.h"
 #include "simplestack.h"
 
+#include <QDebug>
+
 IterationControlNode::IterationControlNode()
 {
 
 }
 
-bool IterationControlNode::EnterScope(QSharedPointer<SimpleStack> StackToUse) const
+IterationControlNode::~IterationControlNode()
 {
-    return ScopedControlNode::EnterScope(StackToUse);
-}
-
-bool IterationControlNode::ExitScope(QSharedPointer<SimpleStack> StackToUse) const
-{
-    return ScopedControlNode::ExitScope(StackToUse);
+    qDebug() << __PRETTY_FUNCTION__;
 }
 
 ControlNode::ControlType IterationControlNode::getControlType() const
@@ -43,14 +40,9 @@ ForLoopNode::ForLoopNode(const ForLoopNode &ToCopy) :
     }
 }
 
-bool ForLoopNode::EnterScope(QSharedPointer<SimpleStack> StackToUse) const
+ForLoopNode::~ForLoopNode()
 {
-    return IterationControlNode::EnterScope(StackToUse);
-}
-
-bool ForLoopNode::ExitScope(QSharedPointer<SimpleStack> StackToUse) const
-{
-    return IterationControlNode::EnterScope(StackToUse);
+    qDebug() << __PRETTY_FUNCTION__;
 }
 
 Node::ValueTypes ForLoopNode::getReturnType() const
@@ -68,6 +60,11 @@ ControlNode::SpecificControlType ForLoopNode::getSpecificControlType() const
     return ControlNode::FOR;
 }
 
+void ForLoopNode::executeLoop(QSharedPointer<SimpleStack> StackToUse) const
+{
+
+}
+
 QString ForLoopNode::printValue() const
 {
     return QString("for(%1;%2;%3)").arg(ForLoopInitialization->printNode()).arg(ForLoopCondition->printNode()).arg(ForLoopUpdate->printNode());
@@ -76,6 +73,11 @@ QString ForLoopNode::printValue() const
 QString ForLoopNode::printNode() const
 {
     return QString("{(ForLoopNode):(%1)}").arg(printValue());
+}
+
+std::unique_ptr<SimpleNode> ForLoopNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new ForLoopNode(*this));
 }
 
 WhileLoopNode::WhileLoopNode(std::unique_ptr<SimpleNode> Condition, std::vector<std::unique_ptr<SimpleNode> > &Expressions) :
@@ -94,6 +96,11 @@ WhileLoopNode::WhileLoopNode(const WhileLoopNode &ToCopy) :
     }
 }
 
+WhileLoopNode::~WhileLoopNode()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
 Node::ValueTypes WhileLoopNode::getReturnType() const
 {
     return Node::Void;
@@ -107,6 +114,11 @@ std::unique_ptr<ValueNode> WhileLoopNode::visit(QSharedPointer<SimpleStack> Stac
 ControlNode::SpecificControlType WhileLoopNode::getSpecificControlType() const
 {
     return ControlNode::WHILE;
+}
+
+void WhileLoopNode::executeLoop(QSharedPointer<SimpleStack> StackToUse) const
+{
+
 }
 
 QString WhileLoopNode::printValue() const
@@ -129,6 +141,11 @@ DoWhileLoopNode::DoWhileLoopNode(std::unique_ptr<SimpleNode> Condition, std::vec
     WhileLoopNode(std::move(Condition), Expressions)
 {
 
+}
+
+DoWhileLoopNode::~DoWhileLoopNode()
+{
+    qDebug() << __PRETTY_FUNCTION__;
 }
 
 std::unique_ptr<SimpleNode> DoWhileLoopNode::deepCopy() const

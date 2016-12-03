@@ -94,6 +94,10 @@ protected:
     // SimpleNode interface
 public:
     virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const = 0;
 };
 
 class UnaryOperationNode : public OperationNode
@@ -119,6 +123,10 @@ protected:
     // SimpleNode interface
 public:
     virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const = 0;
 };
 
 
@@ -148,6 +156,10 @@ protected:
     // SimpleNode interface
 public:
     virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const = 0;
 };
 
 
@@ -178,6 +190,10 @@ protected:
     // SimpleNode interface
 public:
     virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const = 0;
 };
 
 #endif // OPERATIONNODES_H

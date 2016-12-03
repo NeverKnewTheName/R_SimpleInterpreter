@@ -21,6 +21,10 @@ public:
 public:
     virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
 
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const = 0;
 };
 
 class AdditionNode : public BinaryArithmeticOperationNode
@@ -39,6 +43,10 @@ public:
     // SimpleNode interface
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class SubtractionNode : public BinaryArithmeticOperationNode
@@ -57,6 +65,10 @@ public:
     // SimpleNode interface
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class MultiplicationNode : public BinaryArithmeticOperationNode
@@ -76,6 +88,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class DivisionNode : public BinaryArithmeticOperationNode
@@ -95,6 +111,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class ModuloNode : public BinaryArithmeticOperationNode
@@ -114,6 +134,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class BinaryLogicalOperationNode : public BinaryOperationNode
@@ -134,6 +158,10 @@ public:
 public:
     virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
 
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const = 0;
 };
 
 class LogicalANDNode : public BinaryLogicalOperationNode
@@ -165,6 +193,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class LogicalORNode : public BinaryLogicalOperationNode
@@ -196,6 +228,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class LogicalXORNode : public BinaryLogicalOperationNode
@@ -215,6 +251,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class GreaterNode : public BinaryLogicalOperationNode
@@ -234,6 +274,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class LowerNode : public BinaryLogicalOperationNode
@@ -253,6 +297,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class EqualNode : public BinaryLogicalOperationNode
@@ -272,6 +320,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class EqualOrGreaterNode : public BinaryLogicalOperationNode
@@ -291,6 +343,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class EqualOrLowerNode : public BinaryLogicalOperationNode
@@ -310,6 +366,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class UnequalNode : public BinaryLogicalOperationNode
@@ -329,6 +389,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class BinaryBitwiseOperationNode : public BinaryOperationNode
@@ -350,6 +414,10 @@ public:
 public:
     virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
 
+
+    // SimpleNode interface
+public:
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const = 0;
 };
 
 class ANDNode : public BinaryBitwiseOperationNode
@@ -369,6 +437,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class ORNode : public BinaryBitwiseOperationNode
@@ -388,6 +460,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class XORNode : public BinaryBitwiseOperationNode
@@ -407,6 +483,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class LeftShiftNode : public BinaryBitwiseOperationNode
@@ -426,6 +506,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 class RightShiftNode : public BinaryBitwiseOperationNode
@@ -445,6 +529,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const;
 };
 
 

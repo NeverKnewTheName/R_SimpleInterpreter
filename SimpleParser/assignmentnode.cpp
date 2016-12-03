@@ -16,7 +16,8 @@ AssignmentNode::AssignmentNode(std::unique_ptr<VariableNode> VariableToAssign, s
 }
 
 AssignmentNode::AssignmentNode(const AssignmentNode &ToCopy) :
-    VariableToAssign(ToCopy.ValueToAssign->deepCopy()),
+    SimpleNode(ToCopy.getReturnType()),
+    VariableToAssign(dynamic_cast<VariableNode*>(ToCopy.VariableToAssign->deepCopy().release())),
     ValueToAssign(ToCopy.ValueToAssign->deepCopy())
 {
 }

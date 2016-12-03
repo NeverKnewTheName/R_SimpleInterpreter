@@ -40,3 +40,18 @@ ScopedControlNode::ScopedControlNode(const ScopedControlNode &ToCopy) :
 {
 
 }
+
+ScopedControlNode::~ScopedControlNode()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+const QSharedPointer<SimpleSymbolTable> &ScopedControlNode::getScopedControlNodeSymbolTable() const
+{
+    return ScopeSymbolTable;
+}
+
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > ScopedControlNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize) const
+{
+    //ToDO need to increment maxStackSize... Decrement also sometimes... //ToTHINK
+}

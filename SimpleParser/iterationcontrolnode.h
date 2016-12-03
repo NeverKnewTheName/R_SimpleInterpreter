@@ -10,9 +10,6 @@ public:
     virtual ~IterationControlNode();
 
     virtual void executeLoop(QSharedPointer<SimpleStack> StackToUse) const = 0;
-protected:
-    bool EnterScope(QSharedPointer<SimpleStack> StackToUse) const;
-    bool ExitScope(QSharedPointer<SimpleStack> StackToUse) const;
 
     // SimpleNode interface
 public:
@@ -41,9 +38,6 @@ public:
             );
     ForLoopNode(const ForLoopNode &ToCopy);
     ~ForLoopNode();
-
-    bool EnterScope(QSharedPointer<SimpleStack> StackToUse) const;
-    bool ExitScope(QSharedPointer<SimpleStack> StackToUse) const;
 
     // SimpleNode interface
 public:
@@ -115,6 +109,7 @@ public:
             std::unique_ptr<SimpleNode> Condition,
             std::vector<std::unique_ptr<SimpleNode> > &Expressions
             );
+    ~DoWhileLoopNode();
 
     // SimpleNode interface
 public:
