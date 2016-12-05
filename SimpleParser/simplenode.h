@@ -5,6 +5,8 @@
 #include <QSharedPointer>
 #include <memory>
 
+
+class ASTNode;
 class ValueNode;
 class SimpleSymbolTable;
 class SimpleStack;
@@ -46,6 +48,7 @@ public:
     virtual Node::NodeType getNodeType() const;
     virtual Node::ValueTypes getReturnType() const;
 
+    virtual ASTNode *VisualizeNode(ASTNode *parentNode = nullptr) const;
     virtual QString printValue() const;
     virtual QString printNode() const;
 

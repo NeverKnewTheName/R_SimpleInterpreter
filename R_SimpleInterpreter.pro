@@ -14,10 +14,12 @@ TEMPLATE = app
 
 SOURCES += \
     main.cpp\
-    r_simpleinterpreter.cpp
+    r_simpleinterpreter.cpp \
+    astvisualizer.cpp
 
 HEADERS  += \
-    r_simpleinterpreter.h
+    r_simpleinterpreter.h \
+    astvisualizer.h
 
 FORMS    += \
     r_simpleinterpreter.ui

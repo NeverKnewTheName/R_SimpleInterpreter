@@ -6,6 +6,8 @@
 
 #include "simplestack.h"
 
+#include "astvisualizer.h"
+
 OperationNode::OperationNode()
 {
 }
@@ -61,6 +63,15 @@ std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > UnaryOperationNode::
     return std::move(FlatAST);
 }
 
+ASTNode *UnaryOperationNode::VisualizeNode(ASTNode *parentNode) const
+{
+    ASTNode *UnaryOPASTNode = new ASTNode(printNode(),parentNode);
+    new ASTNode(printValue(),UnaryOPASTNode);
+    UnaryOPRightChild->VisualizeNode(UnaryOPASTNode);
+
+    return UnaryOPASTNode;
+}
+
 
 BinaryOperationNode::BinaryOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryOPLeftChild(std::move(leftChild)),
@@ -93,6 +104,16 @@ std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > BinaryOperationNode:
     CurrentPosition++;
 
     return std::move(FlatAST);
+}
+
+ASTNode *BinaryOperationNode::VisualizeNode(ASTNode *parentNode) const
+{
+    ASTNode *BinaryOPASTNode = new ASTNode(printNode(),parentNode);
+    BinaryOPLeftChild->VisualizeNode(BinaryOPASTNode);
+    new ASTNode(printValue(),BinaryOPASTNode);
+    BinaryOPRightChild->VisualizeNode(BinaryOPASTNode);
+
+    return BinaryOPASTNode;
 }
 
 TernaryOperationNode::TernaryOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> midChild, std::unique_ptr<SimpleNode> rightChild) :
@@ -138,4 +159,17 @@ std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > TernaryOperationNode
     CurrentPosition++;
 
     return std::move(FlatAST);
+}
+
+ASTNode *TernaryOperationNode::VisualizeNode(ASTNode *parentNode) const
+{
+    ASTNode *TernaryOPASTNode = new ASTNode(printNode(),parentNode);
+    QStringList TernaryOpSplit = printValue().split(' ');
+    TernaryOPLeftChild->VisualizeNode(TernaryOPASTNode);
+    new ASTNode(TernaryOpSplit.first(),TernaryOPASTNode);
+    TernaryOPMidChild->VisualizeNode(TernaryOPASTNode);
+    new ASTNode(TernaryOpSplit.last(),TernaryOPASTNode);
+    TernaryOPRightChild->VisualizeNode(TernaryOPASTNode);
+
+    return TernaryOPASTNode;
 }

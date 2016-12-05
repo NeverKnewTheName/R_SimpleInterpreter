@@ -38,7 +38,7 @@ SimpleParser::~SimpleParser()
     ParentSymblTbl->removeSubSymbolTable(ProgramSymbolTable->getIdentifier());
 }
 
-std::unique_ptr<SimpleNode> SimpleParser::parse()
+std::unique_ptr<SimpleNode> SimpleParser::ParseToAST()
 {
     std::unique_ptr<SimpleNode> node;
     if(CurrentToken->getTokenType() != SimpleToken::EOFToken)
@@ -224,6 +224,8 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
         return QSharedPointer<FunctionSymbol>();
     }
 
+    SavedSymbolTable->addEntry(qSharedPointerDynamicCast<SimpleSymbolTableEntry>(DeclaredFuncSymbol));
+
     CurSymblTbl = SavedSymbolTable;
 
     qDebug() << __PRETTY_FUNCTION__ << ": " << DeclaredFuncSymbol->PrintToSymbolToString();
@@ -274,7 +276,6 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDeclaration()
                         returnType
                         )
                     );
-        SavedSymbolTable->addEntry(qSharedPointerDynamicCast<SimpleSymbolTableEntry>(FuncSymbol));
         functionSymbolTable->addParentSymbolTable(SavedSymbolTable);
     }
 

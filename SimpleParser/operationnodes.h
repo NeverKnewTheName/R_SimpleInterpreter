@@ -3,6 +3,8 @@
 
 #include "simplenode.h"
 
+class ASTNode;
+
 class OperationNode : public SimpleNode
 {
 public:
@@ -114,19 +116,16 @@ public:
 
     virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
 
+    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
+
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
+
+    virtual ASTNode *VisualizeNode(ASTNode *parentNode) const;
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
 protected:
     std::unique_ptr<SimpleNode> UnaryOPRightChild;
     Node::ValueTypes implicitCastRightChild;
-
-    // SimpleNode interface
-public:
-    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
-
-    // SimpleNode interface
-public:
-    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
 };
 
 class BinaryOperationNode : public OperationNode
@@ -143,6 +142,11 @@ public:
 
     virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
 
+    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
+
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
+
+    virtual ASTNode *VisualizeNode(ASTNode *parentNode) const;
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
 protected:
@@ -151,13 +155,6 @@ protected:
     Node::ValueTypes implicitCastLeftChild;
     Node::ValueTypes implicitCastRightChild;
 
-    // SimpleNode interface
-public:
-    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
-
-    // SimpleNode interface
-public:
-    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
 };
 
 
@@ -175,6 +172,11 @@ public:
 
     virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
 
+    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
+
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
+
+    virtual ASTNode *VisualizeNode(ASTNode *parentNode) const;
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
 protected:
@@ -185,13 +187,6 @@ protected:
     Node::ValueTypes implicitCastMidChild;
     Node::ValueTypes implicitCastRightChild;
 
-    // SimpleNode interface
-public:
-    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
-
-    // SimpleNode interface
-public:
-    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
 };
 
 #endif // OPERATIONNODES_H

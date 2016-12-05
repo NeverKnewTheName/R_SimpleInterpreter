@@ -52,6 +52,8 @@ public:
 
     const std::unique_ptr<SimpleNode> &getFunctionReturnNode() const;
 
+    const std::vector<QSharedPointer<VariableSymbol> > &getFunctionParameters() const;
+
 private:
     QSharedPointer<SimpleSymbolTable> FunctionSymbolTable;
     Node::ValueTypes ReturnType;

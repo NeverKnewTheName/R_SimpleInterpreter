@@ -7,6 +7,8 @@
 #include "functionsymbol.h"
 #include "simplestack.h"
 
+#include "astvisualizer.h"
+
 ProgramNode::ProgramNode(const QString &ProgramName,
         QSharedPointer<SimpleSymbolTable> SymbolTableToUse
         ) :
@@ -61,6 +63,20 @@ Node::NodeType ProgramNode::getNodeType() const
 Node::ValueTypes ProgramNode::getReturnType() const
 {
     return type;
+}
+
+ASTNode *ProgramNode::VisualizeNode(ASTNode *parentNode) const
+{
+    ASTNode *ProgramASTNode = new ASTNode(printNode(), parentNode);
+
+    for( const std::unique_ptr<SimpleNode> &expr : ProgramExpressions)
+    {
+        expr->VisualizeNode(ProgramASTNode);
+    }
+
+    ProgramReturnStatement->VisualizeNode(ProgramASTNode);
+
+    return ProgramASTNode;
 }
 
 QString ProgramNode::printValue() const

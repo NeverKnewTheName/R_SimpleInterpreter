@@ -2,12 +2,14 @@
 
 #include <QDebug>
 
+#include "assignmentnode.h"
+
 #include "simplesymboltableentry.h"
 #include "simplesymboltable.h"
 #include "functionsymbol.h"
 #include "simplestack.h"
 
-
+#include "astvisualizer.h"
 
 FunctionCallNode::FunctionCallNode(
         const QString &FunctionName,
@@ -50,6 +52,37 @@ Node::ValueTypes FunctionCallNode::getReturnType() const
     return returnType;
 }
 
+ASTNode *FunctionCallNode::VisualizeNode(ASTNode *parentNode) const
+{
+    ASTNode *FunctionASTNode = new ASTNode(printNode(), parentNode);
+
+    const std::vector<QSharedPointer<VariableSymbol>> &params = RelatedSymbol->getFunctionParameters();
+    std::vector<QSharedPointer<VariableSymbol>>::const_iterator itParams = params.begin();
+    std::vector<QSharedPointer<VariableSymbol>>::const_iterator itParamsEnd = params.end();
+    std::vector<std::unique_ptr<SimpleNode>>::const_iterator itArgs = FuncArgs.begin();
+    for(;itParams != itParamsEnd; ++itParams, ++itArgs)
+    {
+        ASTNode *paramAssignment = new ASTNode(QString("ParameterAssignment"),FunctionASTNode);
+        new ASTNode((*itParams)->PrintToSymbolToString(), paramAssignment);
+        new ASTNode(QString("="), paramAssignment);
+        (*itArgs)->VisualizeNode(paramAssignment);
+    }
+
+    const std::vector<std::unique_ptr<SimpleNode>> &FunctionExpressions = RelatedSymbol->getFunctionExpressions();
+    std::vector<std::unique_ptr<SimpleNode>>::const_iterator it = FunctionExpressions.begin();
+    std::vector<std::unique_ptr<SimpleNode>>::const_iterator itEnd = FunctionExpressions.end();
+    for( ;it != itEnd; ++it)
+    {
+        (*it)->VisualizeNode(FunctionASTNode);
+        new ASTNode(QString(";"), FunctionASTNode);
+    }
+
+    RelatedSymbol->getFunctionReturnNode()->VisualizeNode(FunctionASTNode);
+    new ASTNode(QString(";"), FunctionASTNode);
+
+    return FunctionASTNode;
+}
+
 QString FunctionCallNode::printValue() const
 {
     return QString("%1()").arg(FunctionName);
@@ -82,10 +115,10 @@ std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FunctionCallNode::Fl
     {
         FlatAST = (*it)->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
     }
-//    for(const std::unique_ptr<SimpleNode> &expr : FunctionExpressions)
-//    {
-//        FlatAST = expr->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
-//    }
+    //    for(const std::unique_ptr<SimpleNode> &expr : FunctionExpressions)
+    //    {
+    //        FlatAST = expr->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
+    //    }
 
     FlatAST = RelatedSymbol->getFunctionReturnNode()->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
 

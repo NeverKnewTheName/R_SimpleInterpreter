@@ -160,7 +160,7 @@ std::unique_ptr<ValueNode> ConditionalNode::DoOperation(QSharedPointer<SimpleSta
 
 QString ConditionalNode::printValue() const
 {
-    return QString("?:");
+    return QString("? :");
 }
 
 QString ConditionalNode::printNode() const

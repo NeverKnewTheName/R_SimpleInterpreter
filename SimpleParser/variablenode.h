@@ -20,6 +20,7 @@ public:
 
     virtual Node::NodeType getNodeType() const;
     virtual Node::ValueTypes getReturnType() const;
+    virtual ASTNode *VisualizeNode(ASTNode *parentNode) const;
     QString printValue() const;
     virtual QString printNode() const;
 
@@ -28,6 +29,7 @@ public:
 
 private:
     QSharedPointer<ValueSymbol> RelatedVariableSymbol;    
+
 
 };
 

@@ -22,21 +22,19 @@ public:
 public:
     Node::NodeType getNodeType() const;
     Node::ValueTypes getReturnType() const;
+    ASTNode *VisualizeNode(ASTNode *parentNode) const;
     QString printValue() const;
     QString printNode() const;
     std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
 
+    std::unique_ptr<SimpleNode> deepCopy() const;
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
 private:
     QString FunctionName;
     std::vector<std::unique_ptr<SimpleNode>> FuncArgs;
     QSharedPointer<FunctionSymbol> RelatedSymbol;
     QSharedPointer<SimpleSymbolTable> CurrentSymbolTable;
     Node::ValueTypes returnType;
-
-    // SimpleNode interface
-public:
-    std::unique_ptr<SimpleNode> deepCopy() const;
-    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
 };
 
 #endif // FUNCTIONCALLNODE_H
