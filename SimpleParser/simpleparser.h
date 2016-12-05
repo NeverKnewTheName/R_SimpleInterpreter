@@ -129,7 +129,7 @@ class SimpleParser : public QObject
 public:
     SimpleParser(SimpleLexer *lexer, QSharedPointer<SimpleSymbolTable> parentSymblTbl);
     ~SimpleParser();
-    std::unique_ptr<SimpleNode> parse();
+    std::unique_ptr<SimpleNode> ParseToAST();
 
     QSharedPointer<SimpleSymbolTable> getProgramSymblTbl();
 

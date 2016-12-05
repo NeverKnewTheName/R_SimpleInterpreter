@@ -6,6 +6,8 @@
 #include "variablenode.h"
 #include "simplestack.h"
 
+#include "astvisualizer.h"
+
 AssignmentNode::AssignmentNode(std::unique_ptr<VariableNode> VariableToAssign, std::unique_ptr<SimpleNode> ValueToAssign) :
     SimpleNode(VariableToAssign->getReturnType()),
     VariableToAssign(std::move(VariableToAssign)),
@@ -37,9 +39,19 @@ Node::ValueTypes AssignmentNode::getReturnType() const
     return VariableToAssign->getReturnType();
 }
 
+ASTNode *AssignmentNode::VisualizeNode(ASTNode *parentNode) const
+{
+    ASTNode *AssgnmntASTNode = new ASTNode(printNode(),parentNode);
+    VariableToAssign->VisualizeNode(AssgnmntASTNode);
+    new ASTNode(printValue(), AssgnmntASTNode);
+    ValueToAssign->VisualizeNode(AssgnmntASTNode);
+
+    return AssgnmntASTNode;
+}
+
 QString AssignmentNode::printValue() const
 {
-    return QString("%1 = %2").arg(VariableToAssign->printValue()).arg(ValueToAssign->printValue());
+    return QString("=");
 }
 
 QString AssignmentNode::printNode() const

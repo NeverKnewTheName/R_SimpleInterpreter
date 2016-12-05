@@ -10,6 +10,7 @@
 #include "simplenode.h"
 #include "valuenode.h"
 
+#include "astvisualizer.h"
 
 #include "simplesymboltableentry.h"
 #include "simplesymboltable.h"
@@ -22,6 +23,8 @@
 
 #include <QStandardItemModel>
 #include <QStandardItem>
+
+#include <QGraphicsScene>
 
 R_SimpleInterpreter::R_SimpleInterpreter(QWidget *parent) :
     QMainWindow(parent),
@@ -96,6 +99,9 @@ void R_SimpleInterpreter::on_pushButton_clicked()
     populateSymbolTableView(GlobalSymbolTable, SymbolTableModel->invisibleRootItem());
     ui->SymbolTableView->setModel(SymbolTableModel);
 
+    QGraphicsScene *myScene = new QGraphicsScene();
+    myScene->addItem(interpreter.VisualizeAST());
+    ui->graphicsView->setScene(myScene);
 
     ui->lineEdit_2->setText(result->getValue().value<QString>());
 }

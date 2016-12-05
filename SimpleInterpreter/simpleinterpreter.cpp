@@ -8,13 +8,15 @@
 #include "simplesymboltable.h"
 #include "simplestack.h"
 
+#include "astvisualizer.h"
+
 #include <QDebug>
 
 SimpleInterpreter::SimpleInterpreter(SimpleParser *parser) :
     parser(parser),
     InterpreterStack(100)
 {
-    tree = parser->parse();
+    tree = parser->ParseToAST();
 }
 
 SimpleInterpreter::SimpleInterpreter(
@@ -25,12 +27,20 @@ InterpreterStack(100)
 {
     SimpleLexer *lexer = new SimpleLexer(StringToInterpret);
     parser = new SimpleParser(lexer,GlobalSymbolTable);
-    tree = parser->parse();
+    tree = parser->ParseToAST();
 }
 
 SimpleInterpreter::~SimpleInterpreter()
 {
     qDebug() << __PRETTY_FUNCTION__;
+}
+
+ASTNode *SimpleInterpreter::VisualizeAST()
+{
+    if(tree == nullptr)
+        return new ASTNode(QString("ERROR"));
+
+    return tree->VisualizeNode();
 }
 
 std::unique_ptr<ValueNode> SimpleInterpreter::interpret()
@@ -47,10 +57,10 @@ std::unique_ptr<ValueNode> SimpleInterpreter::interpret()
 
     const int flatASTSize = FlatAST->size();
     qDebug() << "FlatAST size: " << flatASTSize;
-//    std::vector<std::unique_ptr<SimpleNode>> FlatASTVec = *FlatAST;
-    for(int i = 0; i < flatASTSize; i++)
+    std::vector<std::unique_ptr<SimpleNode>>::const_iterator it = FlatAST->begin();
+    for(; it != FlatAST->end() ; ++it)
     {
-        qDebug() << FlatAST->at(i)->printNode();
+        qDebug() << (*it)->printNode();
     }
 
     QSharedPointer<SimpleStack> RuntimeStack(new SimpleStack(100));

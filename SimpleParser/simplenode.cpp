@@ -12,6 +12,8 @@
 #include <memory>
 #include <vector>
 
+#include "astvisualizer.h"
+
 SimpleNode::SimpleNode(Node::ValueTypes valueType) :
     valueType(valueType)
 {
@@ -91,6 +93,13 @@ Node::NodeType SimpleNode::getNodeType() const
 Node::ValueTypes SimpleNode::getReturnType() const
 {
     return Node::ErrorType;
+}
+
+ASTNode *SimpleNode::VisualizeNode(ASTNode *parentNode) const
+{
+    ASTNode *simpleASTNode = new ASTNode(printNode(), parentNode);
+    new ASTNode(printValue(), simpleASTNode);
+    return simpleASTNode;
 }
 
 QString SimpleNode::printValue() const

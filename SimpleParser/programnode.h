@@ -32,10 +32,13 @@ public:
 public:
     Node::NodeType getNodeType() const;
     Node::ValueTypes getReturnType() const;
+    ASTNode *VisualizeNode(ASTNode *parentNode) const;
     QString printValue() const;
     QString printNode() const;
     std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
+    std::unique_ptr<SimpleNode> deepCopy() const;
     uint8_t FlatCompileOPCode(int &curStackOffset) const;
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
 
 private:
     QString ProgramName;
@@ -44,11 +47,6 @@ private:
     std::unique_ptr<SimpleNode> ProgramReturnStatement;
     QSharedPointer<SimpleSymbolTable> ParentSymbolTable;
     QSharedPointer<SimpleSymbolTable> ProgramSymbolTable;
-
-    // SimpleNode interface
-public:
-    std::unique_ptr<SimpleNode> deepCopy() const;
-    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
 };
 
 

@@ -17,20 +17,18 @@ public:
 public:
     Node::NodeType getNodeType() const;
     Node::ValueTypes getReturnType() const;
+    ASTNode *VisualizeNode(ASTNode *parentNode) const;
     QString printValue() const;
     QString printNode() const;
     std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
     virtual uint8_t FlatCompileOPCode(int &curStackOffset) const = 0;
+    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
     std::unique_ptr<SimpleNode> deepCopy() const;
 
 private:
     std::unique_ptr<VariableNode> VariableToAssign;
     std::unique_ptr<SimpleNode> ValueToAssign;
 
-
-    // SimpleNode interface
-public:
-    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
 };
 
 #endif // ASSIGNMENTNODE_H

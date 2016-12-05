@@ -187,3 +187,8 @@ const std::unique_ptr<SimpleNode> &FunctionSymbol::getFunctionReturnNode() const
     return FunctionReturnNode;
 }
 
+const std::vector<QSharedPointer<VariableSymbol> > &FunctionSymbol::getFunctionParameters() const
+{
+    return FunctionParameters;
+}
+

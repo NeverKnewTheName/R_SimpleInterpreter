@@ -13,6 +13,8 @@ class ValueNode;
 class SimpleParser;
 class SimpleSymbolTable;
 
+class ASTNode;
+
 class SimpleInterpreter : QObject
 {
     Q_OBJECT
@@ -21,6 +23,7 @@ public:
     SimpleInterpreter(const QString &StringToInterpret, QSharedPointer<SimpleSymbolTable> GlobalSymbolTable);
     ~SimpleInterpreter();
 
+    ASTNode *VisualizeAST();
     std::unique_ptr<ValueNode> interpret();
 private:
     SimpleParser *parser;
