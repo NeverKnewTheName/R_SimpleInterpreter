@@ -32,6 +32,7 @@ public:
     Precedence getPrecedence() const;
 
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -51,6 +52,7 @@ public:
     Precedence getPrecedence() const;
 
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -69,6 +71,7 @@ public:
     Precedence getPrecedence() const;
 
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -88,6 +91,7 @@ public:
     Precedence getPrecedence() const;
 
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -107,6 +111,7 @@ public:
     Precedence getPrecedence() const;
 
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -157,6 +162,7 @@ public:
      * \note Integer and Double ValueNodes are converted to bool before the operation takes place (0 or 0.0 is false whereas everything else  is true)
      */
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -188,6 +194,7 @@ public:
      * \note Integer and Double ValueNodes are converted to bool before the operation takes place (0 or 0.0 is false whereas everything else  is true)
      */
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -207,6 +214,7 @@ public:
     Precedence getPrecedence() const;
 
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -226,6 +234,7 @@ public:
     Precedence getPrecedence() const;
 
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -245,6 +254,7 @@ public:
     Precedence getPrecedence() const;
 
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -264,6 +274,7 @@ public:
     Precedence getPrecedence() const;
 
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -283,6 +294,7 @@ public:
     Precedence getPrecedence() const;
 
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -302,6 +314,7 @@ public:
     Precedence getPrecedence() const;
 
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -321,6 +334,7 @@ public:
     Precedence getPrecedence() const;
 
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -361,6 +375,7 @@ public:
     Precedence getPrecedence() const;
 
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -380,6 +395,7 @@ public:
     Precedence getPrecedence() const;
 
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -399,6 +415,7 @@ public:
     Precedence getPrecedence() const;
 
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -418,6 +435,7 @@ public:
     Precedence getPrecedence() const;
 
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -436,6 +454,7 @@ public:
     Precedence getPrecedence() const;
 
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;

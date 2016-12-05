@@ -24,6 +24,7 @@ public:
     virtual QString printNode() const;
 
     std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
     std::unique_ptr<SimpleNode> deepCopy() const;
 
 private:

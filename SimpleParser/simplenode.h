@@ -54,6 +54,8 @@ public:
     virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
 
     virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode>>> FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode>>> FlatAST, int &maxStackSize, int &CurrentPosition) const;
+    virtual uint8_t FlatCompileOPCode(int &curStackOffset) const = 0;
+
 
     static QString getHumanReadableTypeNameToValueType(const Node::ValueTypes type);
     static bool canConvertTypes(const Node::ValueTypes OrigType, const Node::ValueTypes NewType);
@@ -76,6 +78,7 @@ public:
     virtual QString printNode() const = 0;
     virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
     virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const = 0;
+    virtual uint8_t FlatCompileOPCode(int &curStackOffset) const = 0;
 
 private:
     QSharedPointer<SimpleSymbolTable> ScopedSymbolTable;
@@ -95,7 +98,8 @@ public:
     QString printValue() const;
     QString printNode() const;
 
-    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;    
+    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
+    virtual uint8_t FlatCompileOPCode(int &curStackOffset) const = 0;
 
     std::unique_ptr<SimpleNode> deepCopy() const;
 };

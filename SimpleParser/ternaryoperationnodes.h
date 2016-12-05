@@ -52,6 +52,7 @@ public:
     Precedence getPrecedence() const;
 
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;

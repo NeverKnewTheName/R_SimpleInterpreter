@@ -35,6 +35,7 @@ public:
     QString printValue() const;
     QString printNode() const;
     std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
 private:
     QString ProgramName;

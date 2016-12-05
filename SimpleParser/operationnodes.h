@@ -113,6 +113,7 @@ public:
     virtual Precedence getPrecedence() const = 0;
 
     virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
+    virtual uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -142,6 +143,7 @@ public:
     virtual Precedence getPrecedence() const = 0;
 
     virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
+    virtual uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
@@ -174,6 +176,7 @@ public:
     virtual Precedence getPrecedence() const = 0;
 
     virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
+    virtual uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;

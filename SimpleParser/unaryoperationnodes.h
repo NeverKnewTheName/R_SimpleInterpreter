@@ -43,6 +43,7 @@ public:
      * \warning Only use this operation on Integer ValueNodes
      */
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -75,6 +76,7 @@ public:
      * \warning Only use this operation on Integer ValueNodes
      */
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -109,6 +111,7 @@ public:
      * \warning Only use this operation on Integer ValueNodes
      */
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -141,6 +144,7 @@ public:
      * \warning Only use this operation on Integer or Double ValueNodes
      */
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -171,6 +175,7 @@ public:
      * \warning Only use this operation on Integer or Double ValueNodes
      */
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -222,6 +227,7 @@ public:
      * \note If the passed ValueNode equals 0 (or 0.0) it is treated as Bool false, otherwise Bool true
      */
     std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -272,6 +278,7 @@ public:
      * \warning Only use this operation on Integer ValueNodes
      */
     virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
+    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     virtual QString printValue() const;
     virtual QString printNode() const;
