@@ -163,6 +163,7 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
         CurSymblTbl = SavedSymbolTable;
         return QSharedPointer<FunctionSymbol>();
     }
+    Node::ValueTypes returnType = DeclaredFuncSymbol->getReturnType();
     SharedSimpleTokenPtr token = CurrentToken;
 
     if(CurrentToken->getTokenType() == SimpleToken::LCurlyParan)
@@ -200,12 +201,19 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
         }
 
         std::unique_ptr<SimpleNode> ReturnStatementNode = ReturnStatement();
-
+        if(!SimpleNode::canConvertTypes(returnType, ReturnStatementNode->getReturnType()))
+        {
+            TypeError(CurrentToken, QString("Expected: %1 but got: %2")
+                      .arg(SimpleNode::getHumanReadableTypeNameToValueType(returnType))
+                      .arg(SimpleNode::getHumanReadableTypeNameToValueType(ReturnStatementNode->getReturnType()))
+                      );
+            return QSharedPointer<FunctionSymbol>();
+        }
         eat(SimpleToken::RCurlyParan);
 
         DeclaredFuncSymbol->addFunctionExpressions(FuncExpressions);
         DeclaredFuncSymbol->addFunctionReturnStatement(std::move(ReturnStatementNode));
-        if(DeclaredFuncSymbol->getReturnType() == Node::ErrorType)
+        if(returnType == Node::ErrorType)
         {
             //            CurSymblTbl = &SymblTbl;
 
@@ -264,6 +272,19 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDeclaration()
                 return QSharedPointer<FunctionSymbol>();
             }
             parameters.push_back(varSymbolDeclaration);
+            if(CurrentToken->getTokenType() != SimpleToken::CommaDelim)
+            {
+                break;
+            }
+            else
+            {
+                eat(SimpleToken::CommaDelim);
+                if(CurrentToken->getTokenType() != SimpleToken::TypeName)
+                {
+                    SyntacticError(CurrentToken, QString("Expected another VariableDeclaration after CommaDelimiter!"));
+                    return QSharedPointer<FunctionSymbol>();
+                }
+            }
         }
 
         eat(SimpleToken::RParan);
@@ -322,12 +343,12 @@ std::unique_ptr<SimpleNode> SimpleParser::VarDefinition()
 
         node = std::unique_ptr<SimpleNode>(
                     new AssignmentNode(
-//                        std::move(
-                            std::unique_ptr<VariableNode>(
-                                new VariableNode(
-                                    VarDeclarationSymbol
-                                    )
-//                                )
+                        //                        std::move(
+                        std::unique_ptr<VariableNode>(
+                            new VariableNode(
+                                VarDeclarationSymbol
+                                )
+                            //                                )
                             ),
                         std::move(nodeTwo)
                         )
@@ -398,7 +419,7 @@ std::unique_ptr<SimpleNode> SimpleParser::ReturnStatement()
         node = Expression();
         if(node == nullptr)
         {
-            return nullptr;
+            node = std::unique_ptr<SimpleNode>(new VoidValueNode());
         }
         eat(SimpleToken::SemiColonDelim);
     }
@@ -1436,15 +1457,34 @@ std::unique_ptr<SimpleNode> SimpleParser::Symbol()
             std::vector<std::unique_ptr<SimpleNode>> FuncParams;
             std::unique_ptr<SimpleNode> curParam;
             eat(SimpleToken::LParan);
-            do
+            bool CommaDelimSet = false;
+            bool expressionFound = true;
+            while(expressionFound == true)
             {
                 curParam = Expression();
                 if(curParam != nullptr)
                 {
                     //ToDO !!!
                     FuncParams.emplace_back(std::move(curParam));
+                    if(CurrentToken->getTokenType() == SimpleToken::CommaDelim)
+                    {
+                        eat(SimpleToken::CommaDelim);
+                        CommaDelimSet = true;
+                    }
+                    else
+                    {
+                        CommaDelimSet = false;
+                        break;
+                    }
+                } else
+                {
+                    expressionFound = false;
+                    if (CommaDelimSet == true)
+                    {
+                        SyntacticError(CurrentToken, QString("Expected Expression after CommaDelimiter!"));
+                    }
                 }
-            }while(curParam != nullptr);
+            }
             eat(SimpleToken::RParan);
             node.reset(new FunctionCallNode(varID, CurSymblTbl, FuncParams));
             if(node->getReturnType() == Node::ErrorType)

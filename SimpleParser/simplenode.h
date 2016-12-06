@@ -57,7 +57,7 @@ public:
     virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
 
     virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode>>> FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode>>> FlatAST, int &maxStackSize, int &CurrentPosition) const;
-    virtual uint8_t FlatCompileOPCode(int &curStackOffset) const = 0;
+    virtual uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
 
     static QString getHumanReadableTypeNameToValueType(const Node::ValueTypes type);
@@ -81,13 +81,14 @@ public:
     virtual QString printNode() const = 0;
     virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
     virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const = 0;
-    virtual uint8_t FlatCompileOPCode(int &curStackOffset) const = 0;
+    virtual uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
 private:
     QSharedPointer<SimpleSymbolTable> ScopedSymbolTable;
 };
 
 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+
 class EOFNode : public SimpleNode
 {
 public:
@@ -102,7 +103,7 @@ public:
     QString printNode() const;
 
     std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
-    virtual uint8_t FlatCompileOPCode(int &curStackOffset) const = 0;
+    virtual uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     std::unique_ptr<SimpleNode> deepCopy() const;
 };

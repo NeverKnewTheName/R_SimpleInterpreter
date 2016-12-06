@@ -73,6 +73,11 @@ std::unique_ptr<ValueNode> AssignmentNode::visit(QSharedPointer<SimpleStack> Sta
     return relatedSymbol->getValue(StackToUse);
 }
 
+uint8_t AssignmentNode::FlatCompileOPCode(int &curStackOffset) const
+{
+
+}
+
 std::unique_ptr<SimpleNode> AssignmentNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new AssignmentNode(*this));

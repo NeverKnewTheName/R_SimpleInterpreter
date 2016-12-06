@@ -58,6 +58,8 @@ private:
     QString LexerString;
     SharedSimpleTokenPtr CurrentToken;
     int PosInInputString;
+
+    static const QString LexerRegularExpression;
 };
 
 #endif // SIMPLELEXER_H

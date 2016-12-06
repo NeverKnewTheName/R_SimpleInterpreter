@@ -43,7 +43,7 @@ public:
 public:
     Node::ValueTypes getReturnType() const;
     std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
-    uint8_t FlatCompileOPCode(int &curStackOffset) const;
+    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     // ControlNode interface
 public:
@@ -81,7 +81,7 @@ public:
 public:
     Node::ValueTypes getReturnType() const;
     virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
-    uint8_t FlatCompileOPCode(int &curStackOffset) const;
+    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     // ControlNode interface
 public:
@@ -117,7 +117,7 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
     std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
-    uint8_t FlatCompileOPCode(int &curStackOffset) const;
+    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     // ControlNode interface
 public:

@@ -1,6 +1,6 @@
 #include "simpleflatcompiler.h"
 
-SimpleFlatCompiler::SimpleFlatCompiler(QObject *parent) : QObject(parent)
+SimpleFlatCompiler::SimpleFlatCompiler(std::unique_ptr<SimpleNode> AST, QObject *parent) : QObject(parent)
 {
 
 }

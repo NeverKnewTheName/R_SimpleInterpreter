@@ -155,6 +155,9 @@ QString SimpleToken::convertTokenTypeToString(SimpleToken::TokenType type)
     case Colon:
         typeString = QString(":");
         break;
+    case CommaDelim:
+        typeString = QString(",");
+        break;
     case SemiColonDelim:
         typeString = QString(";");
         break;
@@ -645,4 +648,25 @@ QString ControlToken::printValue() const
 QString ControlToken::printToken() const
 {
     return QString("{ControlToken}:{%1}").arg(printValue());
+}
+
+CommaDelimToken::CommaDelimToken(const int TokenPos, const int TokenLen) :
+    SimpleToken(SimpleToken::CommaDelim, TokenPos, TokenLen)
+{
+
+}
+
+CommaDelimToken::~CommaDelimToken()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+QString CommaDelimToken::printValue() const
+{
+    return SimpleToken::convertTokenTypeToString(type);
+}
+
+QString CommaDelimToken::printToken() const
+{
+    return QString("{CommaDelimToken}:{%1}").arg(printValue());
 }

@@ -1,6 +1,8 @@
 #include "valuenode.h"
 #include "simplestack.h"
 
+//#include "astvisualizer.h"
+
 #include <QDebug>
 
 ValueNode::ValueNode() :
@@ -11,14 +13,14 @@ ValueNode::ValueNode() :
 
 ValueNode::ValueNode(const ValueNode &valueNodeToCopy) :
     SimpleNode(),
-    valueType(valueNodeToCopy.getValueType()),
+    valueType(valueNodeToCopy.getReturnType()),
     value(valueNodeToCopy.getValue())
 {
     qDebug() << __PRETTY_FUNCTION__;
 }
 
 ValueNode::ValueNode(ValueNode &&valueNodeToMove) :
-    valueType(valueNodeToMove.getValueType()),
+    valueType(valueNodeToMove.getReturnType()),
     value(valueNodeToMove.getValue())
 {
     qDebug() << __PRETTY_FUNCTION__;
@@ -60,19 +62,19 @@ Node::NodeType ValueNode::getNodeType() const
 
 Node::ValueTypes ValueNode::getReturnType() const
 {
-    return getValueType();
+    return valueType;
 }
 
 ValueNode &ValueNode::operator=(const ValueNode &value)
 {
-    valueType = value.getValueType();
+    valueType = value.getReturnType();
     this->value = value.getValue();
     return *this;
 }
 
 ValueNode &ValueNode::operator=(ValueNode &&value)
 {
-    valueType = value.getValueType();
+    valueType = value.getReturnType();
     this->value = value.getValue();
     return *this;
 }
@@ -80,11 +82,6 @@ ValueNode &ValueNode::operator=(ValueNode &&value)
 const QVariant ValueNode::getValue() const
 {
     return value;
-}
-
-Node::ValueTypes ValueNode::getValueType() const
-{
-    return valueType;
 }
 
 QString ValueNode::printValue() const
@@ -127,4 +124,51 @@ std::unique_ptr<ValueNode> ValueNode::visit(QSharedPointer<SimpleStack> StackToU
 std::unique_ptr<SimpleNode> ValueNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new ValueNode(*this));
+}
+
+VoidValueNode::VoidValueNode()
+{
+
+}
+
+VoidValueNode::~VoidValueNode()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+Node::NodeType VoidValueNode::getNodeType() const
+{
+    return Node::Value;
+}
+
+Node::ValueTypes VoidValueNode::getReturnType() const
+{
+    return Node::Void;
+}
+
+//ASTNode *VoidValueNode::VisualizeNode(ASTNode *parentNode) const
+//{
+//    ASTNode *voidASTNode = new ASTNode("VoidValue",parentNode);
+//    return voidASTNode;
+//}
+
+QString VoidValueNode::printValue() const
+{
+    return QString("Void");
+}
+
+QString VoidValueNode::printNode() const
+{
+    return QString("{(VoidValueNode):(Void)}");
+}
+
+std::unique_ptr<ValueNode> VoidValueNode::visit(QSharedPointer<SimpleStack> StackToUse) const
+{
+    Q_UNUSED(StackToUse)
+    return std::unique_ptr<ValueNode>(new VoidValueNode());
+}
+
+const QVariant VoidValueNode::getValue() const
+{
+    return QVariant(QString("Void"));
 }

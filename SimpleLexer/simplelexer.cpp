@@ -19,9 +19,11 @@
 #define REGEX_OPERATION             11
 #define REGEX_IDENTIFIER            12
 
+const QString SimpleLexer::LexerRegularExpression("((return)|(Integer|Double|Bool|String|Void)|(?:\"((?:\\\\\"|.)*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\{|\\)|\\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|\\+{1,2}|\\-{1,2}|[!~\\*\\/%\\?;,:])|([_a-zA-Z]\\w*))");
+
 SimpleLexer::SimpleLexer(QObject *parent) :
     QObject(parent),
-    regEx(QString("((return)|(Integer|Double|Bool|String|Void)|(?:\"((?:\\\\\"|.)*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\{|\\)|\\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|\\+{1,2}|\\-{1,2}|[!~\\*\\/%\\?;:])|([_a-zA-Z]\\w*))")),
+    regEx(LexerRegularExpression),
     CurrentToken(new EOFToken(0,0)),
     PosInInputString(0)
 {
@@ -29,7 +31,7 @@ SimpleLexer::SimpleLexer(QObject *parent) :
 
 SimpleLexer::SimpleLexer(const QString &InputString, QObject *parent) :
     QObject(parent),
-    regEx(QString("((return)|(Integer|Double|Bool|String|Void)|(?:\"((?:\\\\\"|.)*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\{|\\)|\\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|\\+{1,2}|\\-{1,2}|[!~\\*\\/%\\?;:])|([_a-zA-Z]\\w*))")),
+    regEx(LexerRegularExpression),
     InputString(InputString),
     LexerString(InputString),
     CurrentToken(new EOFToken(0,0)),
@@ -299,6 +301,11 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
                 {
                     //Colon
                     Token = SharedSimpleTokenPtr(new ColonToken(PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
+                }
+                else if(!operatorString.compare(QString(",")))
+                {
+                    //CommaDelim
+                    Token = SharedSimpleTokenPtr(new CommaDelimToken(PosInInputString, regExMatch.capturedLength(REGEX_WHOLE)));
                 }
                 else if(!operatorString.compare(QString(";")))
                 {

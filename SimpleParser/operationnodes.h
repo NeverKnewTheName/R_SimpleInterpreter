@@ -86,20 +86,11 @@ public:
 
     virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
 
-    virtual QString printValue() const = 0;
-    virtual QString printNode() const = 0;
-
+public:
     std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
+
 protected:
     Node::ValueTypes returnType;
-
-    // SimpleNode interface
-public:
-    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
-
-    // SimpleNode interface
-public:
-    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const = 0;
 };
 
 class UnaryOperationNode : public OperationNode
@@ -109,21 +100,12 @@ public:
     UnaryOperationNode(const UnaryOperationNode &ToCopy);
     virtual ~UnaryOperationNode();
     ArityTypes getArityType() const;
-    virtual OperationTypes getOpType() const = 0;
-    virtual Operation getOp() const = 0;
-    virtual Associativity getAssociativity() const = 0;
-    virtual Precedence getPrecedence() const = 0;
 
-    virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
-    virtual uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
-    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
+    //virtual uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
 
     virtual ASTNode *VisualizeNode(ASTNode *parentNode) const;
-    virtual QString printValue() const = 0;
-    virtual QString printNode() const = 0;
 protected:
     std::unique_ptr<SimpleNode> UnaryOPRightChild;
     Node::ValueTypes implicitCastRightChild;
@@ -136,27 +118,16 @@ public:
     BinaryOperationNode(const BinaryOperationNode &ToCopy);
     virtual ~BinaryOperationNode();
     ArityTypes getArityType() const;
-    virtual OperationTypes getOpType() const = 0;
-    virtual Operation getOp() const = 0;
-    virtual Associativity getAssociativity() const = 0;
-    virtual Precedence getPrecedence() const = 0;
-
-    virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
-    virtual uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
-    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
 
     virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
 
     virtual ASTNode *VisualizeNode(ASTNode *parentNode) const;
-    virtual QString printValue() const = 0;
-    virtual QString printNode() const = 0;
+
 protected:
     std::unique_ptr<SimpleNode> BinaryOPLeftChild;
     std::unique_ptr<SimpleNode> BinaryOPRightChild;
     Node::ValueTypes implicitCastLeftChild;
     Node::ValueTypes implicitCastRightChild;
-
 };
 
 
@@ -167,21 +138,12 @@ public:
     TernaryOperationNode(const TernaryOperationNode &ToCopy);
     virtual ~TernaryOperationNode();
     ArityTypes getArityType() const;
-    virtual OperationTypes getOpType() const = 0;
-    virtual Operation getOp() const = 0;
-    virtual Associativity getAssociativity() const = 0;
-    virtual Precedence getPrecedence() const = 0;
-
-    virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
-    virtual uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
-    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
+    //virtual uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
 
     virtual ASTNode *VisualizeNode(ASTNode *parentNode) const;
-    virtual QString printValue() const = 0;
-    virtual QString printNode() const = 0;
+
 protected:
     std::unique_ptr<SimpleNode> TernaryOPLeftChild;
     std::unique_ptr<SimpleNode> TernaryOPMidChild;
@@ -189,7 +151,6 @@ protected:
     Node::ValueTypes implicitCastLeftChild;
     Node::ValueTypes implicitCastMidChild;
     Node::ValueTypes implicitCastRightChild;
-
 };
 
 #endif // OPERATIONNODES_H

@@ -51,6 +51,7 @@ public:
         RightShift,
         QMark,
         Colon,
+        CommaDelim,
         SemiColonDelim,
         If,
         Else,
@@ -320,6 +321,19 @@ public:
 
 private:
     const Node::ValueTypes type;
+};
+
+class CommaDelimToken : public SimpleToken
+{
+public:
+    CommaDelimToken(const int TokenPos, const int TokenLen);
+    ~CommaDelimToken();
+
+
+    // SimpleToken interface
+public:
+    QString printValue() const;
+    QString printToken() const;
 };
 
 class SemiColonDelimToken : public SimpleToken

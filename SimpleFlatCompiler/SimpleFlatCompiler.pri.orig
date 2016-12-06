@@ -1,0 +1,15 @@
+DEPENDPATH += $$PWD
+INCLUDEPATH += $$PWD
+
+SOURCES += \
+<<<<<<< HEAD
+    $$PWD/simpleflatcompiler.cpp
+
+HEADERS += \
+    $$PWD/simpleflatcompiler.h
+=======
+    $$PWD/flatopcodecompiler.cpp
+
+HEADERS += \
+    $$PWD/flatopcodecompiler.h
+>>>>>>> 0614799f97c15ca37ec009b329493be8ecc06177

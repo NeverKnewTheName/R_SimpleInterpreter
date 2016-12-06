@@ -21,8 +21,11 @@ public:
     QString printValue() const;
     QString printNode() const;
     std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
-    virtual uint8_t FlatCompileOPCode(int &curStackOffset) const;
+<<<<<<< HEAD
+    virtual uint8_t FlatCompileOPCode(int &curStackOffset) const = 0;
+=======
     std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
+>>>>>>> 0614799f97c15ca37ec009b329493be8ecc06177
     std::unique_ptr<SimpleNode> deepCopy() const;
 
 private:

@@ -126,6 +126,11 @@ std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > SimpleNode::FlatComp
     return std::move(FlatAST);
 }
 
+uint8_t SimpleNode::FlatCompileOPCode(int &curStackOffset) const
+{
+
+}
+
 EOFNode::EOFNode()
 {
 }
@@ -162,9 +167,19 @@ std::unique_ptr<ValueNode> EOFNode::visit(QSharedPointer<SimpleStack> StackToUse
     return std::unique_ptr<ValueNode>(new ValueNode());
 }
 
+uint8_t EOFNode::FlatCompileOPCode(int &curStackOffset) const
+{
+
+}
+
 std::unique_ptr<SimpleNode> EOFNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new EOFNode());
 }
 
 
+
+uint8_t ScopedNode::FlatCompileOPCode(int &curStackOffset) const
+{
+
+}

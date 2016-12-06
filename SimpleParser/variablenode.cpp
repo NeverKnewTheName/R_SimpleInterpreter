@@ -6,6 +6,8 @@
 #include <vector>
 #include <memory>
 
+#include "astvisualizer.h"
+
 VariableNode::VariableNode(QSharedPointer<ValueSymbol> relatedVariableSymbol) :
     SimpleNode(relatedVariableSymbol->getReturnType()),
     RelatedVariableSymbol(relatedVariableSymbol)
