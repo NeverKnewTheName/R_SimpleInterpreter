@@ -146,8 +146,6 @@ String func(Integer b)
 return func(add(a, 3));
 
 
-
-
 Integer a = 5;
 
 Integer add(Integer a, Integer c)
@@ -205,3 +203,16 @@ String func(Integer b)
 };
 
 return func(add(4 5));
+
+
+
+
+
+Integer a = 4;
+
+Integer Fak(Integer val)
+{
+    return ((val > 0) ? val * Fak(val-1) : 1;
+}
+
+return Fak(a);

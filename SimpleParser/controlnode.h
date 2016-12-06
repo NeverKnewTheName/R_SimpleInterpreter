@@ -8,7 +8,7 @@
 
 class SimpleSymbolTable;
 
-class ControlNode : public SimpleNode
+class ControlNode : public NonTerminalNode
 {
 public:
     typedef enum _ControlType
@@ -44,16 +44,7 @@ public:
     // SimpleNode interface
 public:
     virtual Node::NodeType getNodeType() const;
-    virtual Node::ValueTypes getReturnType() const = 0;
-    virtual QString printValue() const = 0;
-    virtual QString printNode() const = 0;
-    virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const = 0;
 
-    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
-
-    // SimpleNode interface
-public:
-    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const = 0;
 };
 
 // // // // // // // // // // // // // // // //
@@ -61,38 +52,39 @@ public:
 class ScopedControlNode : public ControlNode
 {
 public:
-    ScopedControlNode();
+    ScopedControlNode(const QString &ScopeName);
     ScopedControlNode(const ScopedControlNode &ToCopy);
     virtual ~ScopedControlNode();
 
     const QSharedPointer<SimpleSymbolTable> &getScopedControlNodeSymbolTable() const;
+
+    const QString &getScopeName() const;
+
+    virtual void AddScopeExpression(std::unique_ptr<SimpleNode> Expression);
+
+    void setScopeReturnType(const Node::ValueTypes &value);
+
+    // SimpleNode interface
+public:
+    virtual Node::ValueTypes getReturnType() const;
+    virtual ASTNode *VisualizeNode(ASTNode *parentNode) const;
+    virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
+
+    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
+
+    //Must copy shared pointer to ScopeSymbolTable
+    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
 
 protected:
     bool EnterScope(QSharedPointer<SimpleStack> StackToUse) const;
     bool ExitScope(QSharedPointer<SimpleStack> StackToUse) const;
 
 private:
-    QSharedPointer<SimpleSymbolTable> ScopeSymbolTable;
-
-    // SimpleNode interface
-public:
-    virtual Node::ValueTypes getReturnType() const = 0;
-    virtual QString printValue() const = 0;
-    virtual QString printNode() const = 0;
-    virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const = 0;
-
-    //Must copy shared pointer to ScopeSymbolTable
-    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
-
-    // ControlNode interface
-public:
-    virtual ControlNode::ControlType getControlType() const = 0;
-    virtual ControlNode::SpecificControlType getSpecificControlType() const = 0;
-
-    // SimpleNode interface
-public:
-    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
     static unsigned int ScopeCntr;
+    const QString ScopeName;
+    QSharedPointer<SimpleSymbolTable> ScopeSymbolTable;
+    Node::ValueTypes ScopeReturnType;
+    std::vector<std::unique_ptr<SimpleNode>> ScopeExpressions;
 };
 
 // // // // // // // // // // // // // // // //

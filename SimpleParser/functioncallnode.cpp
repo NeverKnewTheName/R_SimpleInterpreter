@@ -154,10 +154,6 @@ std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FunctionCallNode::Fl
     {
         FlatAST = (*it)->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
     }
-    //    for(const std::unique_ptr<SimpleNode> &expr : FunctionExpressions)
-    //    {
-    //        FlatAST = expr->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
-    //    }
 
     FlatAST = RelatedSymbol->getFunctionReturnNode()->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
 

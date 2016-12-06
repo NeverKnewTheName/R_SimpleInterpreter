@@ -183,3 +183,38 @@ uint8_t ScopedNode::FlatCompileOPCode(int &curStackOffset) const
 {
 
 }
+
+TerminalNode::TerminalNode()
+{
+
+}
+
+TerminalNode::~TerminalNode()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+bool TerminalNode::IsTerminal() const
+{
+    return true;
+}
+
+bool NonTerminalNode::IsTerminal() const
+{
+    return false;
+}
+
+NonTerminalNode::NonTerminalNode()
+{
+
+}
+
+NonTerminalNode::~NonTerminalNode()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+Node::NodeType ScopeNode::getNodeType() const
+{
+    return Node::Scope;
+}

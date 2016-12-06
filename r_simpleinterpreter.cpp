@@ -26,6 +26,9 @@
 
 #include <QGraphicsScene>
 
+#include <QPrinter>
+#include <QPrintDialog>
+
 R_SimpleInterpreter::R_SimpleInterpreter(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::R_SimpleInterpreter),
@@ -103,6 +106,17 @@ void R_SimpleInterpreter::on_pushButton_clicked()
     myScene->addItem(interpreter.VisualizeAST());
     ui->graphicsView->setScene(myScene);
 
+//#define _PRINT_AST_
+#ifdef _PRINT_AST_
+    QPrinter printer;
+    if (QPrintDialog(&printer).exec() == QDialog::Accepted) {
+        printer.setPageOrientation(QPageLayout::Landscape);
+        QPainter painter(&printer);
+        painter.setRenderHint(QPainter::Antialiasing);
+        myScene->render(&painter);
+    }
+#endif
+
     ui->lineEdit_2->setText(result->getValue().value<QString>());
 }
 
@@ -142,7 +156,7 @@ void R_SimpleInterpreter::receiveLexerHTMLFormattedErrMsg(QString HTMLFormattedE
 void R_SimpleInterpreter::populateSymbolTableView(QSharedPointer<SimpleSymbolTable> symbolTable, QStandardItem *SymbolTableModel)
 {
     std::vector<QSharedPointer<SimpleSymbolTableEntry>> symbolTableEntries = symbolTable->getSymbolTableEntries();
-    for(QSharedPointer<SimpleSymbolTableEntry> &entry : symbolTableEntries)
+    for(const QSharedPointer<SimpleSymbolTableEntry> &entry : symbolTableEntries)
     {
         QStandardItem *entryItem = new QStandardItem(entry->PrintSymbolType());
         QList<QStandardItem*> row;

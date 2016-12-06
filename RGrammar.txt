@@ -1,35 +1,37 @@
-Program                  :   (VarDefinition)* (FunctionDefinition)* (Expression ";")* ReturnStatement
-FunctionDefinition       :   FunctionDeclaration "{" (VarDefinition)* (Expression ";")* ReturnStatement "}"
-FunctionDeclaration      :   ReturnType ID "("(VarDeclaration)*")"
-ReturnType               :   TypeName | "Void"
-VarDefinition            :   VarDeclaration ("=" Expression)? ";"
+Program                  :   (VarDefinition)* (FunctionDefinition)* (Statement)* ReturnStatement
+FunctionDefinition       :   FunctionDeclaration '{' (VarDefinition)* (Statement)* ReturnStatement '}'  ##Probably will forbid definition without declation
+FunctionDeclaration      :   ReturnType ID '(' (VarDeclaration (',' VarDeclaration)*)? *')'
+VarDefinition            :   VarDeclaration ( ('=' Statement) | ';' )  ##Probably will forbid definition without declation
 VarDeclaration           :   TypeName VariableID 
-ReturnStatement          :   "return"  Expression? ";"
+Block                    :   '{' Statement* ReturnStatement? '}'
+ReturnStatement          :   ('return'  Statement | ';') | Statement
+Statement                :   Expression ';'
 Expression               :   AssignmentExpression 
-AssignmentExpression     :   (VariableID ( "=" | "+=" | "-=" | "*=" | "/=" | "%="  | ">>="  | "<<="  | "&="  | "|="  | "^=" ))? ConditionalExpression
-ConditionalExpression    :   LogicalORExpression  ( "?" ConditionalExpression ":" ConditionalExpression )*
-LogicalORExpression      :   LogicalXORExpression        ( "||" LogicalXORExpression )*
-LogicalXORExpression     :   LogicalANDExpression        ( "^^" LogicalANDExpression )*
-LogicalANDExpression     :   BitwiseORExpression         ( "&&" BitwiseORExpression )*
-BitwiseORExpression      :   BitwiseXORExpression        ( "|" BitwiseXORExpression )*
-BitwiseXORExpression     :   BitwiseANDExpression        ( "^" BitwiseANDExpression )*
-BitwiseANDExpression     :   EqualityExpression          ( "&" EqualityExpression )*
-EqualityExpression       :   RelationalExpression        ( ( "==" | "!=" ) RelationalExpression )*
-RelationalExpression     :   ShiftExpression             ( ( "<" | ">" | "<=" | ">=" ) ShiftExpression )*
-ShiftExpression          :   AdditiveExpression          ( ( "<<" | ">>" ) AdditiveExpression )*
-AdditiveExpression       :   MultiplicativeExpression    ( ( "+" | "-" ) MultiplicativeExpression )*
-MultiplicativeExpression :   UnaryExpression             ( ( "*" | "/" | "%" ) UnaryExpression )*
-UnaryExpression          :   (( "++" | "--" ) VariableID) | (( "+" | "-" | "~" | "!" | "("TypeName")" )* PostFixExpression)
-TypeName                 :   "Integer" | "Double" | "Bool" | "String"   ## Parsed by the LEXER
-PostFixExpression        :   ( VariableID ( "++" | "--" ) ) | PrimaryExpression
-PrimaryExpression        :   Value | Symbol | "(" Expression ")" | FunctionInvocation
+AssignmentExpression     :   (VariableID ( '=' | '+=' | '-=' | '*=' | '/=' | '%='  | '>>='  | '<<='  | '&='  | '|='  | '^=' ))? ConditionalExpression
+ConditionalExpression    :   LogicalORExpression  ( '?' ConditionalExpression ':' ConditionalExpression )*
+LogicalORExpression      :   LogicalXORExpression        ( '||' LogicalXORExpression )*
+LogicalXORExpression     :   LogicalANDExpression        ( '^^' LogicalANDExpression )*
+LogicalANDExpression     :   BitwiseORExpression         ( '&&' BitwiseORExpression )*
+BitwiseORExpression      :   BitwiseXORExpression        ( '|' BitwiseXORExpression )*
+BitwiseXORExpression     :   BitwiseANDExpression        ( '^' BitwiseANDExpression )*
+BitwiseANDExpression     :   EqualityExpression          ( '&' EqualityExpression )*
+EqualityExpression       :   RelationalExpression        ( ( '==' | '!=' ) RelationalExpression )*
+RelationalExpression     :   ShiftExpression             ( ( '<' | '>' | '<=' | '>=' ) ShiftExpression )*
+ShiftExpression          :   AdditiveExpression          ( ( '<<' | '>>' ) AdditiveExpression )*
+AdditiveExpression       :   MultiplicativeExpression    ( ( '+' | '-' ) MultiplicativeExpression )*
+MultiplicativeExpression :   UnaryExpression             ( ( '*' | '/' | '%' ) UnaryExpression )*
+UnaryExpression          :   (( '++' | '--' ) VariableID) | (( '+' | '-' | '~' | '!' | '('TypeName')' )* PostFixExpression)
+PostFixExpression        :   ( VariableID ( '++' | '--' ) ) | PrimaryExpression
+PrimaryExpression        :   Value | Symbol | '(' Expression ')' | FunctionInvocation
 Value                    :   Integer | Double | Bool | String           ## Parsed by the LEXER
 Symbol                   :   Data | VariableID
-FunctionInvocation       :   ID"(" (Expression)* ")"
-Data                     :   "D"Integer                                 ## Parsed by the LEXER
+FunctionInvocation       :   ID'(' (Expression (',' Expression)*)? ')'
+Data                     :   'D'Integer                                 ## Parsed by the LEXER
 VariableID               :   ID                                         ## Parsed by the LEXER
 Integer                  :   \d+
-Double                   :   \d+"."\d+
-Bool                     :   "true" | "false"
-String                   :   """(\w*)"""
+Double                   :   \d+'.'\d+
+Bool                     :   'true' | 'false'
+String                   :   '"'(\w*)'"'
 ID                       :   ( [_a-zA-Z] \w* )
+ReturnType               :   TypeName | 'Void'
+TypeName                 :   'Integer' | 'Double' | 'Bool' | 'String'   ## Parsed by the LEXER
