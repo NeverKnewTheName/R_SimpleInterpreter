@@ -15,11 +15,9 @@ TEMPLATE = app
 SOURCES += \
     main.cpp\
     r_simpleinterpreter.cpp \
-    astvisualizer.cpp
 
 HEADERS  += \
     r_simpleinterpreter.h \
-    astvisualizer.h
 
 FORMS    += \
     r_simpleinterpreter.ui
@@ -33,3 +31,4 @@ include(SimpleSymbolTable/SimpleSymbolTable.pri)
 include(SimpleStack/SimpleStack.pri)
 include(SimpleFlatCompiler/SimpleFlatCompiler.pri)
 include(SimpleNodeVisitor/SimpleNodeVisitor.pri)
+include(SimpleASTVisualizer/SimpleASTVisualizer.pri)

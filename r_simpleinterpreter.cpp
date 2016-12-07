@@ -19,6 +19,7 @@
 
 
 #include "simpleastinterpretervisitor.h"
+#include "astvisualizervisitor.h"
 
 #include <QMessageBox>
 #include <QThread>
@@ -93,7 +94,7 @@ void R_SimpleInterpreter::on_pushButton_clicked()
 
     std::unique_ptr<SimpleNode> parseTree = std::move(parse.ParseToAST());
 
-    astInterpreter.visit(std::move(parseTree));
+    astInterpreter.visit(parseTree->deepCopy());
     std::unique_ptr<ValueNode> result = astInterpreter.getInterpreterResult();
     if(result != nullptr)
     {
@@ -110,9 +111,14 @@ void R_SimpleInterpreter::on_pushButton_clicked()
     populateSymbolTableView(GlobalSymbolTable, SymbolTableModel->invisibleRootItem());
     ui->SymbolTableView->setModel(SymbolTableModel);
 
-//    QGraphicsScene *myScene = new QGraphicsScene();
-//    myScene->addItem(interpreter.VisualizeAST());
-//    ui->graphicsView->setScene(myScene);
+    ASTVisualizerVisitor ASTVisualizer;
+
+    ASTVisualizer.visit(parseTree->deepCopy());
+
+    ASTNode *rootASTNode = ASTVisualizer.getVisualizedASTRootNode();
+    QGraphicsScene *myScene = new QGraphicsScene();
+    myScene->addItem(rootASTNode);
+    ui->graphicsView->setScene(myScene);
 
 //#define _PRINT_AST_
 #ifdef _PRINT_AST_
