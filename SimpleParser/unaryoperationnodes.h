@@ -31,6 +31,8 @@ public:
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
+    Node::ValueTypes getTypeToCastTo() const;
+
     /**
      * \brief Increments Integer Values by one and returns the result as a new ValueNode
      *
@@ -47,12 +49,15 @@ public:
 
     QString printValue() const;
     QString printNode() const;
+
+    std::unique_ptr<SimpleNode> deepCopy() const;
+
 private:
     Node::ValueTypes typeToCastTo;
 
-    // SimpleNode interface
+    // SimpleNodeVisitable interface
 public:
-    std::unique_ptr<SimpleNode> deepCopy() const;
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class IncrementNode : public UnaryArithmeticOperationNode
@@ -86,8 +91,14 @@ public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
 
+    bool getIsPre() const;
+
 private:
     const bool IsPre;
+
+    // SimpleNodeVisitable interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class DecrementNode : public UnaryArithmeticOperationNode
@@ -120,8 +131,14 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+    bool getIsPre() const;
+
 private:
     const bool IsPre;
+
+    // SimpleNodeVisitable interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class PositiveNode : public UnaryArithmeticOperationNode
@@ -153,6 +170,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNodeVisitable interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class NegativeNode : public UnaryArithmeticOperationNode
@@ -184,6 +205,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNodeVisitable interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class UnaryLogicalOperationNode : public UnaryOperationNode
@@ -236,6 +261,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNodeVisitable interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class UnaryBitwiseOperationNode : public UnaryOperationNode
@@ -287,6 +316,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNodeVisitable interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 #endif // UNARYOPERATIONNODES_H

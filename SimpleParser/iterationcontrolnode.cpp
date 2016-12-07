@@ -3,6 +3,7 @@
 #include "valuenode.h"
 #include "simplesymboltable.h"
 #include "simplestack.h"
+#include "simplenodevisitor.h"
 
 #include <QDebug>
 
@@ -133,7 +134,7 @@ QString WhileLoopNode::printNode() const
 
 std::unique_ptr<SimpleNode> WhileLoopNode::deepCopy() const
 {
-    return std::unique_ptr<SimpleNode>(new WhileLoopNode(*this));
+//    return std::unique_ptr<SimpleNode>(new WhileLoopNode(*this));
 }
 
 
@@ -150,7 +151,7 @@ DoWhileLoopNode::~DoWhileLoopNode()
 
 std::unique_ptr<SimpleNode> DoWhileLoopNode::deepCopy() const
 {
-    return std::unique_ptr<SimpleNode>(new DoWhileLoopNode(*this));
+//    return std::unique_ptr<SimpleNode>(new DoWhileLoopNode(*this));
 }
 
 std::unique_ptr<ValueNode> DoWhileLoopNode::visit(QSharedPointer<SimpleStack> StackToUse) const
@@ -172,4 +173,10 @@ QString DoWhileLoopNode::printValue() const
 QString DoWhileLoopNode::printNode() const
 {
     return QString("{(DoWhileLoopNode):(%1)}").arg(printValue());
+}
+
+
+void ForLoopNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<ForLoopNode>(new ForLoopNode(*this)));
 }

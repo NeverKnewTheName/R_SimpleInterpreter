@@ -10,6 +10,7 @@
 #include "simplestack.h"
 
 #include "astvisualizer.h"
+#include "simplenodevisitor.h"
 
 FunctionCallNode::FunctionCallNode(
         const QString &FunctionName,
@@ -161,4 +162,25 @@ std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FunctionCallNode::Fl
     CurrentPosition++;
 
     return std::move(FlatAST);
+}
+
+QSharedPointer<FunctionSymbol> FunctionCallNode::getRelatedSymbol() const
+{
+    return RelatedSymbol;
+}
+
+const std::vector<std::unique_ptr<SimpleNode> > &FunctionCallNode::getFuncArgs() const
+{
+    return FuncArgs;
+}
+
+QSharedPointer<SimpleSymbolTable> FunctionCallNode::getCurrentSymbolTable() const
+{
+    return CurrentSymbolTable;
+}
+
+
+void FunctionCallNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<FunctionCallNode>(new FunctionCallNode(*this)));
 }

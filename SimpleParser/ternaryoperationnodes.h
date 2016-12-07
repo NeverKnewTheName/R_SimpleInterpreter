@@ -61,6 +61,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNodeVisitable interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class TernaryBitwiseOperationNode : public TernaryOperationNode

@@ -5,7 +5,7 @@
 
 class VariableNode;
 
-class AssignmentNode : public SimpleNode
+class AssignmentNode : public NonTerminalNode
 {
 public:
 //    AssignmentNode();
@@ -25,10 +25,18 @@ public:
     std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+    const std::unique_ptr<VariableNode> &getVariableToAssign() const;
+
+    const std::unique_ptr<SimpleNode> &getValueToAssign() const;
+
 private:
     std::unique_ptr<VariableNode> VariableToAssign;
     std::unique_ptr<SimpleNode> ValueToAssign;
 
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 #endif // ASSIGNMENTNODE_H

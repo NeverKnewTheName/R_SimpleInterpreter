@@ -1,7 +1,7 @@
 #include "valuenode.h"
 #include "simplestack.h"
 
-//#include "astvisualizer.h"
+#include "simplenodevisitor.h"
 
 #include <QDebug>
 
@@ -12,7 +12,7 @@ ValueNode::ValueNode() :
 }
 
 ValueNode::ValueNode(const ValueNode &valueNodeToCopy) :
-    SimpleNode(),
+    TerminalNode(),
     valueType(valueNodeToCopy.getReturnType()),
     value(valueNodeToCopy.getValue())
 {
@@ -146,12 +146,6 @@ Node::ValueTypes VoidValueNode::getReturnType() const
     return Node::Void;
 }
 
-//ASTNode *VoidValueNode::VisualizeNode(ASTNode *parentNode) const
-//{
-//    ASTNode *voidASTNode = new ASTNode("VoidValue",parentNode);
-//    return voidASTNode;
-//}
-
 QString VoidValueNode::printValue() const
 {
     return QString("Void");
@@ -168,7 +162,24 @@ std::unique_ptr<ValueNode> VoidValueNode::visit(QSharedPointer<SimpleStack> Stac
     return std::unique_ptr<ValueNode>(new VoidValueNode());
 }
 
+std::unique_ptr<SimpleNode> VoidValueNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new VoidValueNode());
+}
+
 const QVariant VoidValueNode::getValue() const
 {
     return QVariant(QString("Void"));
+}
+
+
+void ValueNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<ValueNode>(new ValueNode(*this)));
+}
+
+
+void VoidValueNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<VoidValueNode>(new VoidValueNode(*this)));
 }

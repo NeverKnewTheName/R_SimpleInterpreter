@@ -2,6 +2,7 @@
 
 #include "valuenode.h"
 #include "simplestack.h"
+#include "simplenodevisitor.h"
 
 BinaryArithmeticOperationNode::BinaryArithmeticOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryOperationNode(std::move(leftChild), std::move(rightChild))
@@ -1755,4 +1756,105 @@ QString RightShiftNode::printNode() const
 std::unique_ptr<SimpleNode> RightShiftNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new RightShiftNode(*this));
+}
+
+
+void AdditionNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<AdditionNode>(new AdditionNode(*this)));
+}
+
+void SubtractionNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<SubtractionNode>(new SubtractionNode(*this)));
+}
+
+void MultiplicationNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<MultiplicationNode>(new MultiplicationNode(*this)));
+}
+
+
+void DivisionNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<DivisionNode>(new DivisionNode(*this)));
+}
+
+void ModuloNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<ModuloNode>(new ModuloNode(*this)));
+}
+
+void LogicalANDNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<LogicalANDNode>(new LogicalANDNode(*this)));
+}
+
+void LogicalORNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<LogicalORNode>(new LogicalORNode(*this)));
+}
+
+void LogicalXORNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<LogicalXORNode>(new LogicalXORNode(*this)));
+}
+
+void GreaterNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<GreaterNode>(new GreaterNode(*this)));
+}
+
+
+void LowerNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<LowerNode>(new LowerNode(*this)));
+}
+
+void EqualNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<EqualNode>(new EqualNode(*this)));
+}
+
+void EqualOrGreaterNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<EqualOrGreaterNode>(new EqualOrGreaterNode(*this)));
+}
+
+
+void EqualOrLowerNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<EqualOrLowerNode>(new EqualOrLowerNode(*this)));
+}
+
+void UnequalNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<UnequalNode>(new UnequalNode(*this)));
+}
+
+
+void ANDNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<ANDNode>(new ANDNode(*this)));
+}
+
+void ORNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<ORNode>(new ORNode(*this)));
+}
+
+
+void XORNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<XORNode>(new XORNode(*this)));
+}
+
+void LeftShiftNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<LeftShiftNode>(new LeftShiftNode(*this)));
+}
+
+void RightShiftNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<RightShiftNode>(new RightShiftNode(*this)));
 }

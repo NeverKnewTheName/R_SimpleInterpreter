@@ -3,7 +3,7 @@
 
 #include "simplenode.h"
 
-class ValueNode : public SimpleNode
+class ValueNode : public TerminalNode
 {
 public:
 
@@ -23,18 +23,21 @@ public:
 
     // SimpleNode interface
 public:
-    Node::NodeType getNodeType() const;
-    Node::ValueTypes getReturnType() const;
-    QString printValue() const;
-    QString printNode() const;
-    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
-//    uint8_t FlatCompileOPCode(int &curStackOffset) const;
+    virtual Node::NodeType getNodeType() const;
+    virtual Node::ValueTypes getReturnType() const;
+    virtual QString printValue() const;
+    virtual QString printNode() const;
+    virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
 
-    std::unique_ptr<SimpleNode> deepCopy() const;
+    virtual std::unique_ptr<SimpleNode> deepCopy() const;
 
 private:
     Node::ValueTypes valueType;
     QVariant value;
+
+    // SimpleNodeVisitable interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class VoidValueNode : public ValueNode
@@ -47,14 +50,19 @@ public:
 public:
     Node::NodeType getNodeType() const;
     Node::ValueTypes getReturnType() const;
-//    ASTNode *VisualizeNode(ASTNode *parentNode) const;
     QString printValue() const;
     QString printNode() const;
     std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
+    std::unique_ptr<SimpleNode> deepCopy() const;
 
     // ValueNode interface
 public:
     const QVariant getValue() const;
+
+
+    // SimpleNodeVisitable interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 

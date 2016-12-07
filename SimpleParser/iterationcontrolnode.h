@@ -3,7 +3,7 @@
 
 #include "controlnode.h"
 
-class IterationControlNode : public ScopedControlNode
+class IterationControlNode : public ControlNode
 {
 public:
     IterationControlNode();
@@ -64,6 +64,10 @@ public:
     QString printValue() const;
     QString printNode() const;
     std::unique_ptr<SimpleNode> deepCopy() const;
+
+    // SimpleNodeVisitable interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 // // // // // // // // // // // // // // // // // // // // // //

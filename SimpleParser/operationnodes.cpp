@@ -38,7 +38,8 @@ UnaryOperationNode::UnaryOperationNode(std::unique_ptr<SimpleNode> rightChild) :
 }
 
 UnaryOperationNode::UnaryOperationNode(const UnaryOperationNode &ToCopy) :
-    UnaryOPRightChild(ToCopy.UnaryOPRightChild->deepCopy())
+    UnaryOPRightChild(ToCopy.UnaryOPRightChild->deepCopy()),
+    implicitCastRightChild(ToCopy.implicitCastRightChild)
 {
 
 }
@@ -72,6 +73,16 @@ ASTNode *UnaryOperationNode::VisualizeNode(ASTNode *parentNode) const
     return UnaryOPASTNode;
 }
 
+const std::unique_ptr<SimpleNode> &UnaryOperationNode::getUnaryOPRightChild() const
+{
+    return UnaryOPRightChild;
+}
+
+Node::ValueTypes UnaryOperationNode::getImplicitCastRightChild() const
+{
+    return implicitCastRightChild;
+}
+
 
 BinaryOperationNode::BinaryOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> rightChild) :
     BinaryOPLeftChild(std::move(leftChild)),
@@ -81,7 +92,9 @@ BinaryOperationNode::BinaryOperationNode(std::unique_ptr<SimpleNode> leftChild, 
 
 BinaryOperationNode::BinaryOperationNode(const BinaryOperationNode &ToCopy) :
     BinaryOPLeftChild(std::unique_ptr<SimpleNode>(ToCopy.BinaryOPLeftChild->deepCopy())),
-    BinaryOPRightChild(std::unique_ptr<SimpleNode>(ToCopy.BinaryOPRightChild->deepCopy()))
+    BinaryOPRightChild(std::unique_ptr<SimpleNode>(ToCopy.BinaryOPRightChild->deepCopy())),
+    implicitCastLeftChild(ToCopy.implicitCastLeftChild),
+    implicitCastRightChild(ToCopy.implicitCastRightChild)
 {
 }
 
@@ -116,6 +129,26 @@ ASTNode *BinaryOperationNode::VisualizeNode(ASTNode *parentNode) const
     return BinaryOPASTNode;
 }
 
+const std::unique_ptr<SimpleNode> &BinaryOperationNode::getBinaryOPLeftChild() const
+{
+    return BinaryOPLeftChild;
+}
+
+const std::unique_ptr<SimpleNode> &BinaryOperationNode::getBinaryOPRightChild() const
+{
+    return BinaryOPRightChild;
+}
+
+Node::ValueTypes BinaryOperationNode::getImplicitCastLeftChild() const
+{
+    return implicitCastLeftChild;
+}
+
+Node::ValueTypes BinaryOperationNode::getImplicitCastRightChild() const
+{
+    return implicitCastRightChild;
+}
+
 TernaryOperationNode::TernaryOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> midChild, std::unique_ptr<SimpleNode> rightChild) :
     TernaryOPLeftChild(std::move(leftChild)),
     TernaryOPMidChild(std::move(midChild)),
@@ -126,7 +159,10 @@ TernaryOperationNode::TernaryOperationNode(std::unique_ptr<SimpleNode> leftChild
 TernaryOperationNode::TernaryOperationNode(const TernaryOperationNode &ToCopy) :
     TernaryOPLeftChild(ToCopy.TernaryOPLeftChild->deepCopy()),
     TernaryOPMidChild(ToCopy.TernaryOPMidChild->deepCopy()),
-    TernaryOPRightChild(ToCopy.TernaryOPRightChild->deepCopy())
+    TernaryOPRightChild(ToCopy.TernaryOPRightChild->deepCopy()),
+    implicitCastLeftChild(ToCopy.implicitCastLeftChild),
+    implicitCastMidChild(ToCopy.implicitCastMidChild),
+    implicitCastRightChild(ToCopy.implicitCastRightChild)
 {
 
 }
@@ -172,4 +208,34 @@ ASTNode *TernaryOperationNode::VisualizeNode(ASTNode *parentNode) const
     TernaryOPRightChild->VisualizeNode(TernaryOPASTNode);
 
     return TernaryOPASTNode;
+}
+
+const std::unique_ptr<SimpleNode> &TernaryOperationNode::getTernaryOPLeftChild() const
+{
+    return TernaryOPLeftChild;
+}
+
+const std::unique_ptr<SimpleNode> &TernaryOperationNode::getTernaryOPMidChild() const
+{
+    return TernaryOPMidChild;
+}
+
+const std::unique_ptr<SimpleNode> &TernaryOperationNode::getTernaryOPRightChild() const
+{
+    return TernaryOPRightChild;
+}
+
+Node::ValueTypes TernaryOperationNode::getImplicitCastLeftChild() const
+{
+    return implicitCastLeftChild;
+}
+
+Node::ValueTypes TernaryOperationNode::getImplicitCastMidChild() const
+{
+    return implicitCastMidChild;
+}
+
+Node::ValueTypes TernaryOperationNode::getImplicitCastRightChild() const
+{
+    return implicitCastRightChild;
 }

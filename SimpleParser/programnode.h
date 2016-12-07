@@ -10,7 +10,7 @@ class SimpleSymbolTable;
 class VariableSymbol;
 class FunctionSymbol;
 
-class ProgramNode : public SimpleNode
+class ProgramNode : public NonTerminalNode
 {
 public:
     ProgramNode(
@@ -28,6 +28,11 @@ public:
     bool BuildProgramStack(QSharedPointer<SimpleStack> StackToUse) const;
     bool DestroyProgramStack(QSharedPointer<SimpleStack> StackToUse) const;
 
+    QSharedPointer<SimpleSymbolTable> getProgramSymbolTable() const;
+
+    const std::vector<std::unique_ptr<SimpleNode> > &getProgramExpressions() const;
+    const std::unique_ptr<SimpleNode> &getProgramReturnStatement() const;
+
     // SimpleNode interface
 public:
     Node::NodeType getNodeType() const;
@@ -40,6 +45,7 @@ public:
 //    uint8_t FlatCompileOPCode(int &curStackOffset) const;
     std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
 
+
 private:
     QString ProgramName;
     Node::ValueTypes type;
@@ -47,6 +53,10 @@ private:
     std::unique_ptr<SimpleNode> ProgramReturnStatement;
     QSharedPointer<SimpleSymbolTable> ParentSymbolTable;
     QSharedPointer<SimpleSymbolTable> ProgramSymbolTable;
+
+    // SimpleNodeVisitable interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 

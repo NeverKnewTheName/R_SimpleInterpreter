@@ -8,6 +8,7 @@
 #include "simplestack.h"
 
 #include "astvisualizer.h"
+#include "simplenodevisitor.h"
 
 ProgramNode::ProgramNode(const QString &ProgramName,
         QSharedPointer<SimpleSymbolTable> SymbolTableToUse
@@ -20,7 +21,7 @@ ProgramNode::ProgramNode(const QString &ProgramName,
 
 ProgramNode::ProgramNode(const ProgramNode &ToCopy) :
     ProgramName(ToCopy.ProgramName),
-    ProgramSymbolTable(ToCopy.ParentSymbolTable),
+    ProgramSymbolTable(ToCopy.ProgramSymbolTable),
     ProgramReturnStatement(ToCopy.ProgramReturnStatement->deepCopy())
 {
     for(const std::unique_ptr<SimpleNode> &expr : ToCopy.ProgramExpressions)
@@ -161,4 +162,25 @@ std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > ProgramNode::FlatCom
     CurrentPosition++;
 
     return std::move(FlatAST);
+}
+
+const std::unique_ptr<SimpleNode> &ProgramNode::getProgramReturnStatement() const
+{
+    return ProgramReturnStatement;
+}
+
+const std::vector<std::unique_ptr<SimpleNode> > &ProgramNode::getProgramExpressions() const
+{
+    return ProgramExpressions;
+}
+
+QSharedPointer<SimpleSymbolTable> ProgramNode::getProgramSymbolTable() const
+{
+    return ProgramSymbolTable;
+}
+
+
+void ProgramNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<ProgramNode>(new ProgramNode(*this)));
 }

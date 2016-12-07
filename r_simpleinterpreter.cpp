@@ -17,6 +17,9 @@
 #include "functionsymbol.h"
 #include "variablesymbol.h"
 
+
+#include "simpleastinterpretervisitor.h"
+
 #include <QMessageBox>
 #include <QThread>
 #include <QDebug>
@@ -84,9 +87,14 @@ void R_SimpleInterpreter::on_pushButton_clicked()
 
 
     SimpleParser parse(lex, GlobalSymbolTable);
-    SimpleInterpreter interpreter(&parse);
+//    SimpleInterpreter interpreter(&parse);
 
-    std::unique_ptr<ValueNode> result = interpreter.interpret();
+    SimpleASTInterpreterVisitor astInterpreter;
+
+    std::unique_ptr<SimpleNode> parseTree = std::move(parse.ParseToAST());
+
+    astInterpreter.visit(std::move(parseTree));
+    std::unique_ptr<ValueNode> result = astInterpreter.getInterpreterResult();
     if(result != nullptr)
     {
         qDebug() << "Result Node: " << result->printNode();
@@ -102,9 +110,9 @@ void R_SimpleInterpreter::on_pushButton_clicked()
     populateSymbolTableView(GlobalSymbolTable, SymbolTableModel->invisibleRootItem());
     ui->SymbolTableView->setModel(SymbolTableModel);
 
-    QGraphicsScene *myScene = new QGraphicsScene();
-    myScene->addItem(interpreter.VisualizeAST());
-    ui->graphicsView->setScene(myScene);
+//    QGraphicsScene *myScene = new QGraphicsScene();
+//    myScene->addItem(interpreter.VisualizeAST());
+//    ui->graphicsView->setScene(myScene);
 
 //#define _PRINT_AST_
 #ifdef _PRINT_AST_

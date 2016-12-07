@@ -215,18 +215,12 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
         DeclaredFuncSymbol->addFunctionReturnStatement(std::move(ReturnStatementNode));
         if(returnType == Node::ErrorType)
         {
-            //            CurSymblTbl = &SymblTbl;
-
             CurSymblTbl = SavedSymbolTable;
             return QSharedPointer<FunctionSymbol>();
         }
-
-        //        eat(SimpleToken::SemiColonDelim);
     }
     else
     {
-        //        CurSymblTbl = &SymblTbl;
-
         SyntacticError(CurrentToken, QString("Expected FunctionDeclaration!"));
         CurSymblTbl = SavedSymbolTable;
         return QSharedPointer<FunctionSymbol>();
@@ -237,7 +231,6 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
     CurSymblTbl = SavedSymbolTable;
 
     qDebug() << __PRETTY_FUNCTION__ << ": " << DeclaredFuncSymbol->PrintToSymbolToString();
-    //    CurSymblTbl = &SymblTbl;
     return DeclaredFuncSymbol;
 }
 
@@ -343,12 +336,10 @@ std::unique_ptr<SimpleNode> SimpleParser::VarDefinition()
 
         node = std::unique_ptr<SimpleNode>(
                     new AssignmentNode(
-                        //                        std::move(
                         std::unique_ptr<VariableNode>(
                             new VariableNode(
                                 VarDeclarationSymbol
                                 )
-                            //                                )
                             ),
                         std::move(nodeTwo)
                         )

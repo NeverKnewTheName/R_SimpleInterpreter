@@ -7,9 +7,9 @@
 #include "simplestack.h"
 
 #include "astvisualizer.h"
+#include "simplenodevisitor.h"
 
 AssignmentNode::AssignmentNode(std::unique_ptr<VariableNode> VariableToAssign, std::unique_ptr<SimpleNode> ValueToAssign) :
-    SimpleNode(VariableToAssign->getReturnType()),
     VariableToAssign(std::move(VariableToAssign)),
     ValueToAssign(std::move(ValueToAssign))
 {
@@ -18,7 +18,6 @@ AssignmentNode::AssignmentNode(std::unique_ptr<VariableNode> VariableToAssign, s
 }
 
 AssignmentNode::AssignmentNode(const AssignmentNode &ToCopy) :
-    SimpleNode(ToCopy.getReturnType()),
     VariableToAssign(dynamic_cast<VariableNode*>(ToCopy.VariableToAssign->deepCopy().release())),
     ValueToAssign(ToCopy.ValueToAssign->deepCopy())
 {
@@ -83,6 +82,17 @@ std::unique_ptr<SimpleNode> AssignmentNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new AssignmentNode(*this));
 }
 
+const std::unique_ptr<VariableNode> &AssignmentNode::getVariableToAssign() const
+{
+    return VariableToAssign;
+}
+
+const std::unique_ptr<SimpleNode> &AssignmentNode::getValueToAssign() const
+{
+    return ValueToAssign;
+}
+
+
 std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > AssignmentNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const
 {
     FlatAST = ValueToAssign->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
@@ -94,3 +104,9 @@ std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > AssignmentNode::Flat
     return std::move(FlatAST);
 }
 
+
+
+void AssignmentNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<AssignmentNode>(new AssignmentNode(*this)));
+}

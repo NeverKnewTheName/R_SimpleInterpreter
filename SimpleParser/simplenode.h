@@ -5,11 +5,14 @@
 #include <QSharedPointer>
 #include <memory>
 
+#include "simplenodevisitable.h"
 
 class ASTNode;
 class ValueNode;
 class SimpleSymbolTable;
 class SimpleStack;
+
+class SimpleNodeVisitor;
 
 namespace Node {
 typedef enum _NodeType
@@ -39,7 +42,7 @@ typedef enum _ValueTypes
 }ValueTypes;
 }
 
-class SimpleNode
+class SimpleNode : public SimpleNodeVisitable
 {
 public:
 
@@ -98,6 +101,7 @@ public:
 
 class ScopeNode : public NonTerminalNode
 {
+public:
     ScopeNode(const QString &ScopeName);
     ScopeNode(QSharedPointer<SimpleSymbolTable> ScopedSymbolTable);
     ScopeNode(const ScopeNode &ToCopy);
@@ -127,6 +131,10 @@ private:
     QSharedPointer<SimpleSymbolTable> ScopeSymbolTable;
     Node::ValueTypes ScopeReturnType;
     std::vector<std::unique_ptr<SimpleNode>> ScopeExpressions;
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
@@ -147,5 +155,9 @@ public:
     virtual uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     std::unique_ptr<SimpleNode> deepCopy() const;
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 #endif // SIMPLENODE_H

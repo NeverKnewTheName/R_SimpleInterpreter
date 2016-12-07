@@ -7,9 +7,10 @@
 #include <memory>
 
 #include "astvisualizer.h"
+#include "simplenodevisitor.h"
 
 VariableNode::VariableNode(QSharedPointer<ValueSymbol> relatedVariableSymbol) :
-    SimpleNode(relatedVariableSymbol->getReturnType()),
+    TerminalNode(),
     RelatedVariableSymbol(relatedVariableSymbol)
 {
 }
@@ -74,4 +75,10 @@ QString VariableNode::getVariableName() const
 QSharedPointer<ValueSymbol> VariableNode::getRelatedVariableSymbol() const
 {
     return RelatedVariableSymbol;
+}
+
+
+void VariableNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<VariableNode>(new VariableNode(*this)));
 }

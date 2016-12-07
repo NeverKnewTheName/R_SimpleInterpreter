@@ -5,7 +5,7 @@
 
 class ASTNode;
 
-class OperationNode : public SimpleNode
+class OperationNode : public NonTerminalNode
 {
 public:
     typedef enum _ArityTypes
@@ -106,6 +106,10 @@ public:
     virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
 
     virtual ASTNode *VisualizeNode(ASTNode *parentNode) const;
+    const std::unique_ptr<SimpleNode> &getUnaryOPRightChild() const;
+
+    Node::ValueTypes getImplicitCastRightChild() const;
+
 protected:
     std::unique_ptr<SimpleNode> UnaryOPRightChild;
     Node::ValueTypes implicitCastRightChild;
@@ -122,6 +126,14 @@ public:
     virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
 
     virtual ASTNode *VisualizeNode(ASTNode *parentNode) const;
+
+    const std::unique_ptr<SimpleNode> &getBinaryOPLeftChild() const;
+
+    const std::unique_ptr<SimpleNode> &getBinaryOPRightChild() const;
+
+    Node::ValueTypes getImplicitCastLeftChild() const;
+
+    Node::ValueTypes getImplicitCastRightChild() const;
 
 protected:
     std::unique_ptr<SimpleNode> BinaryOPLeftChild;
@@ -143,6 +155,18 @@ public:
     virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
 
     virtual ASTNode *VisualizeNode(ASTNode *parentNode) const;
+
+    const std::unique_ptr<SimpleNode> &getTernaryOPLeftChild() const;
+
+    const std::unique_ptr<SimpleNode> &getTernaryOPMidChild() const;
+
+    const std::unique_ptr<SimpleNode> &getTernaryOPRightChild() const;
+
+    Node::ValueTypes getImplicitCastLeftChild() const;
+
+    Node::ValueTypes getImplicitCastMidChild() const;
+
+    Node::ValueTypes getImplicitCastRightChild() const;
 
 protected:
     std::unique_ptr<SimpleNode> TernaryOPLeftChild;

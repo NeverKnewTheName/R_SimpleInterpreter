@@ -14,6 +14,8 @@
 
 #include "astvisualizer.h"
 
+#include "simplenodevisitor.h"
+
 SimpleNode::SimpleNode(Node::ValueTypes valueType) :
     valueType(valueType)
 {
@@ -177,12 +179,11 @@ std::unique_ptr<SimpleNode> EOFNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new EOFNode());
 }
 
-
-
-uint8_t ScopedNode::FlatCompileOPCode(int &curStackOffset) const
+void EOFNode::accept(SimpleNodeVisitor *visitor) const
 {
-
+    visitor->visit(std::unique_ptr<EOFNode>(new EOFNode(*this)));
 }
+
 
 TerminalNode::TerminalNode()
 {
@@ -214,7 +215,87 @@ NonTerminalNode::~NonTerminalNode()
     qDebug() << __PRETTY_FUNCTION__;
 }
 
+ScopeNode::ScopeNode(const QString &ScopeName)
+{
+    //ToDO
+}
+
+ScopeNode::ScopeNode(QSharedPointer<SimpleSymbolTable> ScopedSymbolTable)
+{
+    //ToDO
+}
+
+ScopeNode::ScopeNode(const ScopeNode &ToCopy)
+{
+    //ToDO
+}
+
+ScopeNode::~ScopeNode()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
+const QSharedPointer<SimpleSymbolTable> &ScopeNode::GetScopeSymbolTable() const
+{
+    return ScopeSymbolTable;
+}
+
+const QString &ScopeNode::getScopeName() const
+{
+    return ScopeName;
+}
+
+void ScopeNode::AddExpressionToScope(std::unique_ptr<SimpleNode> Expression)
+{
+    //ToDO
+}
+
+void ScopeNode::SetScopeReturnType(const Node::ValueTypes &returnType)
+{
+    //ToDO
+}
+
 Node::NodeType ScopeNode::getNodeType() const
 {
     return Node::Scope;
+}
+
+Node::ValueTypes ScopeNode::getReturnType() const
+{
+    return ScopeReturnType;
+}
+
+ASTNode *ScopeNode::VisualizeNode(ASTNode *parentNode) const
+{
+    //ToDO
+}
+
+QString ScopeNode::printValue() const
+{
+    return QString("");
+}
+
+QString ScopeNode::printNode() const
+{
+    return QString("{(ScopeNode):()}");
+}
+
+std::unique_ptr<SimpleNode> ScopeNode::deepCopy() const
+{
+    return std::unique_ptr<SimpleNode>(new ScopeNode(*this));
+}
+
+std::unique_ptr<ValueNode> ScopeNode::visit(QSharedPointer<SimpleStack> StackToUse) const
+{
+    //ToDO
+}
+
+std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > ScopeNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const
+{
+    //ToDO
+}
+
+void ScopeNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<ScopeNode>(new ScopeNode(*this)));
 }

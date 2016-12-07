@@ -33,7 +33,7 @@ ControlNode::ControlType EscapeControlNode::getControlType() const
 
 
 ScopedControlNode::ScopedControlNode(const QString &ScopeName) :
-    ScopeName(ScopeName.append("%1").arg(ScopeCntr++)),
+    ScopeName(QString(ScopeName).append("%1").arg(ScopeCntr++)),
     ScopeSymbolTable(new SimpleSymbolTable(this->ScopeName)),
     ScopeReturnType(Node::Void)
 {
@@ -87,7 +87,7 @@ ASTNode *ScopedControlNode::VisualizeNode(ASTNode *parentNode) const
     new ASTNode(QString("{"), ScopeASTNode);
     for(const std::unique_ptr<SimpleNode> &expression : ScopeExpressions)
     {
-        expression->VisualizeNode(FunctionASTNode);
+        expression->VisualizeNode(ScopeASTNode);
         new ASTNode(QString(";"),ScopeASTNode);
     }
     new ASTNode(QString("}"), ScopeASTNode);

@@ -3,6 +3,8 @@
 #include "valuenode.h"
 #include "simplestack.h"
 
+#include "simplenodevisitor.h"
+
 TernaryArithmeticOperationNode::TernaryArithmeticOperationNode(std::unique_ptr<SimpleNode> leftChild, std::unique_ptr<SimpleNode> midChild, std::unique_ptr<SimpleNode> rightChild) :
     TernaryOperationNode(std::move(leftChild), std::move(midChild), std::move(rightChild))
 {
@@ -185,4 +187,10 @@ TernaryBitwiseOperationNode::TernaryBitwiseOperationNode(std::unique_ptr<SimpleN
 OperationNode::OperationTypes TernaryBitwiseOperationNode::getOpType() const
 {
     return OperationNode::Bitwise;
+}
+
+
+void ConditionalNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<ConditionalNode>(new ConditionalNode(*this)));
 }

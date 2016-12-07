@@ -5,7 +5,7 @@
 #include <QSharedPointer>
 #include "variablesymbol.h"
 
-class VariableNode : public SimpleNode
+class VariableNode : public TerminalNode
 {
 public:
     VariableNode(QSharedPointer<ValueSymbol> relatedVariableSymbol);
@@ -17,11 +17,10 @@ public:
 
     // SimpleNode interface
 public:
-
     virtual Node::NodeType getNodeType() const;
     virtual Node::ValueTypes getReturnType() const;
     virtual ASTNode *VisualizeNode(ASTNode *parentNode) const;
-    QString printValue() const;
+    virtual QString printValue() const;
     virtual QString printNode() const;
 
     std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
@@ -30,7 +29,9 @@ public:
 private:
     QSharedPointer<ValueSymbol> RelatedVariableSymbol;    
 
-
+    // SimpleNodeVisitable interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 #endif // VARIABLENODE_H

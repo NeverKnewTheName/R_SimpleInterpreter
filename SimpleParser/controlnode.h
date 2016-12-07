@@ -89,7 +89,7 @@ private:
 
 // // // // // // // // // // // // // // // //
 
-class SelectionControlNode : public ScopedControlNode
+class SelectionControlNode : public ControlNode
 {
 public:
     SelectionControlNode();

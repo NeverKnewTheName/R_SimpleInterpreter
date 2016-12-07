@@ -7,7 +7,7 @@
 class SimpleSymbolTable;
 class FunctionSymbol;
 
-class FunctionCallNode : public SimpleNode
+class FunctionCallNode : public NonTerminalNode
 {
 public:
     FunctionCallNode(
@@ -30,12 +30,22 @@ public:
 
     std::unique_ptr<SimpleNode> deepCopy() const;
     std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
+    QSharedPointer<FunctionSymbol> getRelatedSymbol() const;
+
+    const std::vector<std::unique_ptr<SimpleNode> > &getFuncArgs() const;
+
+    QSharedPointer<SimpleSymbolTable> getCurrentSymbolTable() const;
+
 private:
     QString FunctionName;
     std::vector<std::unique_ptr<SimpleNode>> FuncArgs;
     QSharedPointer<FunctionSymbol> RelatedSymbol;
     QSharedPointer<SimpleSymbolTable> CurrentSymbolTable;
     Node::ValueTypes returnType;
+
+    // SimpleNodeVisitable interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 #endif // FUNCTIONCALLNODE_H

@@ -7,6 +7,7 @@
 #include "programnode.h"
 #include "simplestack.h"
 
+#include "simplenodevisitor.h"
 
 UnaryArithmeticOperationNode::UnaryArithmeticOperationNode(std::unique_ptr<SimpleNode> rightChild) :
     UnaryOperationNode(std::move(rightChild))
@@ -140,6 +141,11 @@ std::unique_ptr<SimpleNode> TypeCastNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new TypeCastNode(*this));
 }
 
+Node::ValueTypes TypeCastNode::getTypeToCastTo() const
+{
+    return typeToCastTo;
+}
+
 IncrementNode::IncrementNode(std::unique_ptr<SimpleNode> rightChild, const bool isPre) :
     UnaryArithmeticOperationNode(std::move(rightChild)),
     IsPre(isPre)
@@ -211,6 +217,11 @@ std::unique_ptr<SimpleNode> IncrementNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new IncrementNode(*this));
 }
 
+bool IncrementNode::getIsPre() const
+{
+    return IsPre;
+}
+
 DecrementNode::DecrementNode(std::unique_ptr<SimpleNode> rightChild, const bool isPre) :
     UnaryArithmeticOperationNode(std::move(rightChild)),
     IsPre(isPre)
@@ -280,6 +291,11 @@ QString DecrementNode::printNode() const
 std::unique_ptr<SimpleNode> DecrementNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new DecrementNode(*this));
+}
+
+bool DecrementNode::getIsPre() const
+{
+    return IsPre;
 }
 
 PositiveNode::PositiveNode(std::unique_ptr<SimpleNode> rightChild) :
@@ -561,3 +577,41 @@ std::unique_ptr<SimpleNode> OnesComplementNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new OnesComplementNode(*this));
 }
 
+
+
+void TypeCastNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<TypeCastNode>(new TypeCastNode(*this)));
+}
+
+
+void IncrementNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<IncrementNode>(new IncrementNode(*this)));
+}
+
+
+void DecrementNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<DecrementNode>(new DecrementNode(*this)));
+}
+
+void PositiveNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<PositiveNode>(new PositiveNode(*this)));
+}
+
+void NegativeNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<NegativeNode>(new NegativeNode(*this)));
+}
+
+void LogicalNegationNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<LogicalNegationNode>(new LogicalNegationNode(*this)));
+}
+
+void OnesComplementNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<OnesComplementNode>(new OnesComplementNode(*this)));
+}

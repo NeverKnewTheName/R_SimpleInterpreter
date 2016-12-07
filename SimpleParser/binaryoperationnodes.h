@@ -41,6 +41,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class SubtractionNode : public BinaryArithmeticOperationNode
@@ -60,6 +64,10 @@ public:
     // SimpleNode interface
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class MultiplicationNode : public BinaryArithmeticOperationNode
@@ -80,6 +88,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class DivisionNode : public BinaryArithmeticOperationNode
@@ -100,6 +112,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class ModuloNode : public BinaryArithmeticOperationNode
@@ -120,6 +136,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class BinaryLogicalOperationNode : public BinaryOperationNode
@@ -171,6 +191,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class LogicalORNode : public BinaryLogicalOperationNode
@@ -203,6 +227,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class LogicalXORNode : public BinaryLogicalOperationNode
@@ -223,6 +251,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class GreaterNode : public BinaryLogicalOperationNode
@@ -243,6 +275,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class LowerNode : public BinaryLogicalOperationNode
@@ -263,6 +299,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class EqualNode : public BinaryLogicalOperationNode
@@ -283,6 +323,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class EqualOrGreaterNode : public BinaryLogicalOperationNode
@@ -303,6 +347,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class EqualOrLowerNode : public BinaryLogicalOperationNode
@@ -323,6 +371,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class UnequalNode : public BinaryLogicalOperationNode
@@ -343,6 +395,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class BinaryBitwiseOperationNode : public BinaryOperationNode
@@ -384,6 +440,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class ORNode : public BinaryBitwiseOperationNode
@@ -404,6 +464,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class XORNode : public BinaryBitwiseOperationNode
@@ -424,6 +488,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class LeftShiftNode : public BinaryBitwiseOperationNode
@@ -443,6 +511,10 @@ public:
     // SimpleNode interface
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 class RightShiftNode : public BinaryBitwiseOperationNode
@@ -463,6 +535,10 @@ public:
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
+
+    // SimpleNode interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 
