@@ -1,4 +1,4 @@
-Program                  :   (VarDefinition)* (FunctionDefinition)* (Statement)* ReturnStatement
+Program                  :   (VarDefinition | FunctionDefinition | Statement)* ReturnStatement
 FunctionDefinition       :   FunctionDeclaration '{' (VarDefinition)* (Statement)* ReturnStatement '}'  ##Probably will forbid definition without declation
 FunctionDeclaration      :   ReturnType ID '(' (VarDeclaration (',' VarDeclaration)*)? *')'
 VarDefinition            :   VarDeclaration ( ('=' Statement) | ';' )  ##Probably will forbid definition without declation
