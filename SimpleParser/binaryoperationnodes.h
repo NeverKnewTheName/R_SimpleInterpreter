@@ -12,8 +12,6 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
-
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
 
@@ -31,19 +29,13 @@ public:
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
 
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
 
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 
@@ -55,18 +47,11 @@ public:
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
-
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 
@@ -78,19 +63,11 @@ public:
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
-
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 
@@ -102,19 +79,11 @@ public:
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
-
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 
@@ -126,19 +95,11 @@ public:
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
-
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 
@@ -151,13 +112,10 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
-
+    // SimpleNode interface
+public:    
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
-
-    // SimpleNode interface
-public:
     virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
 };
 
@@ -181,19 +139,12 @@ public:
      * \warning Do not use on type String
      * \note Integer and Double ValueNodes are converted to bool before the operation takes place (0 or 0.0 is false whereas everything else  is true)
      */
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
-
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 
@@ -217,19 +168,12 @@ public:
      * \warning Do not use on type String
      * \note Integer and Double ValueNodes are converted to bool before the operation takes place (0 or 0.0 is false whereas everything else  is true)
      */
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
-
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 
@@ -241,19 +185,11 @@ public:
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
-
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 
@@ -265,19 +201,11 @@ public:
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
-
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 
@@ -289,19 +217,11 @@ public:
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
-
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 
@@ -313,19 +233,11 @@ public:
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
-
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 
@@ -337,19 +249,11 @@ public:
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
-
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 
@@ -361,19 +265,11 @@ public:
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
-
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 
@@ -385,19 +281,11 @@ public:
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
-
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 
@@ -411,15 +299,11 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
-
-    virtual QString printValue() const = 0;
-    virtual QString printNode() const = 0;
-
     // SimpleNode interface
 public:
+    virtual QString printValue() const = 0;
+    virtual QString printNode() const = 0;
     virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
-
 };
 
 class ANDNode : public BinaryBitwiseOperationNode
@@ -430,19 +314,11 @@ public:
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
-
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 
@@ -454,19 +330,11 @@ public:
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
-
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 
@@ -478,19 +346,11 @@ public:
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
-
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 
@@ -502,18 +362,11 @@ public:
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
-
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 
@@ -525,19 +378,11 @@ public:
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
 
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
+    // SimpleNode interface
+public:
     QString printValue() const;
     QString printNode() const;
-
-    // SimpleNode interface
-public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-
-
-    // SimpleNode interface
-public:
     void accept(SimpleNodeVisitor *visitor) const;
 };
 

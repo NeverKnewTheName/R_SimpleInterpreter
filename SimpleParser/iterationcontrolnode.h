@@ -15,7 +15,6 @@ public:
 public:
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
-    virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const = 0;
 
     //Must redirect call to ScopeControlNode... copy shared scope symbol table
     virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
@@ -42,8 +41,6 @@ public:
     // SimpleNode interface
 public:
     Node::ValueTypes getReturnType() const;
-    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     // ControlNode interface
 public:
@@ -68,6 +65,10 @@ public:
     // SimpleNodeVisitable interface
 public:
     void accept(SimpleNodeVisitor *visitor) const;
+    const std::unique_ptr<SimpleNode> &getForLoopInitialization() const;
+    const std::unique_ptr<SimpleNode> &getForLoopCondition() const;
+    const std::unique_ptr<SimpleNode> &getForLoopUpdate() const;
+    const std::vector<std::unique_ptr<SimpleNode> > &getForLoopExpressions() const;
 };
 
 // // // // // // // // // // // // // // // // // // // // // //
@@ -84,8 +85,6 @@ public:
     // SimpleNode interface
 public:
     Node::ValueTypes getReturnType() const;
-    virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     // ControlNode interface
 public:
@@ -120,8 +119,6 @@ public:
     // SimpleNode interface
 public:
     std::unique_ptr<SimpleNode> deepCopy() const;
-    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
-    //uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     // ControlNode interface
 public:

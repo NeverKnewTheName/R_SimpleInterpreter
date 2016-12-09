@@ -19,11 +19,9 @@ public:
 public:
     virtual Node::NodeType getNodeType() const;
     virtual Node::ValueTypes getReturnType() const;
-    virtual ASTNode *VisualizeNode(ASTNode *parentNode) const;
     virtual QString printValue() const;
     virtual QString printNode() const;
 
-    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
     std::unique_ptr<SimpleNode> deepCopy() const;
 
 private:

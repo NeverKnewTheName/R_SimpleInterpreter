@@ -49,46 +49,6 @@ public:
 
 // // // // // // // // // // // // // // // //
 
-class ScopedControlNode : public ControlNode
-{
-public:
-    ScopedControlNode(const QString &ScopeName);
-    ScopedControlNode(const ScopedControlNode &ToCopy);
-    virtual ~ScopedControlNode();
-
-    const QSharedPointer<SimpleSymbolTable> &getScopedControlNodeSymbolTable() const;
-
-    const QString &getScopeName() const;
-
-    virtual void AddScopeExpression(std::unique_ptr<SimpleNode> Expression);
-
-    void setScopeReturnType(const Node::ValueTypes &value);
-
-    // SimpleNode interface
-public:
-    virtual Node::ValueTypes getReturnType() const;
-    virtual ASTNode *VisualizeNode(ASTNode *parentNode) const;
-    virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
-
-    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
-
-    //Must copy shared pointer to ScopeSymbolTable
-    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
-
-protected:
-    bool EnterScope(QSharedPointer<SimpleStack> StackToUse) const;
-    bool ExitScope(QSharedPointer<SimpleStack> StackToUse) const;
-
-private:
-    static unsigned int ScopeCntr;
-    const QString ScopeName;
-    QSharedPointer<SimpleSymbolTable> ScopeSymbolTable;
-    Node::ValueTypes ScopeReturnType;
-    std::vector<std::unique_ptr<SimpleNode>> ScopeExpressions;
-};
-
-// // // // // // // // // // // // // // // //
-
 class SelectionControlNode : public ControlNode
 {
 public:
@@ -99,7 +59,6 @@ public:
 public:
     QString printValue() const;
     QString printNode() const;
-    virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const = 0;
 
     //Must redirect call to ScopeControlNode... copy shared scope symbol table
     virtual std::unique_ptr<SimpleNode> deepCopy() const;
@@ -133,7 +92,6 @@ public:
     virtual QString printValue() const;
     virtual QString printNode() const;
     virtual std::unique_ptr<SimpleNode> deepCopy() const;
-    virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const = 0;
 };
 
 // // // // // // // // // // // // // // // //

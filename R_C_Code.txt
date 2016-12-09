@@ -1,0 +1,29 @@
+Variables
+Strong Typing -> 
+    NO Integer, but Int64, UInt64, Int32, UInt32, Int16, UInt16, Int8, UInt8
+    NO Float, but Double with precision!
+    Numerical values have constraints ->
+        Numerical Range of possible values (range or single/multiple value constraints)
+        Cast restrictions!
+        Arithmetic restrictions! (Integer + Double?)
+        
+Functions
+    Restriction on input parameters ->
+        type restrictions as mentioned above
+        deductability
+
+Returns
+    Restictions on output parameters ->
+        type restrictions as mentioned above
+        
+        
+Loops
+    No infinite loops!
+    
+    
+    
+General Restricitons:
+    No dynamic memory allocation!
+    No recursion!
+
+

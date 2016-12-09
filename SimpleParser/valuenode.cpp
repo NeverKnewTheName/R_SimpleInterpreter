@@ -114,13 +114,6 @@ QString ValueNode::printNode() const
     return QString("{(%1):(%2)}").arg(NodeType).arg(value);
 }
 
-std::unique_ptr<ValueNode> ValueNode::visit(QSharedPointer<SimpleStack> StackToUse) const
-{
-    //ToTHINK DOES THIS REALLY WORK?!?!
-    return std::unique_ptr<ValueNode>( new ValueNode(*this));
-}
-
-//ToThink... visit?..
 std::unique_ptr<SimpleNode> ValueNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new ValueNode(*this));
@@ -154,12 +147,6 @@ QString VoidValueNode::printValue() const
 QString VoidValueNode::printNode() const
 {
     return QString("{(VoidValueNode):(Void)}");
-}
-
-std::unique_ptr<ValueNode> VoidValueNode::visit(QSharedPointer<SimpleStack> StackToUse) const
-{
-    Q_UNUSED(StackToUse)
-    return std::unique_ptr<ValueNode>(new VoidValueNode());
 }
 
 std::unique_ptr<SimpleNode> VoidValueNode::deepCopy() const

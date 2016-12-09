@@ -84,11 +84,6 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
-
-public:
-    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
-
 protected:
     Node::ValueTypes returnType;
 };
@@ -101,11 +96,6 @@ public:
     virtual ~UnaryOperationNode();
     ArityTypes getArityType() const;
 
-    //virtual uint8_t FlatCompileOPCode(int &curStackOffset) const;
-
-    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
-
-    virtual ASTNode *VisualizeNode(ASTNode *parentNode) const;
     const std::unique_ptr<SimpleNode> &getUnaryOPRightChild() const;
 
     Node::ValueTypes getImplicitCastRightChild() const;
@@ -122,10 +112,6 @@ public:
     BinaryOperationNode(const BinaryOperationNode &ToCopy);
     virtual ~BinaryOperationNode();
     ArityTypes getArityType() const;
-
-    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
-
-    virtual ASTNode *VisualizeNode(ASTNode *parentNode) const;
 
     const std::unique_ptr<SimpleNode> &getBinaryOPLeftChild() const;
 
@@ -150,11 +136,7 @@ public:
     TernaryOperationNode(const TernaryOperationNode &ToCopy);
     virtual ~TernaryOperationNode();
     ArityTypes getArityType() const;
-    //virtual uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
-    virtual std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const;
-
-    virtual ASTNode *VisualizeNode(ASTNode *parentNode) const;
 
     const std::unique_ptr<SimpleNode> &getTernaryOPLeftChild() const;
 

@@ -27,11 +27,6 @@ Node::ValueTypes OperationNode::getReturnType() const
     return returnType;
 }
 
-std::unique_ptr<ValueNode> OperationNode::visit(QSharedPointer<SimpleStack> StackToUse) const
-{
-    return DoOperation(StackToUse);
-}
-
 UnaryOperationNode::UnaryOperationNode(std::unique_ptr<SimpleNode> rightChild) :
     UnaryOPRightChild(std::move(rightChild))
 {
@@ -52,25 +47,6 @@ UnaryOperationNode::~UnaryOperationNode()
 OperationNode::ArityTypes UnaryOperationNode::getArityType() const
 {
     return OperationNode::Unary;
-}
-
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > UnaryOperationNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const
-{
-    FlatAST = UnaryOPRightChild->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
-
-    FlatAST->emplace_back(deepCopy());
-    CurrentPosition++;
-
-    return std::move(FlatAST);
-}
-
-ASTNode *UnaryOperationNode::VisualizeNode(ASTNode *parentNode) const
-{
-    ASTNode *UnaryOPASTNode = new ASTNode(printNode(),parentNode);
-    new ASTNode(printValue(),UnaryOPASTNode);
-    UnaryOPRightChild->VisualizeNode(UnaryOPASTNode);
-
-    return UnaryOPASTNode;
 }
 
 const std::unique_ptr<SimpleNode> &UnaryOperationNode::getUnaryOPRightChild() const
@@ -106,27 +82,6 @@ BinaryOperationNode::~BinaryOperationNode()
 OperationNode::ArityTypes BinaryOperationNode::getArityType() const
 {
     return OperationNode::Binary;
-}
-
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > BinaryOperationNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const
-{
-    FlatAST = BinaryOPRightChild->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
-    FlatAST = BinaryOPLeftChild->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
-
-    FlatAST->emplace_back(deepCopy());
-    CurrentPosition++;
-
-    return std::move(FlatAST);
-}
-
-ASTNode *BinaryOperationNode::VisualizeNode(ASTNode *parentNode) const
-{
-    ASTNode *BinaryOPASTNode = new ASTNode(printNode(),parentNode);
-    BinaryOPLeftChild->VisualizeNode(BinaryOPASTNode);
-    new ASTNode(printValue(),BinaryOPASTNode);
-    BinaryOPRightChild->VisualizeNode(BinaryOPASTNode);
-
-    return BinaryOPASTNode;
 }
 
 const std::unique_ptr<SimpleNode> &BinaryOperationNode::getBinaryOPLeftChild() const
@@ -183,32 +138,6 @@ OperationNode::ArityTypes TernaryOperationNode::getArityType() const
  * as long as the walker does not catch a node that requires the previous value, it will keep it and simply use another temporary storage
  * -> might be an array with a reasonable size (3 for ternary operations?? what about nesting?)
  */
-
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > TernaryOperationNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const
-{
-    //The special operation node has already been put into the FlatAST -> Add children from here on!
-    FlatAST = TernaryOPRightChild->FlatCompile(std::move(FlatAST),maxStackSize, CurrentPosition);
-    FlatAST = TernaryOPMidChild->FlatCompile(std::move(FlatAST),maxStackSize, CurrentPosition);
-    FlatAST = TernaryOPLeftChild->FlatCompile(std::move(FlatAST),maxStackSize, CurrentPosition);
-
-    FlatAST->emplace_back(deepCopy());
-    CurrentPosition++;
-
-    return std::move(FlatAST);
-}
-
-ASTNode *TernaryOperationNode::VisualizeNode(ASTNode *parentNode) const
-{
-    ASTNode *TernaryOPASTNode = new ASTNode(printNode(),parentNode);
-    QStringList TernaryOpSplit = printValue().split(' ');
-    TernaryOPLeftChild->VisualizeNode(TernaryOPASTNode);
-    new ASTNode(TernaryOpSplit.first(),TernaryOPASTNode);
-    TernaryOPMidChild->VisualizeNode(TernaryOPASTNode);
-    new ASTNode(TernaryOpSplit.last(),TernaryOPASTNode);
-    TernaryOPRightChild->VisualizeNode(TernaryOPASTNode);
-
-    return TernaryOPASTNode;
-}
 
 const std::unique_ptr<SimpleNode> &TernaryOperationNode::getTernaryOPLeftChild() const
 {

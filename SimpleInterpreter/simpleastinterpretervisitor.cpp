@@ -55,10 +55,13 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<AssignmentNode> NodeToVi
 
     if(relatedSymbol->getType() == SimpleSymbolTableEntry::Variable)
     {
-        qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(value), InterpreterStack);
+//        qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(value), InterpreterStack);
+        size_t AddressInStack = qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->getStackAddress();
+        InterpreterStack->StackReplaceAt(AddressInStack, std::move(value));
     }
 
-    InterpreterResult = relatedSymbol->getValue(InterpreterStack);
+    const size_t AddressInstack = relatedSymbol->getStackAddress();
+    InterpreterResult = InterpreterStack->StackAt(AddressInstack);
 }
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<ANDNode> NodeToVisit)
@@ -175,7 +178,9 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<DecrementNode> NodeToVis
 
     if(relatedSymbol->getType() == SimpleSymbolTableEntry::Variable)
     {
-        qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(Result), InterpreterStack);
+//        qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(Result), InterpreterStack);
+        size_t AddressInStack = qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->getStackAddress();
+        InterpreterStack->StackReplaceAt(AddressInStack, std::move(Result));
     }
 
     if(isPre)
@@ -378,7 +383,9 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<FunctionCallNode> NodeTo
     {
         const QSharedPointer<VariableSymbol> &param = FunctionParameters.at(i);
         std::unique_ptr<ValueNode> &argument = EvaluatedFuncArgs.at(i);
-        param->assignValue(std::move(argument), InterpreterStack);
+//        param->assignValue(std::move(argument), InterpreterStack);
+        size_t AddressInStack = param->getStackAddress();
+        InterpreterStack->StackReplaceAt(AddressInStack, std::move(argument));
     }
 
 
@@ -413,7 +420,9 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<IncrementNode> NodeToVis
 
     if(relatedSymbol->getType() == SimpleSymbolTableEntry::Variable)
     {
-        qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(Result), InterpreterStack);
+//        qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(Result), InterpreterStack);
+        size_t AddressInStack = qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->getStackAddress();
+        InterpreterStack->StackReplaceAt(AddressInStack, std::move(Result));
     }
 
     if(isPre)
@@ -699,7 +708,10 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<ValueNode> NodeToVisit)
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<VariableNode> NodeToVisit)
 {
     QSharedPointer<ValueSymbol> RelatedVariableSymbol = NodeToVisit-> getRelatedVariableSymbol();
-    InterpreterResult = RelatedVariableSymbol->getValue(InterpreterStack);
+//    InterpreterResult = RelatedVariableSymbol->getValue(InterpreterStack);
+
+    const size_t AddressInstack = RelatedVariableSymbol->getStackAddress();
+    InterpreterResult = InterpreterStack->StackAt(AddressInstack);
 }
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<VoidValueNode> NodeToVisit)

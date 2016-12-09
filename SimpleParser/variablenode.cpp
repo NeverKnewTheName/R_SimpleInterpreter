@@ -18,7 +18,6 @@ VariableNode::VariableNode(QSharedPointer<ValueSymbol> relatedVariableSymbol) :
 VariableNode::VariableNode(const VariableNode &ToCopy) :
     RelatedVariableSymbol(ToCopy.RelatedVariableSymbol)
 {
-
 }
 
 VariableNode::~VariableNode()
@@ -34,19 +33,6 @@ Node::NodeType VariableNode::getNodeType() const
 Node::ValueTypes VariableNode::getReturnType() const
 {
     return RelatedVariableSymbol->getReturnType();
-}
-
-ASTNode *VariableNode::VisualizeNode(ASTNode *parentNode) const
-{
-    ASTNode *simpleASTNode = new ASTNode(printNode(), parentNode);
-//    RelatedVariableSymbol->getValue() //ToDo...
-    new ASTNode(printValue(), simpleASTNode);
-    return simpleASTNode;
-}
-
-std::unique_ptr<ValueNode> VariableNode::visit(QSharedPointer<SimpleStack> StackToUse) const
-{
-    return RelatedVariableSymbol->getValue(StackToUse);
 }
 
 std::unique_ptr<SimpleNode> VariableNode::deepCopy() const

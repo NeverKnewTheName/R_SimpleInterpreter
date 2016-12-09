@@ -21,7 +21,12 @@ std::unique_ptr<ValueNode> VariableSymbol::getAssignedValue(QSharedPointer<Simpl
     return StackToUse->StackAt(AddressPerScope.back());
 }
 
-bool VariableSymbol::assignValue(std::unique_ptr<SimpleNode> NodeToAssign, QSharedPointer<SimpleStack> StackToUse) const
+size_t VariableSymbol::getStackAddress() const
+{
+    return AddressPerScope.back();
+}
+
+bool VariableSymbol::assignValue(std::unique_ptr<ValueNode> NodeToAssign, QSharedPointer<SimpleStack> StackToUse) const
 {
     std::unique_ptr<ValueNode> newValueNode;// = valueNode; //Save the previous value because it could be referenced in the assignment!!!
 
@@ -37,16 +42,16 @@ bool VariableSymbol::assignValue(std::unique_ptr<SimpleNode> NodeToAssign, QShar
     switch(returnType)
     {
     case Node::Integer:
-        newValueNode.reset(new ValueNode(std::move(NodeToAssign->visit(StackToUse)->getValue().value<int>())));
+        newValueNode.reset(new ValueNode(std::move(NodeToAssign->getValue().value<int>())));
                 break;
     case Node::Double:
-        newValueNode.reset(new ValueNode(std::move(NodeToAssign->visit(StackToUse)->getValue().value<double>())));
+        newValueNode.reset(new ValueNode(std::move(NodeToAssign->getValue().value<double>())));
                 break;
     case Node::Bool:
-        newValueNode.reset(new ValueNode(std::move(NodeToAssign->visit(StackToUse)->getValue().value<bool>())));
+        newValueNode.reset(new ValueNode(std::move(NodeToAssign->getValue().value<bool>())));
                 break;
     case Node::String:
-        newValueNode.reset(new ValueNode(std::move(NodeToAssign->visit(StackToUse)->getValue().value<QString>())));
+        newValueNode.reset(new ValueNode(std::move(NodeToAssign->getValue().value<QString>())));
                 break;
     case Node::Void:
     case Node::ErrorType:
@@ -56,11 +61,11 @@ bool VariableSymbol::assignValue(std::unique_ptr<SimpleNode> NodeToAssign, QShar
 
     size_t Address = AddressPerScope.back();
 
-    qDebug() << "Previous Value: " << StackToUse->StackAt(Address)->visit(StackToUse)->getValue();
+//    qDebug() << "Previous Value: " << StackToUse->StackAt(Address)->getValue();
 
     StackToUse->StackReplaceAt(Address, std::move(newValueNode));
 
-    qDebug() << "Value Assigned: " << StackToUse->StackAt(Address)->visit(StackToUse)->getValue();
+//    qDebug() << "Value Assigned: " << StackToUse->StackAt(Address)->getValue();
 
     return true;
 }
@@ -166,4 +171,10 @@ std::unique_ptr<ValueNode> ConstantValueSymbol::getValue(QSharedPointer<SimpleSt
 {
     Q_UNUSED(StackToUse)
     return std::unique_ptr<ValueNode>(new ValueNode(ConstVal));
+}
+
+
+size_t ConstantValueSymbol::getStackAddress() const
+{
+    return -1; //ToDO
 }

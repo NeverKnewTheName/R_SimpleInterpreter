@@ -24,12 +24,6 @@ public:
 
     void addFunctionExpressions(std::vector<std::unique_ptr<SimpleNode>> &FuncExpressions);
     void addFunctionReturnStatement(std::unique_ptr<SimpleNode> returnNode);
-//    void addVariableDefinition(QSharedPointer<VariableSymbol> newVariable);
-
-    std::unique_ptr<ValueNode> CallFunction(
-            const std::vector<std::unique_ptr<SimpleNode> > &FunctionArguments,
-            QSharedPointer<SimpleStack> StackToUse
-            );
 
     bool checkFunctionArguments(const QVector<std::unique_ptr<SimpleNode>> &FunctionArguments) const;
 

@@ -16,8 +16,7 @@
 
 #include "simplenodevisitor.h"
 
-SimpleNode::SimpleNode(Node::ValueTypes valueType) :
-    valueType(valueType)
+SimpleNode::SimpleNode()
 {
 }
 
@@ -97,13 +96,6 @@ Node::ValueTypes SimpleNode::getReturnType() const
     return Node::ErrorType;
 }
 
-ASTNode *SimpleNode::VisualizeNode(ASTNode *parentNode) const
-{
-    ASTNode *simpleASTNode = new ASTNode(printNode(), parentNode);
-    new ASTNode(printValue(), simpleASTNode);
-    return simpleASTNode;
-}
-
 QString SimpleNode::printValue() const
 {
     return QString("INVALID VALUE");
@@ -112,25 +104,6 @@ QString SimpleNode::printValue() const
 QString SimpleNode::printNode() const
 {
     return QString("{(INVALID NODE):(%1)}").arg(printValue());
-}
-
-std::unique_ptr<ValueNode> SimpleNode::visit(QSharedPointer<SimpleStack> StackToUse) const
-{
-    Q_UNUSED(StackToUse)
-    return std::unique_ptr<ValueNode>( new ValueNode());
-}
-
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > SimpleNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const
-{
-    Q_UNUSED(maxStackSize)
-    FlatAST->emplace_back(deepCopy());
-    CurrentPosition++;
-    return std::move(FlatAST);
-}
-
-uint8_t SimpleNode::FlatCompileOPCode(int &curStackOffset) const
-{
-
 }
 
 EOFNode::EOFNode()
@@ -161,17 +134,6 @@ QString EOFNode::printValue() const
 QString EOFNode::printNode() const
 {
     return QString("{(EOF):(EOF)}");
-}
-
-std::unique_ptr<ValueNode> EOFNode::visit(QSharedPointer<SimpleStack> StackToUse) const
-{
-    Q_UNUSED(StackToUse)
-    return std::unique_ptr<ValueNode>(new ValueNode());
-}
-
-uint8_t EOFNode::FlatCompileOPCode(int &curStackOffset) const
-{
-
 }
 
 std::unique_ptr<SimpleNode> EOFNode::deepCopy() const
@@ -265,11 +227,6 @@ Node::ValueTypes ScopeNode::getReturnType() const
     return ScopeReturnType;
 }
 
-ASTNode *ScopeNode::VisualizeNode(ASTNode *parentNode) const
-{
-    //ToDO
-}
-
 QString ScopeNode::printValue() const
 {
     return QString("");
@@ -283,16 +240,6 @@ QString ScopeNode::printNode() const
 std::unique_ptr<SimpleNode> ScopeNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new ScopeNode(*this));
-}
-
-std::unique_ptr<ValueNode> ScopeNode::visit(QSharedPointer<SimpleStack> StackToUse) const
-{
-    //ToDO
-}
-
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > ScopeNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const
-{
-    //ToDO
 }
 
 void ScopeNode::accept(SimpleNodeVisitor *visitor) const

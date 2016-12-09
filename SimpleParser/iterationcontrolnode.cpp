@@ -51,14 +51,30 @@ Node::ValueTypes ForLoopNode::getReturnType() const
     return Node::Void;
 }
 
-std::unique_ptr<ValueNode> ForLoopNode::visit(QSharedPointer<SimpleStack> StackToUse) const
-{
-
-}
 
 ControlNode::SpecificControlType ForLoopNode::getSpecificControlType() const
 {
     return ControlNode::FOR;
+}
+
+const std::vector<std::unique_ptr<SimpleNode> > &ForLoopNode::getForLoopExpressions() const
+{
+    return ForLoopExpressions;
+}
+
+const std::unique_ptr<SimpleNode> &ForLoopNode::getForLoopUpdate() const
+{
+    return ForLoopUpdate;
+}
+
+const std::unique_ptr<SimpleNode> &ForLoopNode::getForLoopCondition() const
+{
+    return ForLoopCondition;
+}
+
+const std::unique_ptr<SimpleNode> &ForLoopNode::getForLoopInitialization() const
+{
+    return ForLoopInitialization;
 }
 
 void ForLoopNode::executeLoop(QSharedPointer<SimpleStack> StackToUse) const
@@ -107,11 +123,6 @@ Node::ValueTypes WhileLoopNode::getReturnType() const
     return Node::Void;
 }
 
-std::unique_ptr<ValueNode> WhileLoopNode::visit(QSharedPointer<SimpleStack> StackToUse) const
-{
-
-}
-
 ControlNode::SpecificControlType WhileLoopNode::getSpecificControlType() const
 {
     return ControlNode::WHILE;
@@ -152,12 +163,6 @@ DoWhileLoopNode::~DoWhileLoopNode()
 std::unique_ptr<SimpleNode> DoWhileLoopNode::deepCopy() const
 {
 //    return std::unique_ptr<SimpleNode>(new DoWhileLoopNode(*this));
-}
-
-std::unique_ptr<ValueNode> DoWhileLoopNode::visit(QSharedPointer<SimpleStack> StackToUse) const
-{
-    WhileLoopNode::executeLoop(StackToUse);
-    return WhileLoopNode::visit(StackToUse);
 }
 
 ControlNode::SpecificControlType DoWhileLoopNode::getSpecificControlType() const

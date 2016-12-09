@@ -112,54 +112,6 @@ OperationNode::Precedence ConditionalNode::getPrecedence() const
     return OperationNode::ConditionalPrec;
 }
 
-std::unique_ptr<ValueNode> ConditionalNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = TernaryOPLeftChild->visit(StackToUse);
-    //ToDO calculate all values beforehand??? endless recursion ahead!
-//    std::unique_ptr<ValueNode> value2 = TernaryOPMidChild->visit(StackToUse);
-//    std::unique_ptr<ValueNode> value3 = TernaryOPRightChild->visit(StackToUse);
-
-    bool IsTrue = value1->getValue().value<bool>();
-
-    std::unique_ptr<ValueNode> returnValue = IsTrue ? TernaryOPMidChild->visit(StackToUse) : TernaryOPRightChild->visit(StackToUse);
-
-    switch(implicitCastMidChild)
-    {
-    case Node::Integer:
-        if(implicitCastRightChild == Node::Double)
-        {
-            return std::unique_ptr<ValueNode>(new ValueNode(returnValue->getValue().value<double>()));
-        }
-        else if(implicitCastRightChild == Node::Bool)
-        {
-            return std::unique_ptr<ValueNode>(new ValueNode(returnValue->getValue().value<bool>()));
-        }
-        else
-        {
-            return std::unique_ptr<ValueNode>(new ValueNode(returnValue->getValue().value<int>()));
-        }
-        break;
-    case Node::Double:
-        if(implicitCastRightChild == Node::Bool)
-        {
-            return std::unique_ptr<ValueNode>(new ValueNode(returnValue->getValue().value<bool>()));
-        }
-        else
-        {
-            return std::unique_ptr<ValueNode>(new ValueNode(returnValue->getValue().value<double>()));
-        }
-        break;
-    case Node::Bool:
-        return std::unique_ptr<ValueNode>(new ValueNode(returnValue->getValue().value<bool>()));
-        break;
-    case Node::String:
-        return std::unique_ptr<ValueNode>(new ValueNode(returnValue->getValue().value<QString>()));
-        break;
-    default:
-        return std::unique_ptr<ValueNode>(new ValueNode());
-    }
-}
-
 QString ConditionalNode::printValue() const
 {
     return QString("? :");

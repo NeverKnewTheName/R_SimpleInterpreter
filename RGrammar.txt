@@ -1,11 +1,25 @@
-Program                  :   (VarDefinition | FunctionDefinition | Statement)* ReturnStatement
+Program                  :   (VarDefinition | FunctionDefinition | Block)* ReturnStatement
 FunctionDefinition       :   FunctionDeclaration '{' (VarDefinition)* (Statement)* ReturnStatement '}'  ##Probably will forbid definition without declation
-FunctionDeclaration      :   ReturnType ID '(' (VarDeclaration (',' VarDeclaration)*)? *')'
-VarDefinition            :   VarDeclaration ( ('=' Statement) | ';' )  ##Probably will forbid definition without declation
+FunctionDeclaration      :   ReturnType ID '(' ( VarDeclaration ( ',' VarDeclaration )* )? ')'
+VarDefinition            :   VarDeclaration ( ( '=' ExpressionStatement ) | ';' )  ##Probably will forbid definition without declation
 VarDeclaration           :   TypeName VariableID 
-Block                    :   '{' Statement* ReturnStatement? '}'
-ReturnStatement          :   ('return'  Statement | ';') | Statement
-Statement                :   Expression ';'
+Block                    :   '{' Statement* '}' | Statement
+Statement                :   (SelectionStatement | IterationStatement | EscapeStatement) | ExpressionStatement
+SelectionStatement	     :   IfElseStatement | SwitchStatement
+IfElseStatement		     :   IfStatement Block ( ElseStatement Block )*
+IfStatement		         :   'if' '(' Expressions ')' 
+ElseStatement		     :   'else' IfStatement?
+SwitchStatement		     :   'switch' '(' Expression ')' '{' CaseStatement* DefaultStatement '}'
+CaseStatement		     :   'case' Integer ':' Block BreakStatement
+DefaultStatement         :   'default' ':' Block
+IterationStatement 	     :   ForLoopStatement | DoWhileStatement
+ForLoopStatement	     :   'for' '(' Expression ';' Expression ';' Expression ';' ')' Block
+DoWhileStatement	     :   'for' '(' Expression ';' Expression ';' Expression ';' ')' Block
+EscapeStatement          :   ContinueStatement | BreakStatement | ReturnStatement
+ContinueStatement	     :   'continue' ';'
+BreakStatement		     :   'break' ';'
+ReturnStatement          :   'return'  ( ExpressionStatement | ';' )
+ExpressionStatement      :   Expression ';'
 Expression               :   AssignmentExpression 
 AssignmentExpression     :   (VariableID ( '=' | '+=' | '-=' | '*=' | '/=' | '%='  | '>>='  | '<<='  | '&='  | '|='  | '^=' ))? ConditionalExpression
 ConditionalExpression    :   LogicalORExpression  ( '?' ConditionalExpression ':' ConditionalExpression )*
@@ -20,12 +34,12 @@ RelationalExpression     :   ShiftExpression             ( ( '<' | '>' | '<=' | 
 ShiftExpression          :   AdditiveExpression          ( ( '<<' | '>>' ) AdditiveExpression )*
 AdditiveExpression       :   MultiplicativeExpression    ( ( '+' | '-' ) MultiplicativeExpression )*
 MultiplicativeExpression :   UnaryExpression             ( ( '*' | '/' | '%' ) UnaryExpression )*
-UnaryExpression          :   (( '++' | '--' ) VariableID) | (( '+' | '-' | '~' | '!' | '('TypeName')' )* PostFixExpression)
+UnaryExpression          :   ( ( '++' | '--' ) VariableID ) | (( '+' | '-' | '~' | '!' | '(' TypeName ')' )* PostFixExpression )
 PostFixExpression        :   ( VariableID ( '++' | '--' ) ) | PrimaryExpression
 PrimaryExpression        :   Value | Symbol | '(' Expression ')' | FunctionInvocation
 Value                    :   Integer | Double | Bool | String           ## Parsed by the LEXER
 Symbol                   :   Data | VariableID
-FunctionInvocation       :   ID'(' (Expression (',' Expression)*)? ')'
+FunctionInvocation       :   ID'(' ( Expression ( ',' Expression ) * )? ')'
 Data                     :   'D'Integer                                 ## Parsed by the LEXER
 VariableID               :   ID                                         ## Parsed by the LEXER
 Integer                  :   \d+

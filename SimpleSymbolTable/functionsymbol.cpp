@@ -41,50 +41,6 @@ void FunctionSymbol::addFunctionReturnStatement(std::unique_ptr<SimpleNode> retu
     FunctionReturnNode = std::move(returnNode);
 }
 
-//void FunctionSymbol::addVariableDefinition(QSharedPointer<VariableSymbol> newVariable)
-//{
-//    FunctionSymbolTable->addEntry(newVariable);
-//}
-
-std::unique_ptr<ValueNode> FunctionSymbol::CallFunction(
-        const std::vector<std::unique_ptr<SimpleNode> > &FunctionArguments,
-        QSharedPointer<SimpleStack> StackToUse
-        )
-{
-    const size_t NrOfParameters = FunctionParameters.size();
-
-    if(NrOfParameters != FunctionArguments.size())
-    {
-        qDebug() << "Number of passed arguments does not match function parameters!";
-        return std::unique_ptr<ValueNode>( new ValueNode());
-    }
-
-    std::vector<std::unique_ptr<ValueNode>> EvaluatedFuncArgs;
-    for(size_t i = 0; i < NrOfParameters; i++)
-    {
-        EvaluatedFuncArgs.emplace_back(std::move(FunctionArguments.at(i)->visit(StackToUse)));
-    }
-    FunctionSymbolTable->EnterScope(StackToUse);
-
-    for(size_t i = 0; i < NrOfParameters; i++)
-    {
-        QSharedPointer<VariableSymbol> &param = FunctionParameters.at(i);
-        std::unique_ptr<ValueNode> &argument = EvaluatedFuncArgs.at(i);
-        param->assignValue(std::move(argument), StackToUse);
-    }
-
-
-    for(std::unique_ptr<SimpleNode> &expression : FunctionExpressions)
-    {
-        expression->visit(StackToUse);
-    }
-
-    std::unique_ptr<ValueNode> returnValue = FunctionReturnNode->visit(StackToUse);
-
-    FunctionSymbolTable->ExitScope(StackToUse);
-    return returnValue;
-}
-
 QSharedPointer<SimpleSymbolTable> FunctionSymbol::getFunctionSymbolTable() const
 {
     return FunctionSymbolTable;

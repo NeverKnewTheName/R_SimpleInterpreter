@@ -19,7 +19,7 @@
 #define REGEX_OPERATION             11
 #define REGEX_IDENTIFIER            12
 
-const QString SimpleLexer::LexerRegularExpression("((return)|(Integer|Double|Bool|String|Void)|(?:\"((?:\\\\\"|.)*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\{|\\)|\\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|\\+{1,2}|\\-{1,2}|[!~\\*\\/%\\?;,:])|([_a-zA-Z]\\w*))");
+const QString SimpleLexer::LexerRegularExpression("((if|else|switch|case|for|do|while|continue|break|return)|(Integer|Double|Bool|String|Void)|(?:\"((?:\\\\\"|.)*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\{|\\)|\\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|\\+{1,2}|\\-{1,2}|[!~\\*\\/%\\?;,:])|([_a-zA-Z]\\w*))");
 
 SimpleLexer::SimpleLexer(QObject *parent) :
     QObject(parent),
@@ -84,7 +84,48 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
 
         if(!regExMatch.captured(REGEX_RETRNKW).isNull())
         {
-            Token = SharedSimpleTokenPtr(new ReturnKeywordToken(PosInInputString,regExMatch.capturedLength(REGEX_WHOLE)));
+            //if|else|switch|case|for|do|while|continue|break|return
+            QString keyword = regExMatch.captured(REGEX_RETRNKW);
+            if(!keyword.compare(QString("if")))
+            {
+                Token = SharedSimpleTokenPtr(new ControlToken(SimpleToken::If, PosInInputString,regExMatch.capturedLength(REGEX_WHOLE)));
+            }
+            else if(!keyword.compare(QString("else")))
+            {
+                Token = SharedSimpleTokenPtr(new ControlToken(SimpleToken::Else, PosInInputString,regExMatch.capturedLength(REGEX_WHOLE)));
+            }
+            else if(!keyword.compare(QString("switch")))
+            {
+                Token = SharedSimpleTokenPtr(new ControlToken(SimpleToken::Switch, PosInInputString,regExMatch.capturedLength(REGEX_WHOLE)));
+            }
+            else if(!keyword.compare(QString("case")))
+            {
+                Token = SharedSimpleTokenPtr(new ControlToken(SimpleToken::Case, PosInInputString,regExMatch.capturedLength(REGEX_WHOLE)));
+            }
+            else if(!keyword.compare(QString("for")))
+            {
+                Token = SharedSimpleTokenPtr(new ControlToken(SimpleToken::For, PosInInputString,regExMatch.capturedLength(REGEX_WHOLE)));
+            }
+            else if(!keyword.compare(QString("do")))
+            {
+                Token = SharedSimpleTokenPtr(new ControlToken(SimpleToken::Do, PosInInputString,regExMatch.capturedLength(REGEX_WHOLE)));
+            }
+            else if(!keyword.compare(QString("while")))
+            {
+                Token = SharedSimpleTokenPtr(new ControlToken(SimpleToken::While, PosInInputString,regExMatch.capturedLength(REGEX_WHOLE)));
+            }
+            else if(!keyword.compare(QString("continue")))
+            {
+                Token = SharedSimpleTokenPtr(new ControlToken(SimpleToken::Continue, PosInInputString,regExMatch.capturedLength(REGEX_WHOLE)));
+            }
+            else if(!keyword.compare(QString("break")))
+            {
+                Token = SharedSimpleTokenPtr(new ControlToken(SimpleToken::Break, PosInInputString,regExMatch.capturedLength(REGEX_WHOLE)));
+            }
+            else if(!keyword.compare(QString("return")))
+            {
+                Token = SharedSimpleTokenPtr(new ControlToken(SimpleToken::ReturnKeyword, PosInInputString,regExMatch.capturedLength(REGEX_WHOLE)));
+            }
         }
         else if(!regExMatch.captured(REGEX_TYPENAME).isNull())
         {

@@ -40,7 +40,7 @@ ASTNode *SimpleInterpreter::VisualizeAST()
     if(tree == nullptr)
         return new ASTNode(QString("ERROR"));
 
-    return tree->VisualizeNode();
+//    return tree->VisualizeNode();
 }
 
 std::unique_ptr<ValueNode> SimpleInterpreter::interpret()
@@ -48,21 +48,6 @@ std::unique_ptr<ValueNode> SimpleInterpreter::interpret()
     if(tree == nullptr)
         return std::unique_ptr<ValueNode>();
 
-
-    std::unique_ptr<std::vector<std::unique_ptr<SimpleNode>>> FlatAST(new std::vector<std::unique_ptr<SimpleNode>>());
-    int stackSize = 0;
-    int CurrentPosition = 0;
-
-    FlatAST = tree->FlatCompile(std::move(FlatAST), stackSize, CurrentPosition);
-
-    const int flatASTSize = FlatAST->size();
-    qDebug() << "FlatAST size: " << flatASTSize;
-    std::vector<std::unique_ptr<SimpleNode>>::const_iterator it = FlatAST->begin();
-    for(; it != FlatAST->end() ; ++it)
-    {
-        qDebug() << (*it)->printNode();
-    }
-
     QSharedPointer<SimpleStack> RuntimeStack(new SimpleStack(100));
-    return tree->visit(RuntimeStack);
+//    return tree->visit(RuntimeStack);
 }

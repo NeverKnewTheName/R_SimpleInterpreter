@@ -12,8 +12,6 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
-
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
 
@@ -32,8 +30,6 @@ public:
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
 
-    virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
-
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;
 
@@ -50,9 +46,6 @@ public:
     Operation getOp() const;
     Associativity getAssociativity() const;
     Precedence getPrecedence() const;
-
-    std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const;
-//    uint8_t FlatCompileOPCode(int &curStackOffset) const;
 
     QString printValue() const;
     QString printNode() const;
@@ -75,8 +68,6 @@ public:
     virtual Operation getOp() const = 0;
     virtual Associativity getAssociativity() const = 0;
     virtual Precedence getPrecedence() const = 0;
-
-    virtual std::unique_ptr<ValueNode> DoOperation(QSharedPointer<SimpleStack> StackToUse) const = 0;
 
     virtual QString printValue() const = 0;
     virtual QString printNode() const = 0;

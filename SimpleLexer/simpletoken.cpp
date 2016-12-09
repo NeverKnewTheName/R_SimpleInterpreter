@@ -640,6 +640,17 @@ QString ColonToken::printToken() const
 }
 
 
+ControlToken::ControlToken(SimpleToken::TokenType type, const int TokenPos, const int TokenLen) :
+    SimpleToken(type,TokenPos,TokenLen)
+{
+
+}
+
+ControlToken::~ControlToken()
+{
+    qDebug() << __PRETTY_FUNCTION__;
+}
+
 QString ControlToken::printValue() const
 {
     return SimpleToken::convertTokenTypeToString(type);

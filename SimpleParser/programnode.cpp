@@ -66,20 +66,6 @@ Node::ValueTypes ProgramNode::getReturnType() const
     return type;
 }
 
-ASTNode *ProgramNode::VisualizeNode(ASTNode *parentNode) const
-{
-    ASTNode *ProgramASTNode = new ASTNode(printNode(), parentNode);
-
-    for( const std::unique_ptr<SimpleNode> &expr : ProgramExpressions)
-    {
-        expr->VisualizeNode(ProgramASTNode);
-    }
-
-    ProgramReturnStatement->VisualizeNode(ProgramASTNode);
-
-    return ProgramASTNode;
-}
-
 QString ProgramNode::printValue() const
 {
     return ProgramName;
@@ -122,46 +108,9 @@ bool ProgramNode::DestroyProgramStack(QSharedPointer<SimpleStack> StackToUse) co
     return IsSuccessfull;
 }
 
-
-std::unique_ptr<ValueNode> ProgramNode::visit(QSharedPointer<SimpleStack> StackToUse) const
-{
-    ProgramSymbolTable->EnterScope(StackToUse);
-    const int NrOfProgramExpression = ProgramExpressions.size();
-
-    for(int i = 0; i < NrOfProgramExpression; i++)
-    {
-        ProgramExpressions.at(i)->visit(StackToUse);
-    }
-
-    std::unique_ptr<ValueNode> result = ProgramReturnStatement->visit(StackToUse);
-
-    ProgramSymbolTable->ExitScope(StackToUse);
-    return result;
-}
-
 std::unique_ptr<SimpleNode> ProgramNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new ProgramNode(*this));
-}
-
-std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > ProgramNode::FlatCompile(std::unique_ptr<std::vector<std::unique_ptr<SimpleNode> > > FlatAST, int &maxStackSize, int &CurrentPosition) const
-{
-    //ToDO increase maxStackSize -> Enter/Exit program scope! stack build up/destruction!
-
-
-    std::vector<std::unique_ptr<SimpleNode>>::const_iterator it = ProgramExpressions.begin();
-    std::vector<std::unique_ptr<SimpleNode>>::const_iterator itEnd = ProgramExpressions.end();
-    for( ;it != itEnd; ++it)
-    {
-        FlatAST = (*it)->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
-    }
-
-    FlatAST = ProgramReturnStatement->FlatCompile(std::move(FlatAST), maxStackSize, CurrentPosition);
-
-    FlatAST->emplace_back(deepCopy());
-    CurrentPosition++;
-
-    return std::move(FlatAST);
 }
 
 const std::unique_ptr<SimpleNode> &ProgramNode::getProgramReturnStatement() const

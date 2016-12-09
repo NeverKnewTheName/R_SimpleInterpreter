@@ -27,7 +27,6 @@ public:
     virtual Node::ValueTypes getReturnType() const;
     virtual QString printValue() const;
     virtual QString printNode() const;
-    virtual std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
 
     virtual std::unique_ptr<SimpleNode> deepCopy() const;
 
@@ -52,7 +51,6 @@ public:
     Node::ValueTypes getReturnType() const;
     QString printValue() const;
     QString printNode() const;
-    std::unique_ptr<ValueNode> visit(QSharedPointer<SimpleStack> StackToUse) const;
     std::unique_ptr<SimpleNode> deepCopy() const;
 
     // ValueNode interface

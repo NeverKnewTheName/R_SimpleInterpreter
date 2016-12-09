@@ -86,9 +86,7 @@ void R_SimpleInterpreter::on_pushButton_clicked()
     connect(lex, &SimpleLexer::LexerPosAt, this, &R_SimpleInterpreter::lexerPosChanged);
     connect(lex, &SimpleLexer::LexerErrorHTMLMsg, this, &R_SimpleInterpreter::receiveLexerHTMLFormattedErrMsg);
 
-
     SimpleParser parse(lex, GlobalSymbolTable);
-//    SimpleInterpreter interpreter(&parse);
 
     SimpleASTInterpreterVisitor astInterpreter;
 

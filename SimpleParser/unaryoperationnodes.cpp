@@ -82,30 +82,6 @@ OperationNode::Precedence TypeCastNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-std::unique_ptr<ValueNode> TypeCastNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit(StackToUse);
-
-    switch(typeToCastTo)
-    {
-    case Node::Integer:
-        return std::unique_ptr<ValueNode>( new ValueNode(value->getValue().value<int>()));
-        break;
-    case Node::Double:
-        return std::unique_ptr<ValueNode>( new ValueNode(value->getValue().value<double>()));
-        break;
-    case Node::Bool:
-        return std::unique_ptr<ValueNode>( new ValueNode(value->getValue().value<bool>()));
-        break;
-    case Node::String:
-        return std::unique_ptr<ValueNode>( new ValueNode(value->getValue().value<QString>()));
-        break;
-    case Node::ErrorType:
-    default:
-        return std::unique_ptr<ValueNode>( new ValueNode());
-    }
-}
-
 QString TypeCastNode::printValue() const
 {
     QString TypeClearName;
@@ -183,22 +159,6 @@ OperationNode::Precedence IncrementNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-std::unique_ptr<ValueNode> IncrementNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit(StackToUse);
-
-    std::unique_ptr<ValueNode> Result( new ValueNode(value->getValue().value<int>() + 1) );
-
-    QSharedPointer<ValueSymbol> relatedSymbol = dynamic_cast<VariableNode*>(UnaryOPRightChild.get())->getRelatedVariableSymbol();
-
-    if(relatedSymbol->getType() == SimpleSymbolTableEntry::Variable)
-    {
-        qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(Result), StackToUse);
-    }
-
-    return (IsPre) ? UnaryOPRightChild->visit(StackToUse)/*PreIncrement*/ : std::move(value)/*PostIncrement*/;
-}
-
 QString IncrementNode::printValue() const
 {
     return QString("++");
@@ -259,22 +219,6 @@ OperationNode::Precedence DecrementNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-std::unique_ptr<ValueNode> DecrementNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit(StackToUse);
-
-    std::unique_ptr<ValueNode> Result( new ValueNode(value->getValue().value<int>() - 1) );
-
-    QSharedPointer<ValueSymbol> relatedSymbol = dynamic_cast<VariableNode*>(UnaryOPRightChild.get())->getRelatedVariableSymbol();
-
-    if(relatedSymbol->getType() == SimpleSymbolTableEntry::Variable)
-    {
-        qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(Result), StackToUse);
-    }
-
-    return (IsPre) ? UnaryOPRightChild->visit(StackToUse)/*PreIncrement*/ : std::move(value)/*PostIncrement*/;
-}
-
 QString DecrementNode::printValue() const
 {
     return QString("--");
@@ -331,23 +275,6 @@ OperationNode::Precedence PositiveNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-std::unique_ptr<ValueNode> PositiveNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit(StackToUse);
-
-    switch(implicitCastRightChild)
-    {
-    case Node::Integer:
-        return std::unique_ptr<ValueNode>( new ValueNode(value->getValue().value<int>()));
-        break;
-    case Node::Double:
-        return std::unique_ptr<ValueNode>( new ValueNode(value->getValue().value<double>()));
-        break;
-    default:
-        return std::unique_ptr<ValueNode>( new ValueNode());
-    }
-}
-
 QString PositiveNode::printValue() const
 {
     return QString("+");
@@ -397,23 +324,6 @@ OperationNode::Associativity NegativeNode::getAssociativity() const
 OperationNode::Precedence NegativeNode::getPrecedence() const
 {
     return OperationNode::UnaryPrec;
-}
-
-std::unique_ptr<ValueNode> NegativeNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit(StackToUse);
-
-    switch(implicitCastRightChild)
-    {
-    case Node::Integer:
-        return std::unique_ptr<ValueNode>( new ValueNode(value->getValue().value<int>() * -1));
-        break;
-    case Node::Double:
-        return std::unique_ptr<ValueNode>( new ValueNode(value->getValue().value<double>() * -1));
-        break;
-    default:
-        return std::unique_ptr<ValueNode>( new ValueNode());
-    }
 }
 
 QString NegativeNode::printValue() const
@@ -472,28 +382,6 @@ OperationNode::Precedence LogicalNegationNode::getPrecedence() const
     return OperationNode::UnaryPrec;
 }
 
-std::unique_ptr<ValueNode> LogicalNegationNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit(StackToUse);
-
-    bool IsTrue = value->getValue().value<bool>();
-
-    switch(implicitCastRightChild)
-    {
-    case Node::Integer:
-        return std::unique_ptr<ValueNode>( new ValueNode(IsTrue ? 0 : 1));
-        break;
-    case Node::Double:
-        return std::unique_ptr<ValueNode>( new ValueNode(IsTrue ? 0.0 : 1.0));
-        break;
-    case Node::Bool:
-        return std::unique_ptr<ValueNode>( new ValueNode(IsTrue ? false : true));
-        break;
-    default:
-        return std::unique_ptr<ValueNode>( new ValueNode());
-    }
-}
-
 QString LogicalNegationNode::printValue() const
 {
     return QString("!");
@@ -550,13 +438,6 @@ OperationNode::Associativity OnesComplementNode::getAssociativity() const
 OperationNode::Precedence OnesComplementNode::getPrecedence() const
 {
     return OperationNode::UnaryPrec;
-}
-
-std::unique_ptr<ValueNode> OnesComplementNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value = UnaryOPRightChild->visit(StackToUse);
-
-    return std::unique_ptr<ValueNode>( new ValueNode(~(value->getValue().value<int>())));
 }
 
 QString OnesComplementNode::printValue() const

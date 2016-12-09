@@ -18,6 +18,8 @@ public:
 
     virtual std::unique_ptr<ValueNode> getValue(QSharedPointer<SimpleStack> StackToUse) const = 0;
 
+    virtual size_t getStackAddress() const = 0;
+
     // SimpleSymbolTableEntry interface
 public:
     virtual SymbolTableEntryType getType() const = 0;
@@ -43,7 +45,9 @@ public:
 
     std::unique_ptr<ValueNode> getAssignedValue(QSharedPointer<SimpleStack> StackToUse) const;
 
-    bool assignValue(std::unique_ptr<SimpleNode> NodeToAssign,QSharedPointer<SimpleStack> StackToUse) const;
+    bool assignValue(std::unique_ptr<ValueNode> NodeToAssign,QSharedPointer<SimpleStack> StackToUse) const;
+
+    virtual size_t getStackAddress() const;
 
     Node::ValueTypes getVariableType() const;
 
@@ -90,9 +94,11 @@ public:
     // ValueSymbol interface
 public:
     std::unique_ptr<ValueNode> getValue(QSharedPointer<SimpleStack> StackToUse) const;
+    size_t getStackAddress() const;
 
 private:
     ValueNode ConstVal;
+
 };
 
 #endif // VARIABLESYMBOL_H

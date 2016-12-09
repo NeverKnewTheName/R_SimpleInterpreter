@@ -87,36 +87,6 @@ OperationNode::Precedence AdditionNode::getPrecedence() const
     return OperationNode::AdditivePrec;
 }
 
-std::unique_ptr<ValueNode> AdditionNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-
-    switch(implicitCastLeftChild)
-    {
-    case Node::Integer:
-        if(implicitCastRightChild == Node::Double)
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<double>() + value2->getValue().value<double>()));
-        }
-        else
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<int>() + value2->getValue().value<int>()));
-        }
-        break;
-    case Node::Double:
-        //RightChild can only be Integer or Double -> cast anyway
-        return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<double>() + value2->getValue().value<double>()));
-        break;
-    case Node::String:
-        //RightChild is cast to String anyway
-        return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<QString>() + value2->getValue().value<QString>()));
-        break;
-    default:
-        return std::unique_ptr<ValueNode>( new ValueNode());
-    }
-}
-
 QString AdditionNode::printValue() const
 {
     return QString("+");
@@ -195,31 +165,6 @@ OperationNode::Associativity SubtractionNode::getAssociativity() const
 OperationNode::Precedence SubtractionNode::getPrecedence() const
 {
     return OperationNode::AdditivePrec;
-}
-
-std::unique_ptr<ValueNode> SubtractionNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-
-    switch(implicitCastLeftChild)
-    {
-    case Node::Integer:
-        if(implicitCastRightChild == Node::Double)
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<double>() - value2->getValue().value<double>()));
-        }
-        else
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<int>() - value2->getValue().value<int>()));
-        }
-        break;
-    case Node::Double:
-        return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<double>() - value2->getValue().value<double>()));
-        break;
-    default:
-        return std::unique_ptr<ValueNode>( new ValueNode());
-    }
 }
 
 QString SubtractionNode::printValue() const
@@ -311,47 +256,6 @@ OperationNode::Precedence MultiplicationNode::getPrecedence() const
     return OperationNode::MultiplicativePrec;
 }
 
-std::unique_ptr<ValueNode> MultiplicationNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-
-    switch(implicitCastLeftChild)
-    {
-    case Node::Integer:
-        if(implicitCastRightChild == Node::Double)
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<double>() * value2->getValue().value<double>()));
-        }
-        else
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<int>() * value2->getValue().value<int>()));
-        }
-        break;
-    case Node::Double:
-        return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<double>() * value2->getValue().value<double>()));
-        break;
-    case Node::String:
-    {
-        QString input(value1->getValue().value<QString>());
-        QString output(input);
-        int cntr = value2->getValue().value<int>();
-        if(cntr--)
-        {
-            while(cntr)
-            {
-                output.append(std::move(input));
-                cntr--;
-            }
-        }
-        return std::unique_ptr<ValueNode>( new ValueNode( output ));
-    }
-        break;
-    default:
-        return std::unique_ptr<ValueNode>( new ValueNode());
-    }
-}
-
 QString MultiplicationNode::printValue() const
 {
     return QString("*");
@@ -432,31 +336,6 @@ OperationNode::Precedence DivisionNode::getPrecedence() const
     return OperationNode::MultiplicativePrec;
 }
 
-std::unique_ptr<ValueNode> DivisionNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-
-    switch(implicitCastLeftChild)
-    {
-    case Node::Integer:
-        if(implicitCastRightChild == Node::Double)
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<double>() / value2->getValue().value<double>()));
-        }
-        else
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<int>() / value2->getValue().value<int>()));
-        }
-        break;
-    case Node::Double:
-        return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<double>() / value2->getValue().value<double>()));
-        break;
-    default:
-        return std::unique_ptr<ValueNode>( new ValueNode());
-    }
-}
-
 QString DivisionNode::printValue() const
 {
     return QString("/");
@@ -518,14 +397,6 @@ OperationNode::Associativity ModuloNode::getAssociativity() const
 OperationNode::Precedence ModuloNode::getPrecedence() const
 {
     return OperationNode::MultiplicativePrec;
-}
-
-std::unique_ptr<ValueNode> ModuloNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-
-    return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<int>() % value2->getValue().value<int>()));
 }
 
 QString ModuloNode::printValue() const
@@ -613,14 +484,6 @@ OperationNode::Precedence LogicalANDNode::getPrecedence() const
     return OperationNode::LogicalANDPrec;
 }
 
-std::unique_ptr<ValueNode> LogicalANDNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-
-    return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<bool>() && value2->getValue().value<bool>()));
-}
-
 QString LogicalANDNode::printValue() const
 {
     return QString("&&");
@@ -694,14 +557,6 @@ OperationNode::Associativity LogicalORNode::getAssociativity() const
 OperationNode::Precedence LogicalORNode::getPrecedence() const
 {
     return OperationNode::LogicalORPrec;
-}
-
-std::unique_ptr<ValueNode> LogicalORNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-
-    return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<bool>() || value2->getValue().value<bool>()));
 }
 
 QString LogicalORNode::printValue() const
@@ -779,14 +634,6 @@ OperationNode::Precedence LogicalXORNode::getPrecedence() const
     return OperationNode::LogicalORPrec;
 }
 
-std::unique_ptr<ValueNode> LogicalXORNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-
-    return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<bool>() != value2->getValue().value<bool>()));
-}
-
 QString LogicalXORNode::printValue() const
 {
     return QString("^^");
@@ -856,14 +703,6 @@ OperationNode::Precedence GreaterNode::getPrecedence() const
     return OperationNode::RelationalPrec;
 }
 
-std::unique_ptr<ValueNode> GreaterNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-
-    return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<double>() > value2->getValue().value<double>()) ?  true : false ));
-}
-
 QString GreaterNode::printValue() const
 {
     return QString(">");
@@ -931,13 +770,6 @@ OperationNode::Associativity LowerNode::getAssociativity() const
 OperationNode::Precedence LowerNode::getPrecedence() const
 {
     return OperationNode::RelationalPrec;
-}
-
-std::unique_ptr<ValueNode> LowerNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-    return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<double>() < value2->getValue().value<double>()) ?  true : false ));
 }
 
 QString LowerNode::printValue() const
@@ -1052,48 +884,6 @@ OperationNode::Precedence EqualNode::getPrecedence() const
     return OperationNode::EqualityPrec;
 }
 
-std::unique_ptr<ValueNode> EqualNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-
-    switch(implicitCastLeftChild)
-    {
-    case Node::Integer:
-        if(implicitCastRightChild == Node::Integer)
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<int>() == value2->getValue().value<int>()) ? true : false ));
-        }
-        else if( implicitCastRightChild == Node::Double )
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<double>() == value2->getValue().value<double>()) ? true : false ));
-        }
-        else if( implicitCastRightChild == Node::Bool )
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<bool>() == value2->getValue().value<bool>()) ? true : false ));
-        }
-        break;
-    case Node::Double:
-        if((implicitCastRightChild == Node::Double) || ( implicitCastRightChild == Node::Integer ))
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<double>() == value2->getValue().value<double>()) ? true : false ));
-        }
-        else if( implicitCastRightChild == Node::Bool )
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<bool>() == value2->getValue().value<bool>()) ? true : false ));
-        }
-        break;
-    case Node::Bool:
-        return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<bool>() == value2->getValue().value<bool>()) ? true : false ));
-        break;
-    case Node::String:
-        return std::unique_ptr<ValueNode>( new ValueNode((!value1->getValue().value<QString>().compare(value2->getValue().value<QString>())) ? true : false ));
-        break;
-    default:
-        return std::unique_ptr<ValueNode>( new ValueNode());
-    }
-}
-
 QString EqualNode::printValue() const
 {
     return QString("==");
@@ -1172,31 +962,6 @@ OperationNode::Associativity EqualOrGreaterNode::getAssociativity() const
 OperationNode::Precedence EqualOrGreaterNode::getPrecedence() const
 {
     return OperationNode::RelationalPrec;
-}
-
-std::unique_ptr<ValueNode> EqualOrGreaterNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-
-    switch(implicitCastLeftChild)
-    {
-    case Node::Integer:
-        if(implicitCastRightChild == Node::Integer)
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<int>() >= value2->getValue().value<int>()) ? true : false ));
-        }
-        else
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<double>() >= value2->getValue().value<double>()) ? true : false ));
-        }
-        break;
-    case Node::Double:
-        return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<double>() >= value2->getValue().value<double>()) ? true : false ));
-        break;
-    default:
-        return std::unique_ptr<ValueNode>( new ValueNode());
-    }
 }
 
 QString EqualOrGreaterNode::printValue() const
@@ -1279,31 +1044,6 @@ OperationNode::Precedence EqualOrLowerNode::getPrecedence() const
     return OperationNode::RelationalPrec;
 }
 
-std::unique_ptr<ValueNode> EqualOrLowerNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-
-    switch(implicitCastLeftChild)
-    {
-    case Node::Integer:
-        if(implicitCastRightChild == Node::Integer)
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<int>() <= value2->getValue().value<int>()) ? true : false ));
-        }
-        else
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<double>() <= value2->getValue().value<double>()) ? true : false ));
-        }
-        break;
-    case Node::Double:
-        return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<double>() <= value2->getValue().value<double>()) ? true : false ));
-        break;
-    default:
-        return std::unique_ptr<ValueNode>( new ValueNode());
-    }
-}
-
 QString EqualOrLowerNode::printValue() const
 {
     return QString("<=");
@@ -1340,48 +1080,6 @@ OperationNode::Associativity UnequalNode::getAssociativity() const
 OperationNode::Precedence UnequalNode::getPrecedence() const
 {
     return OperationNode::EqualityPrec;
-}
-
-std::unique_ptr<ValueNode> UnequalNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-
-    switch(implicitCastLeftChild)
-    {
-    case Node::Integer:
-        if(implicitCastRightChild == Node::Integer)
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<int>() != value2->getValue().value<int>()) ? true : false ));
-        }
-        else if( implicitCastRightChild == Node::Double )
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<double>() != value2->getValue().value<double>()) ? true : false ));
-        }
-        else if( implicitCastRightChild == Node::Bool )
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<bool>() != value2->getValue().value<bool>()) ? true : false ));
-        }
-        break;
-    case Node::Double:
-        if((implicitCastRightChild == Node::Double) || ( implicitCastRightChild == Node::Integer ))
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<double>() != value2->getValue().value<double>()) ? true : false ));
-        }
-        else if( implicitCastRightChild == Node::Bool )
-        {
-            return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<bool>() != value2->getValue().value<bool>()) ? true : false ));
-        }
-        break;
-    case Node::Bool:
-        return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<bool>() != value2->getValue().value<bool>()) ? true : false ));
-        break;
-    case Node::String:
-        return std::unique_ptr<ValueNode>( new ValueNode((value1->getValue().value<QString>().compare(value2->getValue().value<QString>())) ? true : false ));
-        break;
-    default:
-        return std::unique_ptr<ValueNode>( new ValueNode());
-    }
 }
 
 QString UnequalNode::printValue() const
@@ -1455,14 +1153,6 @@ OperationNode::Precedence ANDNode::getPrecedence() const
     return OperationNode::BitwiseANDPrec;
 }
 
-std::unique_ptr<ValueNode> ANDNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-
-    return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<int>() & value2->getValue().value<int>()));
-}
-
 QString ANDNode::printValue() const
 {
     return QString("&");
@@ -1522,14 +1212,6 @@ OperationNode::Associativity ORNode::getAssociativity() const
 OperationNode::Precedence ORNode::getPrecedence() const
 {
     return OperationNode::BitwiseORPrec;
-}
-
-std::unique_ptr<ValueNode> ORNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-
-    return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<int>() | value2->getValue().value<int>()));
 }
 
 QString ORNode::printValue() const
@@ -1593,14 +1275,6 @@ OperationNode::Precedence XORNode::getPrecedence() const
     return OperationNode::BitwiseXORPrec;
 }
 
-std::unique_ptr<ValueNode> XORNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-
-    return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<int>() ^ value2->getValue().value<int>()));
-}
-
 QString XORNode::printValue() const
 {
     return QString("^");
@@ -1660,14 +1334,6 @@ OperationNode::Associativity LeftShiftNode::getAssociativity() const
 OperationNode::Precedence LeftShiftNode::getPrecedence() const
 {
     return OperationNode::ShiftPrec;
-}
-
-std::unique_ptr<ValueNode> LeftShiftNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-
-    return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<int>() << value2->getValue().value<int>()));
 }
 
 QString LeftShiftNode::printValue() const
@@ -1730,14 +1396,6 @@ OperationNode::Associativity RightShiftNode::getAssociativity() const
 OperationNode::Precedence RightShiftNode::getPrecedence() const
 {
     return OperationNode::ShiftPrec;
-}
-
-std::unique_ptr<ValueNode> RightShiftNode::DoOperation(QSharedPointer<SimpleStack> StackToUse) const
-{
-    std::unique_ptr<ValueNode> value1 = BinaryOPLeftChild->visit(StackToUse);
-    std::unique_ptr<ValueNode> value2 = BinaryOPRightChild->visit(StackToUse);
-
-    return std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<int>() >> value2->getValue().value<int>()));
 }
 
 QString RightShiftNode::printValue() const
