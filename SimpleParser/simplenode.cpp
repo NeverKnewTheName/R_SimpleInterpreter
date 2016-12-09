@@ -23,7 +23,7 @@ SimpleNode::SimpleNode()
 QString SimpleNode::getHumanReadableTypeNameToValueType(const Node::ValueTypes type)
 {
     QString HumanReadableTypeName("UNDEFINED");
-    switch(type)
+    switch(type & Node::ValType)
     {
     case Node::Integer:
         HumanReadableTypeName = QString("Integer");
@@ -50,35 +50,118 @@ QString SimpleNode::getHumanReadableTypeNameToValueType(const Node::ValueTypes t
 
 bool SimpleNode::canConvertTypes(const Node::ValueTypes OrigType, const Node::ValueTypes NewType)
 {
-    switch(OrigType)
+    // IS either one an error?
+    if( OrigType == Node::ErrorType || NewType == Node::ErrorType )
     {
-    case Node::Integer:
-        //FALLTHROUGH
-    case Node::Double:
-        //FALLTHROUGH
-    case Node::Bool:
-        if(NewType == Node::Integer  || NewType == Node::Double || NewType == Node::Bool || NewType == Node::String)
-        {
-            return true;
-        }
-        break;
-    case Node::String:
-        if(NewType == Node::String)
-        {
-            return true;
-        }
-        break;
-    case Node::Void:
-        if(NewType == Node::Void)
-        {
-            return true;
-        }
-        break;
-    case Node::ErrorType:
-    default:
-        break;
+        qDebug() << "ErrorType cannot be converted at all!";
+        return false;
     }
-    return false;
+    // IS it a conversion from unsigned to signed?
+    if( ( OrigType & Node::SignBit ) != ( NewType & Node::SignBit ) )
+    {
+        qDebug() << "Type SIGN mismatch!";
+        return false;
+    }
+    // IS it a conversion from a scalar to to a non-scalar type or vice versa?
+    if( (OrigType & Node::NonScalarBit) != ( NewType & Node::NonScalarBit ) )
+    {
+        qDebug() << "Cannot convert scalar type to non-scalar type!";
+        return false;
+    }
+    // IS Either one Void?
+    if( ( OrigType & Node::Void ) ^ ( NewType & Node::Void ) )
+    {
+        qDebug() << "Cannot convert from or to Void!";
+        return false;
+    }
+
+    // IS it of the same type but different amount of used bits?
+    if( OrigType & NewType & Node::ValType)
+    {
+        if((NewType & Node::BitCnt) > (OrigType & Node::BitCnt))
+        {
+            qDebug() << "NewType uses less bits than OrigType!";
+            return false;
+        }
+    }
+
+    // IS it a user defined type?
+    if( NewType & Node::UserType )
+    {
+        if( NewType == OrigType )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    // CAN convert types?
+    if( ( NewType & Node::ValType ) > ( OrigType & Node::ValType ) )
+    {
+        return false;
+    }
+
+    return true;
+
+//    switch(OrigType & Node::ValType)
+//    {
+//    case Node::Integer:
+//        //FALLTHROUGH
+//    case Node::Double:
+//        //FALLTHROUGH
+//    case Node::Bool:
+//        if((NewType & Node::ValType) == Node::Integer  || (NewType & Node::ValType) == Node::Double || (NewType & Node::ValType) == Node::Bool || (NewType & Node::ValType) == Node::String)
+//        {
+//            return true;
+//        }
+//        break;
+//    case Node::String:
+//        if((NewType & Node::ValType) == Node::String)
+//        {
+//            return true;
+//        }
+//        break;
+//    case Node::Void:
+//        if((NewType & Node::ValType) == Node::Void)
+//        {
+//            return true;
+//        }
+//        break;
+//    case Node::ErrorType:
+//    default:
+//        break;
+//    }
+//    return false;
+}
+
+Node::ValueTypes SimpleNode::evaluateResultingType(const Node::ValueTypes type1, const Node::ValueTypes type2)
+{
+    quint64 resultingType = ((quint64)type1 | (quint64)type2);
+    quint64 typeExtension = resultingType & Node::TypeExtens;
+    resultingType &=  Node::TypeDecl;
+
+    if( ( type1 & Node::SignBit ) != ( type2 & Node::SignBit ) )
+    {
+        qDebug() << "Type SIGN mismatch!";
+        return Node::ErrorType;
+    }
+    if( (type1 & Node::NonScalarBit) != ( type2 & Node::NonScalarBit ) )
+    {
+        qDebug() << "Cannot convert scalar type to non-scalar type!";
+        return Node::ErrorType;
+    }
+    if( ( type1 & Node::Void ) || ( type2 & Node::Void ) )
+    {
+        qDebug() << "Cannot convert from or to Void!";
+        return Node::ErrorType;
+    }
+
+    resultingType = resultingType & (-resultingType) | typeExtension;
+
+    return (Node::ValueTypes)resultingType;
 }
 
 SimpleNode::~SimpleNode()

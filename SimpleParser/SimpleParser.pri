@@ -17,7 +17,10 @@ SOURCES += \
     $$PWD//binaryoperationnodes.cpp \
     $$PWD//ternaryoperationnodes.cpp \
     $$PWD/expressionnode.cpp \
-    $$PWD/statementnode.cpp
+    $$PWD/statementnode.cpp \
+    $$PWD/selectioncontrolnode.cpp \
+    $$PWD/escapecontrolnode.cpp \
+    $$PWD/blocknode.cpp
 
 HEADERS += \
     $$PWD//simpleparser.h \
@@ -35,4 +38,7 @@ HEADERS += \
     $$PWD//binaryoperationnodes.h \
     $$PWD//ternaryoperationnodes.h \
     $$PWD/expressionnode.h \
-    $$PWD/statementnode.h
+    $$PWD/statementnode.h \
+    $$PWD/selectioncontrolnode.h \
+    $$PWD/escapecontrolnode.h \
+    $$PWD/blocknode.h

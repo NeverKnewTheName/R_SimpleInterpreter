@@ -11,6 +11,10 @@
 #include "unaryoperationnodes.h"
 #include "binaryoperationnodes.h"
 #include "ternaryoperationnodes.h"
+#include "blocknode.h"
+#include "selectioncontrolnode.h"
+#include "iterationcontrolnode.h"
+#include "escapecontrolnode.h"
 
 #include "simplesymboltable.h"
 #include "variablesymbol.h"
@@ -119,7 +123,7 @@ void ASTVisualizerVisitor::visit(std::unique_ptr<DivisionNode> NodeToVisit)
 
 void ASTVisualizerVisitor::visit(std::unique_ptr<DoWhileLoopNode> NodeToVisit)
 {
-    //ToDO5
+    //ToDO
 }
 
 void ASTVisualizerVisitor::visit(std::unique_ptr<EOFNode> NodeToVisit)
@@ -162,12 +166,32 @@ void ASTVisualizerVisitor::visit(std::unique_ptr<EqualOrLowerNode> NodeToVisit)
 
 void ASTVisualizerVisitor::visit(std::unique_ptr<ExpressionNode> NodeToVisit)
 {
-    //ToDO
+    ASTNode *ExpressionASTNode = new ASTNode(NodeToVisit->printNode(),VisualizedASTRootNode);
+    new ASTNode(NodeToVisit->printValue(), ExpressionASTNode);
+    VisualizedASTRootNode = ExpressionASTNode;
 }
 
 void ASTVisualizerVisitor::visit(std::unique_ptr<ForLoopNode> NodeToVisit)
 {
-    //ToDO
+    ASTNode *ForASTNode = new ASTNode(NodeToVisit->printNode(),VisualizedASTRootNode);
+    new ASTNode(NodeToVisit->printValue(), ForASTNode);
+    VisualizedASTRootNode = ForASTNode;
+    new ASTNode(QString("("), ForASTNode);
+
+    NodeToVisit->getForLoopInitialization()->accept(this);
+    VisualizedASTRootNode = ForASTNode;
+    new ASTNode(QString(";"), ForASTNode);
+
+    NodeToVisit->getForLoopCondition()->accept(this);
+    VisualizedASTRootNode = ForASTNode;
+    new ASTNode(QString(";"), ForASTNode);
+
+    NodeToVisit->getForLoopUpdate()->accept(this);
+    VisualizedASTRootNode = ForASTNode;
+
+    new ASTNode(QString(")"), ForASTNode);
+    NodeToVisit->getIterationStatement()->accept(this);
+    VisualizedASTRootNode = ForASTNode;
 }
 
 void ASTVisualizerVisitor::visit(std::unique_ptr<FunctionCallNode> NodeToVisit)
@@ -383,7 +407,10 @@ void ASTVisualizerVisitor::visit(std::unique_ptr<ScopeNode> NodeToVisit)
 
 void ASTVisualizerVisitor::visit(std::unique_ptr<StatementNode> NodeToVisit)
 {
-    //ToDO
+    ASTNode *StatementASTNode = new ASTNode(NodeToVisit->printNode(),VisualizedASTRootNode);
+    new ASTNode(NodeToVisit->printValue(), StatementASTNode);
+    VisualizedASTRootNode = StatementASTNode;
+    new ASTNode(QString(";"), StatementASTNode);
 }
 
 void ASTVisualizerVisitor::visit(std::unique_ptr<SubtractionNode> NodeToVisit)
@@ -440,7 +467,16 @@ void ASTVisualizerVisitor::visit(std::unique_ptr<VoidValueNode> NodeToVisit)
 
 void ASTVisualizerVisitor::visit(std::unique_ptr<WhileLoopNode> NodeToVisit)
 {
-    //ToDO
+    ASTNode *WhileASTNode = new ASTNode(NodeToVisit->printNode(),VisualizedASTRootNode);
+    new ASTNode(NodeToVisit->printValue(), WhileASTNode);
+    VisualizedASTRootNode = WhileASTNode;
+    new ASTNode(QString("("), WhileASTNode);
+    NodeToVisit->getWhileCondition()->accept(this);
+    VisualizedASTRootNode = WhileASTNode;
+    new ASTNode(QString(")"), WhileASTNode);
+
+    NodeToVisit->getIterationStatement()->accept(this);
+    VisualizedASTRootNode = WhileASTNode;
 }
 
 void ASTVisualizerVisitor::visit(std::unique_ptr<XORNode> NodeToVisit)
@@ -452,4 +488,76 @@ void ASTVisualizerVisitor::visit(std::unique_ptr<XORNode> NodeToVisit)
     new ASTNode(NodeToVisit->printValue(), BinaryASTNode);
     NodeToVisit->getBinaryOPRightChild()->accept(this);
     VisualizedASTRootNode = BinaryASTNode;
+}
+
+void ASTVisualizerVisitor::visit(std::unique_ptr<BlockNode> NodeToVisit)
+{
+    ASTNode *BlockASTNode = new ASTNode(NodeToVisit->printNode(),VisualizedASTRootNode);
+    VisualizedASTRootNode = BlockASTNode;
+    new ASTNode(QString("{"), BlockASTNode);
+    const std::vector<std::unique_ptr<SimpleNode>> &BlockStatements = NodeToVisit->getBlockStatements();
+    for(const std::unique_ptr<SimpleNode> & stmt : BlockStatements)
+    {
+        stmt->accept(this);
+        VisualizedASTRootNode = BlockASTNode;
+    }
+    new ASTNode(QString("}"), BlockASTNode);
+}
+
+void ASTVisualizerVisitor::visit(std::unique_ptr<BreakNode> NodeToVisit)
+{
+    ASTNode *BreakASTNode = new ASTNode(NodeToVisit->printNode(),VisualizedASTRootNode);
+    new ASTNode(QString("break"), BreakASTNode);
+    new ASTNode(QString(";"), BreakASTNode);
+}
+
+void ASTVisualizerVisitor::visit(std::unique_ptr<ContinueNode> NodeToVisit)
+{
+    ASTNode *ContinueASTNode = new ASTNode(NodeToVisit->printNode(),VisualizedASTRootNode);
+    new ASTNode(QString("continue"), ContinueASTNode);
+    new ASTNode(QString(";"), ContinueASTNode);
+}
+
+void ASTVisualizerVisitor::visit(std::unique_ptr<ElseNode> NodeToVisit)
+{
+    ASTNode *ElseASTNode = new ASTNode(NodeToVisit->printNode(),VisualizedASTRootNode);
+    new ASTNode(NodeToVisit->printValue(), ElseASTNode);
+    VisualizedASTRootNode = ElseASTNode;
+    NodeToVisit->getElseStatementBlock()->accept(this);
+    VisualizedASTRootNode = ElseASTNode;
+}
+
+void ASTVisualizerVisitor::visit(std::unique_ptr<IfNode> NodeToVisit)
+{
+    ASTNode *IfASTNode = new ASTNode(NodeToVisit->printNode(),VisualizedASTRootNode);
+    new ASTNode(NodeToVisit->printValue(), IfASTNode);
+    VisualizedASTRootNode = IfASTNode;
+    new ASTNode(QString("("), IfASTNode);
+    NodeToVisit->getIfCondition()->accept(this);
+    VisualizedASTRootNode = IfASTNode;
+    new ASTNode(QString(")"), IfASTNode);
+    NodeToVisit->getIfStatementBlock()->accept(this);
+    VisualizedASTRootNode = IfASTNode;
+}
+
+void ASTVisualizerVisitor::visit(std::unique_ptr<ReturnNode> NodeToVisit)
+{
+    ASTNode *ReturnASTNode = new ASTNode(NodeToVisit->printNode(),VisualizedASTRootNode);
+    new ASTNode(NodeToVisit->printValue(), ReturnASTNode);
+    VisualizedASTRootNode = ReturnASTNode;
+    NodeToVisit->getReturnExpression()->accept(this);
+    new ASTNode(QString(";"), ReturnASTNode);
+}
+
+void ASTVisualizerVisitor::visit(std::unique_ptr<SwitchNode> NodeToVisit)
+{
+    ASTNode *SwitchASTNode = new ASTNode(NodeToVisit->printNode(),VisualizedASTRootNode);
+    new ASTNode(NodeToVisit->printValue(), SwitchASTNode);
+    VisualizedASTRootNode = SwitchASTNode;
+    new ASTNode(QString("("), SwitchASTNode);
+    NodeToVisit->getSwitchCondition()->accept(this);
+    VisualizedASTRootNode = SwitchASTNode;
+    new ASTNode(QString(")"), SwitchASTNode);
+//    NodeToVisit->getIfStatementBlock()->accept(this);  //ToDO
+    VisualizedASTRootNode = SwitchASTNode;
 }

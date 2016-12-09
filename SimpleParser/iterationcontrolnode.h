@@ -6,23 +6,20 @@
 class IterationControlNode : public ControlNode
 {
 public:
-    IterationControlNode();
+    IterationControlNode(std::unique_ptr<SimpleNode> Statement);
+    IterationControlNode(const IterationControlNode &ToCopy);
     virtual ~IterationControlNode();
 
-    virtual void executeLoop(QSharedPointer<SimpleStack> StackToUse) const = 0;
-
-    // SimpleNode interface
-public:
-    virtual QString printValue() const = 0;
-    virtual QString printNode() const = 0;
-
-    //Must redirect call to ScopeControlNode... copy shared scope symbol table
-    virtual std::unique_ptr<SimpleNode> deepCopy() const = 0;
+    void replaceStatement(std::unique_ptr<SimpleNode> Statement);
+    const std::unique_ptr<SimpleNode> &getIterationStatement() const;
 
     // ScopedControlNodeInterface
 public:
     ControlNode::ControlType getControlType() const;
     virtual ControlNode::SpecificControlType getSpecificControlType() const = 0;
+
+private:
+    std::unique_ptr<SimpleNode> IterationStatement;
 };
 
 // // // // // // // // // // // // // // // // // // // // // //
@@ -30,45 +27,38 @@ public:
 class ForLoopNode : public IterationControlNode
 {
 public:
-    ForLoopNode(std::unique_ptr<SimpleNode> Initialization,
+    ForLoopNode(
+            std::unique_ptr<SimpleNode> Initialization,
             std::unique_ptr<SimpleNode> Condition,
             std::unique_ptr<SimpleNode> Update,
-            std::vector<std::unique_ptr<SimpleNode> > &Expressions
+            std::unique_ptr<SimpleNode> Statement
             );
     ForLoopNode(const ForLoopNode &ToCopy);
     ~ForLoopNode();
 
-    // SimpleNode interface
-public:
-    Node::ValueTypes getReturnType() const;
-
-    // ControlNode interface
-public:
-    ControlNode::SpecificControlType getSpecificControlType() const;
-
-private:
-    std::unique_ptr<SimpleNode> ForLoopInitialization;
-    std::unique_ptr<SimpleNode> ForLoopCondition;
-    std::unique_ptr<SimpleNode> ForLoopUpdate;
-    std::vector<std::unique_ptr<SimpleNode>> ForLoopExpressions;
-
-    // IterationControlNode interface
-public:
-    void executeLoop(QSharedPointer<SimpleStack> StackToUse) const;
+    const std::unique_ptr<SimpleNode> &getForLoopInitialization() const;
+    const std::unique_ptr<SimpleNode> &getForLoopCondition() const;
+    const std::unique_ptr<SimpleNode> &getForLoopUpdate() const;
 
     // SimpleNode interface
 public:
     QString printValue() const;
     QString printNode() const;
+    Node::ValueTypes getReturnType() const;
     std::unique_ptr<SimpleNode> deepCopy() const;
+
+    // ControlNode interface
+public:
+    ControlNode::SpecificControlType getSpecificControlType() const;
 
     // SimpleNodeVisitable interface
 public:
     void accept(SimpleNodeVisitor *visitor) const;
-    const std::unique_ptr<SimpleNode> &getForLoopInitialization() const;
-    const std::unique_ptr<SimpleNode> &getForLoopCondition() const;
-    const std::unique_ptr<SimpleNode> &getForLoopUpdate() const;
-    const std::vector<std::unique_ptr<SimpleNode> > &getForLoopExpressions() const;
+
+private:
+    std::unique_ptr<SimpleNode> ForLoopInitialization;
+    std::unique_ptr<SimpleNode> ForLoopCondition;
+    std::unique_ptr<SimpleNode> ForLoopUpdate;
 };
 
 // // // // // // // // // // // // // // // // // // // // // //
@@ -76,33 +66,32 @@ public:
 class WhileLoopNode : public IterationControlNode
 {
 public:
-    WhileLoopNode(std::unique_ptr<SimpleNode> Condition,
-            std::vector<std::unique_ptr<SimpleNode> > &Expressions
+    WhileLoopNode(
+            std::unique_ptr<SimpleNode> Condition,
+            std::unique_ptr<SimpleNode> Statement
             );
     WhileLoopNode(const WhileLoopNode &ToCopy);
     ~WhileLoopNode();
 
-    // SimpleNode interface
-public:
-    Node::ValueTypes getReturnType() const;
-
-    // ControlNode interface
-public:
-    virtual ControlNode::SpecificControlType getSpecificControlType() const;
-
-private:
-    std::unique_ptr<SimpleNode> WhileLoopCondition;
-    std::vector<std::unique_ptr<SimpleNode>> WhileLoopExpressions;
-
-    // IterationControlNode interface
-public:
-    void executeLoop(QSharedPointer<SimpleStack> StackToUse) const;
+    const std::unique_ptr<SimpleNode> &getWhileCondition();
 
     // SimpleNode interface
 public:
     QString printValue() const;
     QString printNode() const;
+    Node::ValueTypes getReturnType() const;
     std::unique_ptr<SimpleNode> deepCopy() const;
+
+    // ControlNode interface
+public:
+    virtual ControlNode::SpecificControlType getSpecificControlType() const;
+
+    // SimpleNodeVisitable interface
+public:
+    void accept(SimpleNodeVisitor *visitor) const;
+
+private:
+    std::unique_ptr<SimpleNode> WhileLoopCondition;
 };
 
 // // // // // // // // // // // // // // // // // // // // // //
@@ -112,22 +101,23 @@ class DoWhileLoopNode : public WhileLoopNode
 public:
     DoWhileLoopNode(
             std::unique_ptr<SimpleNode> Condition,
-            std::vector<std::unique_ptr<SimpleNode> > &Expressions
+            std::unique_ptr<SimpleNode> Statement
             );
     ~DoWhileLoopNode();
 
     // SimpleNode interface
 public:
+    QString printValue() const;
+    QString printNode() const;
     std::unique_ptr<SimpleNode> deepCopy() const;
 
     // ControlNode interface
 public:
     ControlNode::SpecificControlType getSpecificControlType() const;
 
-    // SimpleNode interface
+    // SimpleNodeVisitable interface
 public:
-    QString printValue() const;
-    QString printNode() const;
+    void accept(SimpleNodeVisitor *visitor) const;
 };
 
 #endif // ITERATIONCONTROLNODE_H

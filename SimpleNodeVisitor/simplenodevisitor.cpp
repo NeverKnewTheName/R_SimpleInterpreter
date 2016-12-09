@@ -11,6 +11,11 @@
 #include "unaryoperationnodes.h"
 #include "binaryoperationnodes.h"
 #include "ternaryoperationnodes.h"
+#include "blocknode.h"
+#include "selectioncontrolnode.h"
+#include "iterationcontrolnode.h"
+#include "escapecontrolnode.h"
+
 
 #include <QDebug>
 

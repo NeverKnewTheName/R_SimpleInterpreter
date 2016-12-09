@@ -7,9 +7,15 @@
 
 #include <QDebug>
 
-IterationControlNode::IterationControlNode()
+IterationControlNode::IterationControlNode(std::unique_ptr<SimpleNode> Statement) :
+    IterationStatement(std::move(Statement))
 {
 
+}
+
+IterationControlNode::IterationControlNode(const IterationControlNode &ToCopy) :
+    IterationStatement(ToCopy.IterationStatement->deepCopy())
+{
 }
 
 IterationControlNode::~IterationControlNode()
@@ -17,28 +23,35 @@ IterationControlNode::~IterationControlNode()
     qDebug() << __PRETTY_FUNCTION__;
 }
 
+void IterationControlNode::replaceStatement(std::unique_ptr<SimpleNode> Statement)
+{
+    IterationStatement.reset(Statement.release());
+}
+
+const std::unique_ptr<SimpleNode> &IterationControlNode::getIterationStatement() const
+{
+    return IterationStatement;
+}
+
 ControlNode::ControlType IterationControlNode::getControlType() const
 {
     return ControlNode::ITERATION;
 }
 
-ForLoopNode::ForLoopNode(std::unique_ptr<SimpleNode> Initialization, std::unique_ptr<SimpleNode> Condition, std::unique_ptr<SimpleNode> Update, std::vector<std::unique_ptr<SimpleNode> > &Expressions) :
+ForLoopNode::ForLoopNode(std::unique_ptr<SimpleNode> Initialization, std::unique_ptr<SimpleNode> Condition, std::unique_ptr<SimpleNode> Update, std::unique_ptr<SimpleNode> Statement) :
+    IterationControlNode(std::move(Statement)),
     ForLoopInitialization(std::move(Initialization)),
     ForLoopCondition(std::move(Condition)),
-    ForLoopUpdate(std::move(Update)),
-    ForLoopExpressions(std::move(Expressions))
+    ForLoopUpdate(std::move(Update))
 {
 }
 
 ForLoopNode::ForLoopNode(const ForLoopNode &ToCopy) :
+    IterationControlNode(ToCopy),
     ForLoopInitialization(ToCopy.ForLoopInitialization->deepCopy()),
     ForLoopCondition(ToCopy.ForLoopCondition->deepCopy()),
     ForLoopUpdate(ToCopy.ForLoopUpdate->deepCopy())
 {
-    for(const std::unique_ptr<SimpleNode> &exprToCopy : ToCopy.ForLoopExpressions)
-    {
-        this->ForLoopExpressions.emplace_back(exprToCopy->deepCopy());
-    }
 }
 
 ForLoopNode::~ForLoopNode()
@@ -51,15 +64,9 @@ Node::ValueTypes ForLoopNode::getReturnType() const
     return Node::Void;
 }
 
-
 ControlNode::SpecificControlType ForLoopNode::getSpecificControlType() const
 {
     return ControlNode::FOR;
-}
-
-const std::vector<std::unique_ptr<SimpleNode> > &ForLoopNode::getForLoopExpressions() const
-{
-    return ForLoopExpressions;
 }
 
 const std::unique_ptr<SimpleNode> &ForLoopNode::getForLoopUpdate() const
@@ -77,11 +84,6 @@ const std::unique_ptr<SimpleNode> &ForLoopNode::getForLoopInitialization() const
     return ForLoopInitialization;
 }
 
-void ForLoopNode::executeLoop(QSharedPointer<SimpleStack> StackToUse) const
-{
-
-}
-
 QString ForLoopNode::printValue() const
 {
     return QString("for(%1;%2;%3)").arg(ForLoopInitialization->printNode()).arg(ForLoopCondition->printNode()).arg(ForLoopUpdate->printNode());
@@ -97,25 +99,27 @@ std::unique_ptr<SimpleNode> ForLoopNode::deepCopy() const
     return std::unique_ptr<SimpleNode>(new ForLoopNode(*this));
 }
 
-WhileLoopNode::WhileLoopNode(std::unique_ptr<SimpleNode> Condition, std::vector<std::unique_ptr<SimpleNode> > &Expressions) :
-    WhileLoopCondition(std::move(Condition)),
-    WhileLoopExpressions(std::move(Expressions))
+WhileLoopNode::WhileLoopNode(std::unique_ptr<SimpleNode> Condition, std::unique_ptr<SimpleNode> Statement) :
+    IterationControlNode(std::move(Statement)),
+    WhileLoopCondition(std::move(Condition))
 {
 
 }
 
 WhileLoopNode::WhileLoopNode(const WhileLoopNode &ToCopy) :
+    IterationControlNode(ToCopy),
     WhileLoopCondition(ToCopy.WhileLoopCondition->deepCopy())
 {
-    for(const std::unique_ptr<SimpleNode> &expr : ToCopy.WhileLoopExpressions)
-    {
-        this->WhileLoopExpressions.emplace_back(expr->deepCopy());
-    }
 }
 
 WhileLoopNode::~WhileLoopNode()
 {
     qDebug() << __PRETTY_FUNCTION__;
+}
+
+const std::unique_ptr<SimpleNode> &WhileLoopNode::getWhileCondition()
+{
+    return WhileLoopCondition;
 }
 
 Node::ValueTypes WhileLoopNode::getReturnType() const
@@ -128,9 +132,9 @@ ControlNode::SpecificControlType WhileLoopNode::getSpecificControlType() const
     return ControlNode::WHILE;
 }
 
-void WhileLoopNode::executeLoop(QSharedPointer<SimpleStack> StackToUse) const
+void WhileLoopNode::accept(SimpleNodeVisitor *visitor) const
 {
-
+    visitor->visit(std::unique_ptr<WhileLoopNode>(new WhileLoopNode(*this)));
 }
 
 QString WhileLoopNode::printValue() const
@@ -145,14 +149,13 @@ QString WhileLoopNode::printNode() const
 
 std::unique_ptr<SimpleNode> WhileLoopNode::deepCopy() const
 {
-//    return std::unique_ptr<SimpleNode>(new WhileLoopNode(*this));
+    return std::unique_ptr<SimpleNode>(new WhileLoopNode(*this));
 }
 
 
-DoWhileLoopNode::DoWhileLoopNode(std::unique_ptr<SimpleNode> Condition, std::vector<std::unique_ptr<SimpleNode> > &Expressions) :
-    WhileLoopNode(std::move(Condition), Expressions)
+DoWhileLoopNode::DoWhileLoopNode(std::unique_ptr<SimpleNode> Condition, std::unique_ptr<SimpleNode> Statement) :
+    WhileLoopNode(std::move(Condition), std::move(Statement))
 {
-
 }
 
 DoWhileLoopNode::~DoWhileLoopNode()
@@ -162,7 +165,7 @@ DoWhileLoopNode::~DoWhileLoopNode()
 
 std::unique_ptr<SimpleNode> DoWhileLoopNode::deepCopy() const
 {
-//    return std::unique_ptr<SimpleNode>(new DoWhileLoopNode(*this));
+    return std::unique_ptr<SimpleNode>(new DoWhileLoopNode(*this));
 }
 
 ControlNode::SpecificControlType DoWhileLoopNode::getSpecificControlType() const
@@ -170,16 +173,20 @@ ControlNode::SpecificControlType DoWhileLoopNode::getSpecificControlType() const
     return ControlNode::DOWHILE;
 }
 
+void DoWhileLoopNode::accept(SimpleNodeVisitor *visitor) const
+{
+    visitor->visit(std::unique_ptr<DoWhileLoopNode>(new DoWhileLoopNode(*this)));
+}
+
 QString DoWhileLoopNode::printValue() const
 {
-    return QString("do...").append(WhileLoopNode::printValue());
+    return QString("do ").append(WhileLoopNode::printValue());
 }
 
 QString DoWhileLoopNode::printNode() const
 {
     return QString("{(DoWhileLoopNode):(%1)}").arg(printValue());
 }
-
 
 void ForLoopNode::accept(SimpleNodeVisitor *visitor) const
 {

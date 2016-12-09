@@ -11,6 +11,10 @@
 #include "unaryoperationnodes.h"
 #include "binaryoperationnodes.h"
 #include "ternaryoperationnodes.h"
+#include "blocknode.h"
+#include "selectioncontrolnode.h"
+#include "iterationcontrolnode.h"
+#include "escapecontrolnode.h"
 
 #include "simplesymboltable.h"
 #include "variablesymbol.h"
@@ -348,7 +352,19 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<ExpressionNode> NodeToVi
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<ForLoopNode> NodeToVisit)
 {
-    //ToDO
+    const std::unique_ptr<SimpleNode> &Init = NodeToVisit->getForLoopInitialization();
+    const std::unique_ptr<SimpleNode> &Condition = NodeToVisit->getForLoopCondition();
+    const std::unique_ptr<SimpleNode> &Update = NodeToVisit->getForLoopUpdate();
+    Init->accept(this);
+    Condition->accept(this);
+    bool ForLoopConditionEval = InterpreterResult.get()->getValue().value<bool>();
+    while(ForLoopConditionEval)
+    {
+        NodeToVisit->getIterationStatement()->accept(this);
+        Update->accept(this);
+        Condition->accept(this);
+        ForLoopConditionEval = InterpreterResult.get()->getValue().value<bool>();
+    }
 }
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<FunctionCallNode> NodeToVisit)
@@ -593,7 +609,7 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<ScopeNode> NodeToVisit)
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<StatementNode> NodeToVisit)
 {
-    //ToDO
+//    NodeToVisit->getStatement()->accept(this);
 }
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<SubtractionNode> NodeToVisit)
@@ -702,7 +718,7 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<UnequalNode> NodeToVisit
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<ValueNode> NodeToVisit)
 {
-    InterpreterResult = std::unique_ptr<ValueNode>( new ValueNode(*NodeToVisit));
+    InterpreterResult.reset(new ValueNode(*NodeToVisit));
 }
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<VariableNode> NodeToVisit)
@@ -721,7 +737,15 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<VoidValueNode> NodeToVis
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<WhileLoopNode> NodeToVisit)
 {
-    //ToDO
+    const std::unique_ptr<SimpleNode> &Condition = NodeToVisit->getWhileCondition();
+    Condition->accept(this);
+    bool WhileConditionEval = InterpreterResult.get()->getValue().value<bool>();
+    while(WhileConditionEval)
+    {
+        NodeToVisit->getIterationStatement()->accept(this);
+        Condition->accept(this);
+        WhileConditionEval = InterpreterResult.get()->getValue().value<bool>();
+    }
 }
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<XORNode> NodeToVisit)
@@ -732,5 +756,65 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<XORNode> NodeToVisit)
     std::unique_ptr<ValueNode> value2 = std::move(InterpreterResult);
 
     InterpreterResult = std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<int>() ^ value2->getValue().value<int>()));
+}
+
+void SimpleASTInterpreterVisitor::visit(std::unique_ptr<BlockNode> NodeToVisit)
+{
+    const std::vector<std::unique_ptr<SimpleNode> > & Statements = NodeToVisit->getBlockStatements();
+    for(const std::unique_ptr<SimpleNode> &stmt : Statements)
+    {
+        if(stmt->getNodeType() == Node::Control)
+        {
+            if(dynamic_cast<ControlNode*>(stmt.get())->getControlType() == ControlNode::ESCAPE)
+            {
+                if(dynamic_cast<EscapeControlNode*>(stmt.get())->getSpecificControlType() == ControlNode::CONTINUE)
+                {
+                    continue;
+                }
+                else if(dynamic_cast<EscapeControlNode*>(stmt.get())->getSpecificControlType() == ControlNode::BREAK)
+                {
+                    break;
+                }
+                else if(dynamic_cast<EscapeControlNode*>(stmt.get())->getSpecificControlType() == ControlNode::RETURN)
+                {
+                    stmt->accept(this);
+                    break;
+                }
+            }
+        }
+        stmt->accept(this);
+    }
+}
+
+void SimpleASTInterpreterVisitor::visit(std::unique_ptr<BreakNode> NodeToVisit)
+{
+    InterpreterResult.reset(new VoidValueNode());
+}
+
+void SimpleASTInterpreterVisitor::visit(std::unique_ptr<ContinueNode> NodeToVisit)
+{
+    InterpreterResult.reset(new VoidValueNode());
+}
+
+void SimpleASTInterpreterVisitor::visit(std::unique_ptr<ElseNode> NodeToVisit)
+{
+    //ToDO
+}
+
+void SimpleASTInterpreterVisitor::visit(std::unique_ptr<IfNode> NodeToVisit)
+{
+    //ToDO
+    //ToTHINK SelectionControlManager that holds all possibilities and conditions
+}
+
+void SimpleASTInterpreterVisitor::visit(std::unique_ptr<ReturnNode> NodeToVisit)
+{
+    NodeToVisit->getReturnExpression()->accept(this);
+}
+
+void SimpleASTInterpreterVisitor::visit(std::unique_ptr<SwitchNode> NodeToVisit)
+{
+    //ToDo..
+    //ToTHINK SelectionControlManager that holds all possibilities and conditions
 }
 

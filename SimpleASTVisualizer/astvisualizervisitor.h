@@ -60,6 +60,16 @@ public:
 
 private:
     ASTNode *VisualizedASTRootNode;
+
+    // SimpleNodeVisitor interface
+public:
+    void visit(std::unique_ptr<BlockNode> NodeToVisit);
+    void visit(std::unique_ptr<BreakNode> NodeToVisit);
+    void visit(std::unique_ptr<ContinueNode> NodeToVisit);
+    void visit(std::unique_ptr<ElseNode> NodeToVisit);
+    void visit(std::unique_ptr<IfNode> NodeToVisit);
+    void visit(std::unique_ptr<ReturnNode> NodeToVisit);
+    void visit(std::unique_ptr<SwitchNode> NodeToVisit);
 };
 
 #endif // ASTVISUALIZERVISITOR_H

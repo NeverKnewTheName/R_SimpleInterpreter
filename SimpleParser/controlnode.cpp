@@ -23,7 +23,3 @@ Node::NodeType ControlNode::getNodeType() const
     return Node::Control;
 }
 
-ControlNode::ControlType EscapeControlNode::getControlType() const
-{
-    return ControlNode::ESCAPE;
-}
