@@ -42,6 +42,12 @@ public:
 public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
+    qreal getXOffset() const;
+    void setXOffset(const qreal &value);
+
+    qreal getYOffset() const;
+    void setYOffset(const qreal &value);
+
 private:
     const QString ASTNodeText;
     int ASTNodeLevel;

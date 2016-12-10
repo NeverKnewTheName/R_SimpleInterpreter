@@ -410,6 +410,7 @@ void ASTVisualizerVisitor::visit(std::unique_ptr<StatementNode> NodeToVisit)
     ASTNode *StatementASTNode = new ASTNode(NodeToVisit->printNode(),VisualizedASTRootNode);
     new ASTNode(NodeToVisit->printValue(), StatementASTNode);
     VisualizedASTRootNode = StatementASTNode;
+    NodeToVisit->getStatement()->accept(this);
     new ASTNode(QString(";"), StatementASTNode);
 }
 

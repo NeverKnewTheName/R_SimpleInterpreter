@@ -176,7 +176,7 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<DecrementNode> NodeToVis
     NodeToVisit->getUnaryOPRightChild()->accept(this);
     std::unique_ptr<ValueNode> value = std::move(InterpreterResult);
 
-    std::unique_ptr<ValueNode> Result( new ValueNode(InterpreterResult->getValue().value<int>() - 1) );
+    std::unique_ptr<ValueNode> Result( new ValueNode(value->getValue().value<int>() - 1) );
 
     QSharedPointer<ValueSymbol> relatedSymbol = dynamic_cast<VariableNode*>(NodeToVisit->getUnaryOPRightChild().get())->getRelatedVariableSymbol();
 
@@ -430,7 +430,7 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<IncrementNode> NodeToVis
     NodeToVisit->getUnaryOPRightChild()->accept(this);
     std::unique_ptr<ValueNode> value = std::move(InterpreterResult);
 
-    std::unique_ptr<ValueNode> Result( new ValueNode(InterpreterResult->getValue().value<int>() + 1) );
+    std::unique_ptr<ValueNode> Result( new ValueNode(value->getValue().value<int>() + 1) );
 
     QSharedPointer<ValueSymbol> relatedSymbol = dynamic_cast<VariableNode*>(NodeToVisit->getUnaryOPRightChild().get())->getRelatedVariableSymbol();
 
@@ -609,7 +609,7 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<ScopeNode> NodeToVisit)
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<StatementNode> NodeToVisit)
 {
-//    NodeToVisit->getStatement()->accept(this);
+    NodeToVisit->getStatement()->accept(this);
 }
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<SubtractionNode> NodeToVisit)
@@ -761,6 +761,8 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<XORNode> NodeToVisit)
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<BlockNode> NodeToVisit)
 {
     const std::vector<std::unique_ptr<SimpleNode> > & Statements = NodeToVisit->getBlockStatements();
+    QSharedPointer<SimpleSymbolTable> BlockSymbolTable = NodeToVisit->getBlockSymbolTable();
+    BlockSymbolTable->EnterScope(InterpreterStack);
     for(const std::unique_ptr<SimpleNode> &stmt : Statements)
     {
         if(stmt->getNodeType() == Node::Control)
@@ -784,6 +786,7 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<BlockNode> NodeToVisit)
         }
         stmt->accept(this);
     }
+    BlockSymbolTable->ExitScope(InterpreterStack);
 }
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<BreakNode> NodeToVisit)

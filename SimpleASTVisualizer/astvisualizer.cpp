@@ -24,14 +24,18 @@ ASTNode::ASTNode(const QString &nodeText, QGraphicsItem *parent) :
     if(parent != nullptr)
     {
         ASTNodeLevel += 1 + dynamic_cast<ASTNode*>(parent)->getLevel();
-//        setZValue(ASTNodeLevel);
         YOffset = ASTNodeLevel * (50 + 25);
-//        ChildNodeOffset += dynamic_cast<ASTNode*>(parent)->getChildNodeOffset();
-//        dynamic_cast<ASTNode*>(parent)->setChildNodeOffset(ChildNodeOffset);
-        ChildNodeOffset += dynamic_cast<ASTNode*>(parent)->getChildNodeOffset();
-        XOffset = ChildNodeOffset;
+//        if(parent->childItems().size() == 1)
+//        {
+//            XOffset = dynamic_cast<ASTNode*>(parent)->getXOffset();
+//        }
+//        else
+        {
+            ChildNodeOffset += dynamic_cast<ASTNode*>(parent)->getChildNodeOffset();
+            XOffset = ChildNodeOffset;
+        }
         dynamic_cast<ASTNode*>(parent)->addChildConnection(XOffset+50,YOffset+25);
-        ChildNodeOffset += 125;
+        ChildNodeOffset += 100 + 25;
         dynamic_cast<ASTNode*>(parent)->setChildNodeOffset(ChildNodeOffset);
     }
     QGraphicsEllipseItem::setRect(QRectF(QPointF(XOffset,YOffset),QSizeF(100,50)));
@@ -49,17 +53,6 @@ int ASTNode::getLevel() const
 
 qreal ASTNode::getChildNodeOffset() const
 {
-//    qreal offset = 0;
-//    QList<QGraphicsItem*> children = childItems();
-//    if(!children.isEmpty())
-//    {
-//        offset = dynamic_cast<ASTNode*>(children.back())->getChildNodeOffset();
-//    }
-//    else
-//    {
-//        offset = ChildNodeOffset;
-//    }
-//    return offset;
     return ChildNodeOffset;
 }
 
@@ -80,7 +73,6 @@ void ASTNode::addChildConnection(qreal ChildXCenter, qreal ChildYCenter)
 
     QGraphicsLineItem *newConnection = new QGraphicsLineItem(xCenter,yCenter,ChildXCenter,ChildYCenter,this);
     newConnection->setFlag(QGraphicsItem::ItemStacksBehindParent, true);
-//    newConnection->setZValue(0);
     connections.append(newConnection);
 }
 
@@ -89,5 +81,25 @@ void ASTNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     QGraphicsEllipseItem::paint(painter, option, widget);
 
     painter->drawText(boundingRect(), ASTNodeText, QTextOption(Qt::AlignCenter));
+}
+
+qreal ASTNode::getXOffset() const
+{
+    return XOffset;
+}
+
+qreal ASTNode::getYOffset() const
+{
+    return YOffset;
+}
+
+void ASTNode::setYOffset(const qreal &value)
+{
+    YOffset = value;
+}
+
+void ASTNode::setXOffset(const qreal &value)
+{
+    XOffset = value;
 }
 

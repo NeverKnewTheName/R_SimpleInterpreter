@@ -7,20 +7,25 @@
 
 #include <QDebug>
 
-BlockNode::BlockNode() :
-    BlockReturnType(Node::Void)
-{
+unsigned int BlockNode::BlockCntr = 0;
 
+BlockNode::BlockNode(QString BlockName) :
+    BlockReturnType(Node::Void),
+    BlockSymbolTable(new SimpleSymbolTable(BlockName.append("_%1").arg(BlockCntr)))
+{
+    BlockCntr++;
 }
 
-BlockNode::BlockNode(const Node::ValueTypes &BlockExpectedReturnType) :
-    BlockReturnType(BlockExpectedReturnType)
+BlockNode::BlockNode(const Node::ValueTypes &BlockExpectedReturnType, QString BlockName) :
+    BlockReturnType(BlockExpectedReturnType),
+    BlockSymbolTable(new SimpleSymbolTable(BlockName.append("_%1").arg(BlockCntr)))
 {
-
+    BlockCntr++;
 }
 
 BlockNode::BlockNode(const BlockNode &ToCopy) :
-    BlockReturnType(ToCopy.BlockReturnType)
+    BlockReturnType(ToCopy.BlockReturnType),
+    BlockSymbolTable(ToCopy.BlockSymbolTable)
 {
     for(const std::unique_ptr<SimpleNode> &stmt : ToCopy.BlockStatements)
     {
@@ -96,5 +101,10 @@ QString BlockNode::printNode() const
 std::unique_ptr<SimpleNode> BlockNode::deepCopy() const
 {
     return std::unique_ptr<SimpleNode>(new BlockNode(*this));
+}
+
+QSharedPointer<SimpleSymbolTable> BlockNode::getBlockSymbolTable() const
+{
+    return BlockSymbolTable;
 }
 

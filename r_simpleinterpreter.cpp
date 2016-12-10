@@ -92,6 +92,11 @@ void R_SimpleInterpreter::on_pushButton_clicked()
 
     std::unique_ptr<SimpleNode> parseTree = std::move(parse.ParseToAST());
 
+    if(parseTree == nullptr)
+    {
+        qDebug() << "Error in ParseTree";
+        return;
+    }
     astInterpreter.visit(parseTree->deepCopy());
     std::unique_ptr<ValueNode> result = astInterpreter.getInterpreterResult();
     if(result != nullptr)
