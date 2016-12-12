@@ -143,14 +143,14 @@ private:
     std::unique_ptr<SimpleNode> Block();
     std::unique_ptr<SimpleNode> Statement();
     std::unique_ptr<SimpleNode> ControlStatement();
-    std::unique_ptr<SimpleNode> SelectionStatement();
-    std::unique_ptr<SimpleNode> IfElseStatement();
     std::unique_ptr<SimpleNode> IfStatement();
     std::unique_ptr<SimpleNode> ElseStatement();
     std::unique_ptr<SimpleNode> SwitchStatement();
     std::unique_ptr<SimpleNode> CaseStatement();
     std::unique_ptr<SimpleNode> DefaultStatement();
-    std::unique_ptr<SimpleNode> EscapeStatement();
+    std::unique_ptr<SimpleNode> ForStatement();
+    std::unique_ptr<SimpleNode> WhileStatement();
+    std::unique_ptr<SimpleNode> DoWhileStatement();
     std::unique_ptr<SimpleNode> ContinueStatement();
     std::unique_ptr<SimpleNode> BreakStatement();
     std::unique_ptr<SimpleNode> ReturnStatement();

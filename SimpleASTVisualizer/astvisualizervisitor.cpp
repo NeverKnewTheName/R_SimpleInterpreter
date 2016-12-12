@@ -217,18 +217,8 @@ void ASTVisualizerVisitor::visit(std::unique_ptr<FunctionCallNode> NodeToVisit)
 
     VisualizedASTRootNode = FunctionASTNode;
 
-    const std::vector<std::unique_ptr<SimpleNode>> &FunctionExpressions = RelatedSymbol->getFunctionExpressions();
-    std::vector<std::unique_ptr<SimpleNode>>::const_iterator it = FunctionExpressions.begin();
-    std::vector<std::unique_ptr<SimpleNode>>::const_iterator itEnd = FunctionExpressions.end();
-    for( ;it != itEnd; ++it)
-    {
-        (*it)->accept(this);
-        new ASTNode(QString(";"), FunctionASTNode);
-        VisualizedASTRootNode = FunctionASTNode;
-    }
-
-    RelatedSymbol->getFunctionReturnNode()->accept(this);
-    new ASTNode(QString(";"), FunctionASTNode);
+    const std::unique_ptr<SimpleNode> &FunctionStatement = RelatedSymbol->getFunctionStatement();
+    FunctionStatement->accept(this);
 
     VisualizedASTRootNode = FunctionASTNode;
 }
@@ -491,6 +481,17 @@ void ASTVisualizerVisitor::visit(std::unique_ptr<XORNode> NodeToVisit)
     VisualizedASTRootNode = BinaryASTNode;
 }
 
+void ASTVisualizerVisitor::visit(std::unique_ptr<CaseNode> NodeToVisit)
+{
+    ASTNode *CaseASTNode = new ASTNode(NodeToVisit->printNode(), VisualizedASTRootNode);
+    VisualizedASTRootNode = CaseASTNode;
+    new ASTNode(QString("case"), CaseASTNode);
+    NodeToVisit->getCaseArgument()->accept(this);
+    VisualizedASTRootNode = CaseASTNode;
+    new ASTNode(QString(":"), CaseASTNode);
+    NodeToVisit->getSwitchLabelStatement()->accept(this);
+}
+
 void ASTVisualizerVisitor::visit(std::unique_ptr<BlockNode> NodeToVisit)
 {
     ASTNode *BlockASTNode = new ASTNode(NodeToVisit->printNode(),VisualizedASTRootNode);
@@ -561,4 +562,13 @@ void ASTVisualizerVisitor::visit(std::unique_ptr<SwitchNode> NodeToVisit)
     new ASTNode(QString(")"), SwitchASTNode);
 //    NodeToVisit->getIfStatementBlock()->accept(this);  //ToDO
     VisualizedASTRootNode = SwitchASTNode;
+}
+
+
+void ASTVisualizerVisitor::visit(std::unique_ptr<DefaultNode> NodeToVisit)
+{
+    ASTNode *DefaultASTNode = new ASTNode(NodeToVisit->printNode(), VisualizedASTRootNode);
+    VisualizedASTRootNode = DefaultASTNode;
+    new ASTNode(QString("default:"), DefaultASTNode);
+    NodeToVisit->getSwitchLabelStatement()->accept(this);
 }

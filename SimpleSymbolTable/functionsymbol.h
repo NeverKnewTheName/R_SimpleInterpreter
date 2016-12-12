@@ -22,15 +22,9 @@ public:
             );
     ~FunctionSymbol();
 
-    void addFunctionExpressions(std::vector<std::unique_ptr<SimpleNode>> &FuncExpressions);
-    void addFunctionReturnStatement(std::unique_ptr<SimpleNode> returnNode);
-
     bool checkFunctionArguments(const QVector<std::unique_ptr<SimpleNode>> &FunctionArguments) const;
 
     QSharedPointer<SimpleSymbolTable> getFunctionSymbolTable() const;
-
-    bool BuildFunctionStack(QSharedPointer<SimpleStack> StackToUse) const;
-    bool DestroyFunctionStack(QSharedPointer<SimpleStack> StackToUse) const;
 
     // SymbolTableEntry interface
 public:
@@ -42,18 +36,16 @@ public:
 public:
     Node::ValueTypes getReturnType() const;
 
-    const std::vector<std::unique_ptr<SimpleNode> > &getFunctionExpressions() const;
-
-    const std::unique_ptr<SimpleNode> &getFunctionReturnNode() const;
-
     const std::vector<QSharedPointer<VariableSymbol> > &getFunctionParameters() const;
+
+    const std::unique_ptr<SimpleNode> &getFunctionStatement() const;
+    void setFunctionStatement(std::unique_ptr<SimpleNode> value);
 
 private:
     QSharedPointer<SimpleSymbolTable> FunctionSymbolTable;
     Node::ValueTypes ReturnType;
     std::vector<QSharedPointer<VariableSymbol>> FunctionParameters;
-    std::vector<std::unique_ptr<SimpleNode>> FunctionExpressions;
-    std::unique_ptr<SimpleNode> FunctionReturnNode;
+    std::unique_ptr<SimpleNode> FunctionStatement;
 };
 
 #endif // FUNCTIONSYMBOL_H

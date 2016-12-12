@@ -25,9 +25,6 @@ public:
     void addVariableDefinition(QSharedPointer<VariableSymbol> newVariable);
     void addReturnStatement(std::unique_ptr<SimpleNode> ReturnStatement);
 
-    bool BuildProgramStack(QSharedPointer<SimpleStack> StackToUse) const;
-    bool DestroyProgramStack(QSharedPointer<SimpleStack> StackToUse) const;
-
     QSharedPointer<SimpleSymbolTable> getProgramSymbolTable() const;
 
     const std::vector<std::unique_ptr<SimpleNode> > &getProgramExpressions() const;

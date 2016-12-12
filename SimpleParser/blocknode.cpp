@@ -2,6 +2,8 @@
 
 #include "simplenodevisitor.h"
 
+#include "statementnode.h"
+
 #include "controlnode.h"
 #include "escapecontrolnode.h"
 
@@ -40,26 +42,30 @@ BlockNode::~BlockNode()
 
 void BlockNode::addStatement(std::unique_ptr<SimpleNode> Statement)
 {
-    if(Statement->getNodeType() == Node::Control)
+    if(Statement->getNodeType() == Node::Statement)
     {
-        if(dynamic_cast<ControlNode*>(Statement.get())->getControlType() == ControlNode::ESCAPE)
+        const std::unique_ptr<SimpleNode> &stmt = dynamic_cast<StatementNode*>(Statement.get())->getStatement();
+        if(stmt->getNodeType() == Node::Control)
         {
-            if(dynamic_cast<EscapeControlNode*>(Statement.get())->getSpecificControlType() == ControlNode::RETURN)
+            if(dynamic_cast<ControlNode*>(stmt.get())->getControlType() == ControlNode::ESCAPE)
             {
-                Node::ValueTypes newBlockReturnType = dynamic_cast<ReturnNode*>(Statement.get())->getReturnType();
-                if(BlockReturnType == Node::Void )
+                if(dynamic_cast<EscapeControlNode*>(stmt.get())->getSpecificControlType() == ControlNode::RETURN)
                 {
-                    BlockReturnType = newBlockReturnType;
-                }
-                else if( BlockReturnType != newBlockReturnType )
-                {
-                    if(SimpleNode::canConvertTypes(newBlockReturnType, BlockReturnType))
+                    Node::ValueTypes newBlockReturnType = dynamic_cast<ReturnNode*>(stmt.get())->getReturnType();
+                    if(BlockReturnType == Node::Void )
                     {
                         BlockReturnType = newBlockReturnType;
                     }
-                    else if(!SimpleNode::canConvertTypes(BlockReturnType, newBlockReturnType))
+                    else if( BlockReturnType != newBlockReturnType )
                     {
-                        BlockReturnType = Node::ErrorType;
+                        if(SimpleNode::canConvertTypes(newBlockReturnType, BlockReturnType))
+                        {
+                            BlockReturnType = newBlockReturnType;
+                        }
+                        else if(!SimpleNode::canConvertTypes(BlockReturnType, newBlockReturnType))
+                        {
+                            BlockReturnType = Node::ErrorType;
+                        }
                     }
                 }
             }
@@ -106,5 +112,10 @@ std::unique_ptr<SimpleNode> BlockNode::deepCopy() const
 QSharedPointer<SimpleSymbolTable> BlockNode::getBlockSymbolTable() const
 {
     return BlockSymbolTable;
+}
+
+void BlockNode::ResetBlockCntr()
+{
+    BlockCntr = 0;
 }
 

@@ -29,6 +29,7 @@ typedef enum _NodeType
     Scope,
     Block,
     Statement,
+    Label,
     EOFNode,
     ERRORNode
 }NodeType;

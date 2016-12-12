@@ -173,6 +173,9 @@ QString SimpleToken::convertTokenTypeToString(SimpleToken::TokenType type)
     case Case:
         typeString = QString("case");
         break;
+    case DefaultLabel:
+        typeString = QString("default");
+        break;
     case For:
         typeString = QString("for");
         break;

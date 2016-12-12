@@ -16,12 +16,12 @@ FunctionSymbol::FunctionSymbol(
     FunctionSymbolTable(SymbolTableForFunction),
     ReturnType(ReturnType),
     FunctionParameters(functionParameters),
-    FunctionReturnNode(new ValueNode())
+    FunctionStatement(new VoidValueNode())
 {
     const int NrOfFunctionParameters = FunctionParameters.size();
     for(int i = 0; i < NrOfFunctionParameters; i++)
     {
-        QString paramIdentifier = FunctionParameters.at(i)->getIdentifier();
+//        QString paramIdentifier = FunctionParameters.at(i)->getIdentifier();
         FunctionSymbolTable->addEntry(qSharedPointerDynamicCast<SimpleSymbolTableEntry>(FunctionParameters.at(i)));
     }
 }
@@ -31,51 +31,9 @@ FunctionSymbol::~FunctionSymbol()
     qDebug() << __PRETTY_FUNCTION__;
 }
 
-void FunctionSymbol::addFunctionExpressions(std::vector<std::unique_ptr<SimpleNode> > &FuncExpressions)
-{
-    FunctionExpressions = std::move(FuncExpressions);
-}
-
-void FunctionSymbol::addFunctionReturnStatement(std::unique_ptr<SimpleNode> returnNode)
-{
-    FunctionReturnNode = std::move(returnNode);
-}
-
 QSharedPointer<SimpleSymbolTable> FunctionSymbol::getFunctionSymbolTable() const
 {
     return FunctionSymbolTable;
-}
-
-bool FunctionSymbol::BuildFunctionStack(QSharedPointer<SimpleStack> StackToUse) const
-{
-    bool IsSuccessfull = true;
-    const std::vector<QSharedPointer<SimpleSymbolTableEntry>> SymbolTableEntries = FunctionSymbolTable->getSymbolTableEntries();
-
-    for(auto & symbol: SymbolTableEntries)
-    {
-        if(symbol->getType() == SimpleSymbolTableEntry::Variable)
-        {
-            IsSuccessfull = IsSuccessfull || qSharedPointerDynamicCast<VariableSymbol>(symbol)->VarEnterScope(StackToUse);
-        }
-    }
-
-    return IsSuccessfull;
-}
-
-bool FunctionSymbol::DestroyFunctionStack(QSharedPointer<SimpleStack> StackToUse) const
-{
-    bool IsSuccessfull = true;
-    const std::vector<QSharedPointer<SimpleSymbolTableEntry>> SymbolTableEntries = FunctionSymbolTable->getSymbolTableEntries();
-
-    for(auto & symbol: SymbolTableEntries)
-    {
-        if(symbol->getType() == SimpleSymbolTableEntry::Variable)
-        {
-            IsSuccessfull = IsSuccessfull || qSharedPointerDynamicCast<VariableSymbol>(symbol)->VarEnterScope(StackToUse);
-        }
-    }
-
-    return IsSuccessfull;
 }
 
 bool FunctionSymbol::checkFunctionArguments(const QVector<std::unique_ptr<SimpleNode>> &FunctionArguments) const
@@ -133,18 +91,18 @@ Node::ValueTypes FunctionSymbol::getReturnType() const
     return ReturnType;
 }
 
-const std::vector<std::unique_ptr<SimpleNode> > &FunctionSymbol::getFunctionExpressions() const
-{
-    return FunctionExpressions;
-}
-
-const std::unique_ptr<SimpleNode> &FunctionSymbol::getFunctionReturnNode() const
-{
-    return FunctionReturnNode;
-}
-
 const std::vector<QSharedPointer<VariableSymbol> > &FunctionSymbol::getFunctionParameters() const
 {
     return FunctionParameters;
+}
+
+const std::unique_ptr<SimpleNode> &FunctionSymbol::getFunctionStatement() const
+{
+    return FunctionStatement;
+}
+
+void FunctionSymbol::setFunctionStatement(std::unique_ptr<SimpleNode> value)
+{
+    FunctionStatement.reset(value.release());
 }
 

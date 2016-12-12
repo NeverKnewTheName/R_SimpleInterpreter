@@ -57,6 +57,7 @@ public:
         Else,
         Switch,
         Case,
+        DefaultLabel,
         For,
         While,
         Do,

@@ -44,12 +44,12 @@ SimpleParser::SimpleParser(SimpleLexer *lexer, QSharedPointer<SimpleSymbolTable>
 SimpleParser::~SimpleParser()
 {
     qDebug() << __PRETTY_FUNCTION__;
-    ParentSymblTbl->removeSubSymbolTable(ProgramSymbolTable->getIdentifier());
 }
 
 std::unique_ptr<SimpleNode> SimpleParser::ParseToAST()
 {
     std::unique_ptr<SimpleNode> node;
+    BlockNode::ResetBlockCntr();
     if(CurrentToken->getTokenType() != SimpleToken::EOFToken)
     {
         node = Program();
@@ -63,7 +63,6 @@ std::unique_ptr<SimpleNode> SimpleParser::ParseToAST()
                 return nullptr;
             }
         }
-
     }
     qDebug() << __PRETTY_FUNCTION__ << ": EOF";
     return std::move(node);
@@ -175,67 +174,90 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
     SharedSimpleTokenPtr token = CurrentToken;
 
     std::unique_ptr<SimpleNode> node = Block();
+
+    if((node == nullptr) || (node->getNodeType() != Node::Block))
+    {
+        SyntacticError(token, QString("Expected Block Statement after Function Declaration!"));
+        return QSharedPointer<FunctionSymbol>();
+    }
+
+    if(node->getReturnType() != returnType)
+    {
+        if(SimpleNode::canConvertTypes(node->getReturnType(), returnType))
+        {
+            node = std::unique_ptr<SimpleNode>(new TypeCastNode(std::move(node), returnType));
+        }
+        else
+        {
+            SyntacticError(token, QString("Returntype of Block does not match FunctionDeclaration - expected %1, but got: %2")
+                           .arg(SimpleNode::getHumanReadableTypeNameToValueType(returnType))
+                           .arg(SimpleNode::getHumanReadableTypeNameToValueType(node->getReturnType()))
+                           );
+            return QSharedPointer<FunctionSymbol>();
+        }
+    }
+    DeclaredFuncSymbol->setFunctionStatement(std::move(node));
     //ToDO Check last statement for return...
 
-//    if(CurrentToken->getTokenType() == SimpleToken::LCurlyParan)
-//    {
-//        eat(SimpleToken::LCurlyParan);
-//        std::vector<std::unique_ptr<SimpleNode>> FuncExpressions;
+    //    if(CurrentToken->getTokenType() == SimpleToken::LCurlyParan)
+    //    {
+    //        eat(SimpleToken::LCurlyParan);
+    //        std::vector<std::unique_ptr<SimpleNode>> FuncExpressions;
 
-//        while(CurrentToken->getTokenType() == SimpleToken::TypeName)
-//        {
-//            // // // Variable Definition // // //
-//            token = CurrentToken;
-//            std::unique_ptr<SimpleNode> newVarDefinition = VarDefinition();
-//            if(newVarDefinition == nullptr)
-//            {
-//                continue;
-//            }
-//            FuncExpressions.emplace_back(std::move(newVarDefinition));
-//        }
+    //        while(CurrentToken->getTokenType() == SimpleToken::TypeName)
+    //        {
+    //            // // // Variable Definition // // //
+    //            token = CurrentToken;
+    //            std::unique_ptr<SimpleNode> newVarDefinition = VarDefinition();
+    //            if(newVarDefinition == nullptr)
+    //            {
+    //                continue;
+    //            }
+    //            FuncExpressions.emplace_back(std::move(newVarDefinition));
+    //        }
 
-//        std::unique_ptr<SimpleNode> ExpressionNode;
+    //        std::unique_ptr<SimpleNode> ExpressionNode;
 
-//        while(CurrentToken->getTokenType() != SimpleToken::ReturnKeyword)
-//        {
-//            ExpressionNode = Expression();
-//            if(ExpressionNode != nullptr)
-//            {
-//                eat(SimpleToken::SemiColonDelim);
-//                //ToDO !!!
-//                FuncExpressions.emplace_back(std::move(ExpressionNode));
-//            }
-//            else
-//            {
-//                SyntacticError(CurrentToken, QString("Expected Expression or Return... got neither!"));
-//            }
-//        }
+    //        while(CurrentToken->getTokenType() != SimpleToken::ReturnKeyword)
+    //        {
+    //            ExpressionNode = Expression();
+    //            if(ExpressionNode != nullptr)
+    //            {
+    //                eat(SimpleToken::SemiColonDelim);
+    //                //ToDO !!!
+    //                FuncExpressions.emplace_back(std::move(ExpressionNode));
+    //            }
+    //            else
+    //            {
+    //                SyntacticError(CurrentToken, QString("Expected Expression or Return... got neither!"));
+    //            }
+    //        }
 
-//        std::unique_ptr<SimpleNode> ReturnStatementNode = ReturnStatement();
-//        if(!SimpleNode::canConvertTypes(returnType, ReturnStatementNode->getReturnType()))
-//        {
-//            TypeError(CurrentToken, QString("Expected: %1 but got: %2")
-//                      .arg(SimpleNode::getHumanReadableTypeNameToValueType(returnType))
-//                      .arg(SimpleNode::getHumanReadableTypeNameToValueType(ReturnStatementNode->getReturnType()))
-//                      );
-//            return QSharedPointer<FunctionSymbol>();
-//        }
-//        eat(SimpleToken::RCurlyParan);
+    //        std::unique_ptr<SimpleNode> ReturnStatementNode = ReturnStatement();
+    //        if(!SimpleNode::canConvertTypes(returnType, ReturnStatementNode->getReturnType()))
+    //        {
+    //            TypeError(CurrentToken, QString("Expected: %1 but got: %2")
+    //                      .arg(SimpleNode::getHumanReadableTypeNameToValueType(returnType))
+    //                      .arg(SimpleNode::getHumanReadableTypeNameToValueType(ReturnStatementNode->getReturnType()))
+    //                      );
+    //            return QSharedPointer<FunctionSymbol>();
+    //        }
+    //        eat(SimpleToken::RCurlyParan);
 
-//        DeclaredFuncSymbol->addFunctionExpressions(FuncExpressions);
-//        DeclaredFuncSymbol->addFunctionReturnStatement(std::move(ReturnStatementNode));
-//        if(returnType == Node::ErrorType)
-//        {
-//            CurSymblTbl = SavedSymbolTable;
-//            return QSharedPointer<FunctionSymbol>();
-//        }
-//    }
-//    else
-//    {
-//        SyntacticError(CurrentToken, QString("Expected FunctionDeclaration!"));
-//        CurSymblTbl = SavedSymbolTable;
-//        return QSharedPointer<FunctionSymbol>();
-//    }
+    //        DeclaredFuncSymbol->addFunctionExpressions(FuncExpressions);
+    //        DeclaredFuncSymbol->addFunctionReturnStatement(std::move(ReturnStatementNode));
+    //        if(returnType == Node::ErrorType)
+    //        {
+    //            CurSymblTbl = SavedSymbolTable;
+    //            return QSharedPointer<FunctionSymbol>();
+    //        }
+    //    }
+    //    else
+    //    {
+    //        SyntacticError(CurrentToken, QString("Expected FunctionDeclaration!"));
+    //        CurSymblTbl = SavedSymbolTable;
+    //        return QSharedPointer<FunctionSymbol>();
+    //    }
 
     SavedSymbolTable->addEntry(qSharedPointerDynamicCast<SimpleSymbolTableEntry>(DeclaredFuncSymbol));
 
@@ -421,10 +443,12 @@ std::unique_ptr<SimpleNode> SimpleParser::Block()
         eat(SimpleToken::LCurlyParan);
         node.reset(new BlockNode());
         CurSymblTbl = dynamic_cast<BlockNode*>(node.get())->getBlockSymbolTable();
+        SavedSymbolTable->addEntry(CurSymblTbl);
         CurSymblTbl->addParentSymbolTable(SavedSymbolTable);
         std::unique_ptr<SimpleNode> nodeTwo;
         while(CurrentToken->getTokenType() != SimpleToken::RCurlyParan)
         {
+            bool NoMoreVarDef = false;
             do
             {
                 nodeTwo = VarDefinition();
@@ -432,9 +456,13 @@ std::unique_ptr<SimpleNode> SimpleParser::Block()
                 {
                     dynamic_cast<BlockNode*>(node.get())->addStatement(std::move(nodeTwo));
                 }
-            }while(nodeTwo != nullptr);
+                else
+                {
+                    NoMoreVarDef = true;
+                }
+            }while(!NoMoreVarDef);
 
-            nodeTwo = Statement();
+            nodeTwo = Block();
             if(nodeTwo == nullptr)
             {
                 break;
@@ -494,69 +522,44 @@ std::unique_ptr<SimpleNode> SimpleParser::ControlStatement()
     std::unique_ptr<SimpleNode> node;
     SharedSimpleTokenPtr token = CurrentToken;
 
-    if(CurrentToken->getTokenType() == SimpleToken::For)
+    if(CurrentToken->getTokenType() == SimpleToken::If)
     {
-        eat(SimpleToken::For);
-        eat(SimpleToken::LParan);
-        token = CurrentToken;
-        std::unique_ptr<SimpleNode> init = Expression();
-        eat(SimpleToken::SemiColonDelim);
-        if(init == nullptr)
-        {
-            SyntacticError(token, QString("Expected Initialization Statement for ForLoop!"));
-            return nullptr;
-        }
-        token = CurrentToken;
-        std::unique_ptr<SimpleNode> condition = Expression();
-        eat(SimpleToken::SemiColonDelim);
-        if(condition == nullptr)
-        {
-            SyntacticError(token, QString("Expected Condition Statement for ForLoop!"));
-            return nullptr;
-        }
-        token = CurrentToken;
-        std::unique_ptr<SimpleNode> update = Expression();
-        if(update == nullptr)
-        {
-            SyntacticError(token, QString("Expected Update Statement for ForLoop!"));
-            return nullptr;
-        }
-        eat(SimpleToken::RParan);
-        token = CurrentToken;
-        std::unique_ptr<SimpleNode> StatementBlock = Block();
-        if(StatementBlock == nullptr)
-        {
-            SyntacticError(token, QString("Expected Statement Block after ForLoop!"));
-            return nullptr;
-        }
-        node.reset(new ForLoopNode(std::move(init), std::move(condition), std::move(update), std::move(StatementBlock)));
+        node = IfStatement();
+    }
+    else if(CurrentToken->getTokenType() == SimpleToken::Switch)
+    {
+        node = SwitchStatement();
+    }
+    else if(CurrentToken->getTokenType() == SimpleToken::For)
+    {
+        node = ForStatement();
     }
     else if(CurrentToken->getTokenType() == SimpleToken::Do)
     {
-        //ToDO
+        node = DoWhileStatement();
     }
     else if(CurrentToken->getTokenType() == SimpleToken::While)
     {
-        eat(SimpleToken::While);
-        eat(SimpleToken::LParan);
-        token = CurrentToken;
-        std::unique_ptr<SimpleNode> Condition = Expression();
-        if(Condition == nullptr)
-        {
-            SyntacticError(token, QString("Expected Condition Statement for WhileLoop!"));
-            return nullptr;
-        }
-        eat(SimpleToken::RParan);
-        token = CurrentToken;
-        std::unique_ptr<SimpleNode> StatementBlock = Block();
-        if(StatementBlock == nullptr)
-        {
-            SyntacticError(token, QString("Expected Statement Block after WhileLoop!"));
-            return nullptr;
-        }
-        node.reset(new WhileLoopNode(std::move(Condition), std::move(StatementBlock)));
+        node = WhileStatement();
+    }
+    else if(CurrentToken->getTokenType() == SimpleToken::Continue)
+    {
+        node = ContinueStatement();
+    }
+    else if(CurrentToken->getTokenType() == SimpleToken::Break)
+    {
+        node = BreakStatement();
+    }
+    else if(CurrentToken->getTokenType() == SimpleToken::ReturnKeyword)
+    {
+        node = ReturnStatement();
     }
     else
+    {
+        return nullptr;
+    }
+
+    if(node == nullptr)
     {
         return nullptr;
     }
@@ -565,49 +568,305 @@ std::unique_ptr<SimpleNode> SimpleParser::ControlStatement()
     return std::move(node);
 }
 
-std::unique_ptr<SimpleNode> SimpleParser::SelectionStatement()
-{
-
-}
-
-std::unique_ptr<SimpleNode> SimpleParser::IfElseStatement()
-{
-
-}
-
 std::unique_ptr<SimpleNode> SimpleParser::IfStatement()
 {
+    std::unique_ptr<SimpleNode> node;
+    QSharedPointer<SimpleToken> token = CurrentToken;
 
+    eat(SimpleToken::If);
+    eat(SimpleToken::LParan);
+    token = CurrentToken;
+    std::unique_ptr<SimpleNode> Condition = Expression();
+    if(Condition == nullptr)
+    {
+        SyntacticError(token, QString("Expected expression for IfStatement!"));
+    }
+    eat(SimpleToken::RParan);
+    token = CurrentToken;
+    std::unique_ptr<SimpleNode> StatementBlock = Block();
+    if(StatementBlock == nullptr)
+    {
+        SyntacticError(token, QString("Expected Statement Block after IfStatement!"));
+        return nullptr;
+    }
+
+    node.reset(new IfNode(std::move(Condition), std::move(StatementBlock)));
+
+    if(CurrentToken->getTokenType() == SimpleToken::Else)
+    {
+        eat(SimpleToken::Else);
+        std::unique_ptr<SimpleNode> nodeTwo = Block();
+        if(nodeTwo == nullptr)
+        {
+            SyntacticError(token, QString("Expected Block Statement or If Statement after else!"));
+            return nullptr;
+        }
+        dynamic_cast<IfNode*>(node.get())->addElse(std::unique_ptr<ElseNode>(new ElseNode(std::move(nodeTwo))));
+    }
+
+    qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+    return std::move(node);
 }
 
 std::unique_ptr<SimpleNode> SimpleParser::ElseStatement()
 {
+    std::unique_ptr<SimpleNode> node;
+    QSharedPointer<SimpleToken> token = CurrentToken;
 
+    eat(SimpleToken::Else);
+    if(CurrentToken->getTokenType() == SimpleToken::If)
+    {
+        node = IfStatement();
+    }
+    else
+    {
+        node = Block();
+    }
+
+    if(node == nullptr)
+    {
+        SyntacticError(token, QString("Expected either IF or Block after Else!"));
+        return nullptr;
+    }
+
+    node.reset(new ElseNode(std::move(node)));
+
+    qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+    return std::move(node);
 }
 
 std::unique_ptr<SimpleNode> SimpleParser::SwitchStatement()
 {
+    std::unique_ptr<SimpleNode> node;
+    std::unique_ptr<SimpleNode> nodeTwo;
+    QSharedPointer<SimpleToken> token = CurrentToken;
 
+    eat(SimpleToken::Switch);
+    eat(SimpleToken::LParan);
+    token = CurrentToken;
+    std::unique_ptr<SimpleNode> Condition = Expression();
+    if(Condition == nullptr)
+    {
+        SyntacticError(token, QString("Expected expression for IfStatement!"));
+        return nullptr;
+    }
+    node.reset(new SwitchNode(std::move(Condition)));
+    eat(SimpleToken::RParan);
+    token = CurrentToken;
+    eat(SimpleToken::LCurlyParan);
+    while(CurrentToken->getTokenType() != SimpleToken::RCurlyParan)
+    {
+        if(CurrentToken->getTokenType() == SimpleToken::Case)
+        {
+            nodeTwo = CaseStatement();
+        }
+        else if(CurrentToken->getTokenType() == SimpleToken::DefaultLabel)
+        {
+            nodeTwo = DefaultStatement();
+        }
+
+        if(nodeTwo == nullptr)
+        {
+            SyntacticError(token, QString("Expected Case Label or Default Lable after Switch Statement!"));
+            return nullptr;
+        }
+        dynamic_cast<SwitchNode*>(node.get())->addSwitchLabel(std::unique_ptr<SwitchLabel>(dynamic_cast<SwitchLabel*>(nodeTwo.release())));
+    }
+    eat(SimpleToken::RCurlyParan);
+    const std::vector<std::unique_ptr<SwitchLabel>> &SwitchLables = dynamic_cast<SwitchNode*>(node.get())->getSwitchLabels();
+    if(SwitchLables.size() == 0)
+    {
+        SyntacticError(token, QString("Expected Labels after Switch!"));
+        return nullptr;
+    }
+    if(SwitchLables.back()->getSwitchLabelType() != SwitchLabel::DefaultLable)
+    {
+        SyntacticError(CurrentToken, QString("Default Label is missing at the end of Switch Statement!"));
+        return nullptr;
+    }
+
+    qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+    return std::move(node);
 }
 
 std::unique_ptr<SimpleNode> SimpleParser::CaseStatement()
 {
+    std::unique_ptr<SimpleNode> node;
+    std::unique_ptr<SimpleNode> argument;
+    QSharedPointer<SimpleToken> token = CurrentToken;
+    eat(SimpleToken::Case);
+    argument = PrimaryExpression();
+    if(argument == nullptr)
+    {
+        SyntacticError(token, QString("Expected Integer after Case Label!"));
+        return nullptr;
+    }
+    if(argument->getNodeType() == Node::Value)
+    {
+        if(!((dynamic_cast<ValueNode*>(argument.get())->getReturnType()) & Node::Integer))
+        {
+            SyntacticError(token, QString("Expected Integer after Case Label!"));
+            return nullptr;
+        }
+    }
+    else
+    {
+        SyntacticError(token, QString("Expected Integer after Case Label!"));
+        return nullptr;
+    }
+    eat(SimpleToken::Colon);
+    node = Block();
+    if(node == nullptr)
+    {
+        SyntacticError(token, QString("Expected Statement (Block) for Case Label!"));
+        return nullptr;
+    }
 
+    node.reset(new CaseNode(std::unique_ptr<ValueNode>(dynamic_cast<ValueNode*>(argument.release())), std::move(node)));
+
+    qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+    return std::move(node);
 }
 
 std::unique_ptr<SimpleNode> SimpleParser::DefaultStatement()
 {
+    std::unique_ptr<SimpleNode> node;
+    QSharedPointer<SimpleToken> token = CurrentToken;
+    eat(SimpleToken::DefaultLabel);
+    eat(SimpleToken::Colon);
+    node = Block();
+    if(node == nullptr)
+    {
+        SyntacticError(token, QString("Expected Statement (Block) for Default Label!"));
+        return nullptr;
+    }
+    node.reset(new DefaultNode(std::move(node)));
 
+    qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+    return std::move(node);
 }
 
-std::unique_ptr<SimpleNode> SimpleParser::EscapeStatement()
+std::unique_ptr<SimpleNode> SimpleParser::ForStatement()
 {
+    std::unique_ptr<SimpleNode> node;
+    QSharedPointer<SimpleToken> token = CurrentToken;
 
+    eat(SimpleToken::For);
+    eat(SimpleToken::LParan);
+    token = CurrentToken;
+    std::unique_ptr<SimpleNode> init = Expression();
+    eat(SimpleToken::SemiColonDelim);
+    if(init == nullptr)
+    {
+        SyntacticError(token, QString("Expected Initialization Statement for ForLoop!"));
+        return nullptr;
+    }
+    token = CurrentToken;
+    std::unique_ptr<SimpleNode> condition = Expression();
+    eat(SimpleToken::SemiColonDelim);
+    if(condition == nullptr)
+    {
+        SyntacticError(token, QString("Expected Condition Statement for ForLoop!"));
+        return nullptr;
+    }
+    token = CurrentToken;
+    std::unique_ptr<SimpleNode> update = Expression();
+    if(update == nullptr)
+    {
+        SyntacticError(token, QString("Expected Update Statement for ForLoop!"));
+        return nullptr;
+    }
+    eat(SimpleToken::RParan);
+    token = CurrentToken;
+    std::unique_ptr<SimpleNode> StatementBlock = Block();
+    if(StatementBlock == nullptr)
+    {
+        SyntacticError(token, QString("Expected Statement Block after ForLoop!"));
+        return nullptr;
+    }
+    node.reset(new ForLoopNode(std::move(init), std::move(condition), std::move(update), std::move(StatementBlock)));
+
+    qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+    return std::move(node);
+}
+
+std::unique_ptr<SimpleNode> SimpleParser::WhileStatement()
+{
+    std::unique_ptr<SimpleNode> node;
+    QSharedPointer<SimpleToken> token = CurrentToken;
+
+    eat(SimpleToken::While);
+    eat(SimpleToken::LParan);
+    token = CurrentToken;
+    std::unique_ptr<SimpleNode> Condition = Expression();
+    if(Condition == nullptr)
+    {
+        SyntacticError(token, QString("Expected Condition Statement for WhileLoop!"));
+        return nullptr;
+    }
+    eat(SimpleToken::RParan);
+    token = CurrentToken;
+    std::unique_ptr<SimpleNode> StatementBlock = Block();
+    if(StatementBlock == nullptr)
+    {
+        SyntacticError(token, QString("Expected Statement Block after WhileLoop!"));
+        return nullptr;
+    }
+    node.reset(new WhileLoopNode(std::move(Condition), std::move(StatementBlock)));
+
+    qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+    return std::move(node);
+}
+
+std::unique_ptr<SimpleNode> SimpleParser::DoWhileStatement()
+{
+    std::unique_ptr<SimpleNode> node;
+    QSharedPointer<SimpleToken> token = CurrentToken;
+
+    eat(SimpleToken::Do);
+    token = CurrentToken;
+    std::unique_ptr<SimpleNode> StatementBlock = Block();
+    if(StatementBlock == nullptr)
+    {
+        SyntacticError(token, QString("Expected Statement Block after DoWhileLoop!"));
+        return nullptr;
+    }
+    eat(SimpleToken::While);
+    eat(SimpleToken::LParan);
+    token = CurrentToken;
+    std::unique_ptr<SimpleNode> Condition = Expression();
+    if(Condition == nullptr)
+    {
+        SyntacticError(token, QString("Expected Condition Statement for WhileLoop!"));
+        return nullptr;
+    }
+    eat(SimpleToken::RParan);
+    eat(SimpleToken::SemiColonDelim);
+    node.reset(new DoWhileLoopNode(std::move(Condition), std::move(StatementBlock)));
+
+    qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+    return std::move(node);
 }
 
 std::unique_ptr<SimpleNode> SimpleParser::ContinueStatement()
 {
+    std::unique_ptr<SimpleNode> node;
+    SharedSimpleTokenPtr token = CurrentToken;
 
+    if(CurrentToken->getTokenType() == SimpleToken::Continue)
+    {
+        eat(SimpleToken::Continue);
+        eat(SimpleToken::SemiColonDelim);
+        node.reset(new ContinueNode());
+    }
+
+    if(node == nullptr)
+    {
+        return nullptr;
+    }
+
+    qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+    return std::move(node);
 }
 
 std::unique_ptr<SimpleNode> SimpleParser::BreakStatement()
@@ -618,7 +877,8 @@ std::unique_ptr<SimpleNode> SimpleParser::BreakStatement()
     if(CurrentToken->getTokenType() == SimpleToken::Break)
     {
         eat(SimpleToken::Break);
-        //        node = node;//ToDO
+        eat(SimpleToken::SemiColonDelim);
+        node.reset(new BreakNode());
     }
 
     if(node == nullptr)

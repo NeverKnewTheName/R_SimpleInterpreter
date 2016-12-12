@@ -134,6 +134,8 @@ void R_SimpleInterpreter::on_pushButton_clicked()
     }
 #endif
 
+    GlobalSymbolTable->removeEntry(parse.getProgramSymblTbl()->getIdentifier());
+
     ui->lineEdit_2->setText(result->getValue().value<QString>());
 }
 

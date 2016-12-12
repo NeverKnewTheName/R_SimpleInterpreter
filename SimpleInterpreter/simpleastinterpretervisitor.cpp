@@ -23,7 +23,8 @@
 #include <QDebug>
 
 SimpleASTInterpreterVisitor::SimpleASTInterpreterVisitor() :
-    InterpreterStack(new SimpleStack(1000))
+    InterpreterStack(new SimpleStack(1000)),
+    CurrentEscape(NoEscape)
 {
 
 }
@@ -59,7 +60,7 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<AssignmentNode> NodeToVi
 
     if(relatedSymbol->getType() == SimpleSymbolTableEntry::Variable)
     {
-//        qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(value), InterpreterStack);
+        //        qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(value), InterpreterStack);
         size_t AddressInStack = qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->getStackAddress();
         InterpreterStack->StackReplaceAt(AddressInStack, std::move(value));
     }
@@ -182,7 +183,7 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<DecrementNode> NodeToVis
 
     if(relatedSymbol->getType() == SimpleSymbolTableEntry::Variable)
     {
-//        qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(Result), InterpreterStack);
+        //        qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(Result), InterpreterStack);
         size_t AddressInStack = qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->getStackAddress();
         InterpreterStack->StackReplaceAt(AddressInStack, std::move(Result));
     }
@@ -229,7 +230,24 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<DivisionNode> NodeToVisi
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<DoWhileLoopNode> NodeToVisit)
 {
-    //ToDO
+
+    const std::unique_ptr<SimpleNode> &Condition = NodeToVisit->getWhileCondition();
+    Condition->accept(this);
+    bool WhileConditionEval = InterpreterResult.get()->getValue().value<bool>();
+    do
+    {
+        NodeToVisit->getIterationStatement()->accept(this);
+        if(CurrentEscape == BreakEscape)
+        {
+            CurrentEscape = NoEscape;
+            break;
+        } else if(CurrentEscape == ReturnEscape)
+        {
+            break;
+        }
+        Condition->accept(this);
+        WhileConditionEval = InterpreterResult.get()->getValue().value<bool>();
+    }while(WhileConditionEval);
 }
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<EOFNode> NodeToVisit)
@@ -361,6 +379,14 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<ForLoopNode> NodeToVisit
     while(ForLoopConditionEval)
     {
         NodeToVisit->getIterationStatement()->accept(this);
+        if(CurrentEscape == BreakEscape)
+        {
+            CurrentEscape = NoEscape;
+            break;
+        } else if(CurrentEscape == ReturnEscape)
+        {
+            break;
+        }
         Update->accept(this);
         Condition->accept(this);
         ForLoopConditionEval = InterpreterResult.get()->getValue().value<bool>();
@@ -374,14 +400,13 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<FunctionCallNode> NodeTo
     const std::vector<std::unique_ptr<SimpleNode>> &FuncArgs = NodeToVisit->getFuncArgs();
 
     const std::vector<QSharedPointer<VariableSymbol> > &FunctionParameters = RelatedSymbol->getFunctionParameters();
-    const std::vector<std::unique_ptr<SimpleNode>> &FunctionExpressions = RelatedSymbol->getFunctionExpressions();
-    const std::unique_ptr<SimpleNode> &FunctionReturnNode = RelatedSymbol->getFunctionReturnNode();
+    const std::unique_ptr<SimpleNode> &FunctionStatement = RelatedSymbol->getFunctionStatement();
     QSharedPointer<SimpleSymbolTable> FunctionSymbolTable = RelatedSymbol->getFunctionSymbolTable();
 
     if(FunctionParameters.size() != FuncArgs.size())
     {
         qDebug() << "Number of passed arguments does not match function parameters!";
-        InterpreterResult = std::unique_ptr<ValueNode>( new ValueNode());
+        InterpreterResult = std::unique_ptr<VoidValueNode>( new VoidValueNode());
     }
 
     std::vector<std::unique_ptr<SimpleNode>>::const_iterator itFuncArgsBegin = FuncArgs.begin();
@@ -399,17 +424,13 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<FunctionCallNode> NodeTo
     {
         const QSharedPointer<VariableSymbol> &param = FunctionParameters.at(i);
         std::unique_ptr<ValueNode> &argument = EvaluatedFuncArgs.at(i);
-//        param->assignValue(std::move(argument), InterpreterStack);
+        //        param->assignValue(std::move(argument), InterpreterStack);
         size_t AddressInStack = param->getStackAddress();
         InterpreterStack->StackReplaceAt(AddressInStack, std::move(argument));
     }
 
-
-    for(const std::unique_ptr<SimpleNode> &expression : FunctionExpressions)
-    {
-        expression->accept(this);
-    }
-    FunctionReturnNode->accept(this);
+    FunctionStatement->accept(this);
+    CurrentEscape = NoEscape;
 
     FunctionSymbolTable->ExitScope(InterpreterStack);
 }
@@ -436,7 +457,7 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<IncrementNode> NodeToVis
 
     if(relatedSymbol->getType() == SimpleSymbolTableEntry::Variable)
     {
-//        qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(Result), InterpreterStack);
+        //        qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->assignValue(std::move(Result), InterpreterStack);
         size_t AddressInStack = qSharedPointerDynamicCast<VariableSymbol>(relatedSymbol)->getStackAddress();
         InterpreterStack->StackReplaceAt(AddressInStack, std::move(Result));
     }
@@ -576,6 +597,7 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<PositiveNode> NodeToVisi
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<ProgramNode> NodeToVisit)
 {
+    CurrentEscape = NoEscape;
     QSharedPointer<SimpleSymbolTable> ProgramSymbolTable = NodeToVisit->getProgramSymbolTable();
     const std::vector<std::unique_ptr<SimpleNode>> &ProgramExpressions = NodeToVisit->getProgramExpressions();
     const std::unique_ptr<SimpleNode> &ProgramReturnStatement = NodeToVisit->getProgramReturnStatement();
@@ -724,7 +746,7 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<ValueNode> NodeToVisit)
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<VariableNode> NodeToVisit)
 {
     QSharedPointer<ValueSymbol> RelatedVariableSymbol = NodeToVisit-> getRelatedVariableSymbol();
-//    InterpreterResult = RelatedVariableSymbol->getValue(InterpreterStack);
+    //    InterpreterResult = RelatedVariableSymbol->getValue(InterpreterStack);
 
     const size_t AddressInstack = RelatedVariableSymbol->getStackAddress();
     InterpreterResult = InterpreterStack->StackAt(AddressInstack);
@@ -743,6 +765,14 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<WhileLoopNode> NodeToVis
     while(WhileConditionEval)
     {
         NodeToVisit->getIterationStatement()->accept(this);
+        if(CurrentEscape == BreakEscape)
+        {
+            CurrentEscape = NoEscape;
+            break;
+        } else if(CurrentEscape == ReturnEscape)
+        {
+            break;
+        }
         Condition->accept(this);
         WhileConditionEval = InterpreterResult.get()->getValue().value<bool>();
     }
@@ -758,6 +788,16 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<XORNode> NodeToVisit)
     InterpreterResult = std::unique_ptr<ValueNode>( new ValueNode(value1->getValue().value<int>() ^ value2->getValue().value<int>()));
 }
 
+void SimpleASTInterpreterVisitor::visit(std::unique_ptr<CaseNode> NodeToVisit)
+{
+    NodeToVisit->getSwitchLabelStatement()->accept(this);
+}
+
+void SimpleASTInterpreterVisitor::visit(std::unique_ptr<DefaultNode> NodeToVisit)
+{
+    NodeToVisit->getSwitchLabelStatement()->accept(this);
+}
+
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<BlockNode> NodeToVisit)
 {
     const std::vector<std::unique_ptr<SimpleNode> > & Statements = NodeToVisit->getBlockStatements();
@@ -765,26 +805,11 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<BlockNode> NodeToVisit)
     BlockSymbolTable->EnterScope(InterpreterStack);
     for(const std::unique_ptr<SimpleNode> &stmt : Statements)
     {
-        if(stmt->getNodeType() == Node::Control)
-        {
-            if(dynamic_cast<ControlNode*>(stmt.get())->getControlType() == ControlNode::ESCAPE)
-            {
-                if(dynamic_cast<EscapeControlNode*>(stmt.get())->getSpecificControlType() == ControlNode::CONTINUE)
-                {
-                    continue;
-                }
-                else if(dynamic_cast<EscapeControlNode*>(stmt.get())->getSpecificControlType() == ControlNode::BREAK)
-                {
-                    break;
-                }
-                else if(dynamic_cast<EscapeControlNode*>(stmt.get())->getSpecificControlType() == ControlNode::RETURN)
-                {
-                    stmt->accept(this);
-                    break;
-                }
-            }
-        }
         stmt->accept(this);
+        if(CurrentEscape != NoEscape)
+        {
+            break;
+        }
     }
     BlockSymbolTable->ExitScope(InterpreterStack);
 }
@@ -792,32 +817,79 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<BlockNode> NodeToVisit)
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<BreakNode> NodeToVisit)
 {
     InterpreterResult.reset(new VoidValueNode());
+    CurrentEscape = BreakEscape;
 }
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<ContinueNode> NodeToVisit)
 {
     InterpreterResult.reset(new VoidValueNode());
+    CurrentEscape = ContinueEscape;
 }
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<ElseNode> NodeToVisit)
 {
-    //ToDO
+    NodeToVisit->getElseStatementBlock()->accept(this);
 }
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<IfNode> NodeToVisit)
 {
-    //ToDO
-    //ToTHINK SelectionControlManager that holds all possibilities and conditions
+    const std::unique_ptr<SimpleNode> &Condition = NodeToVisit->getIfCondition();
+    Condition->accept(this);
+    bool IfCondition = InterpreterResult->getValue().value<bool>();
+
+    if(IfCondition)
+    {
+        NodeToVisit->getIfStatementBlock()->accept(this);
+    }
+    else
+    {
+        const std::unique_ptr<SimpleNode> &IfElseNode = NodeToVisit->getIfElseNode();
+        if(IfElseNode->getReturnType() != Node::ErrorType)
+        {
+            IfElseNode->accept(this);
+        }
+    }
 }
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<ReturnNode> NodeToVisit)
 {
     NodeToVisit->getReturnExpression()->accept(this);
+    CurrentEscape = ReturnEscape;
 }
 
 void SimpleASTInterpreterVisitor::visit(std::unique_ptr<SwitchNode> NodeToVisit)
 {
-    //ToDo..
-    //ToTHINK SelectionControlManager that holds all possibilities and conditions
+    const std::vector<std::unique_ptr<SwitchLabel> > &SwitchLables = NodeToVisit->getSwitchLabels();
+    std::vector<std::unique_ptr<SwitchLabel>>::const_iterator itBegin = SwitchLables.begin();
+    std::vector<std::unique_ptr<SwitchLabel>>::const_iterator itEnd = SwitchLables.end();
+    NodeToVisit->getSwitchCondition()->accept(this);
+    std::unique_ptr<ValueNode> SwitchCondition = std::move(InterpreterResult);
+
+    for(;itBegin != itEnd; itBegin++)
+    {
+        if((*itBegin)->getSwitchLabelType() == SwitchLabel::DefaultLable)
+        {
+            break;
+        }
+        else if((*itBegin)->getSwitchLabelType() == SwitchLabel::CaseLabel)
+        {
+            if(dynamic_cast<CaseNode*>((*itBegin).get())->getCaseArgument()->getValue().value<int>() == SwitchCondition->getValue().value<int>())
+            {
+                break;
+            }
+        }
+    }
+    for(;itBegin != itEnd; itBegin++)
+    {
+        (*itBegin)->accept(this);
+        if(CurrentEscape != NoEscape)
+        {
+            if(CurrentEscape == BreakEscape)
+            {
+                CurrentEscape = NoEscape;
+            }
+            break;
+        }
+    }
 }
 

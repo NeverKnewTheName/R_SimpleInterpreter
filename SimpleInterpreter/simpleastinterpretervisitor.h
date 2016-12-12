@@ -13,6 +13,14 @@ class ValueNode;
 class SimpleASTInterpreterVisitor : public SimpleNodeVisitor
 {
 public:
+    typedef enum _EcapeType
+    {
+        NoEscape,
+        ContinueEscape,
+        BreakEscape,
+        ReturnEscape
+    }EscapeType;
+
     SimpleASTInterpreterVisitor();
     ~SimpleASTInterpreterVisitor();
 
@@ -61,13 +69,8 @@ public:
     void visit(std::unique_ptr<WhileLoopNode> NodeToVisit);
     void visit(std::unique_ptr<XORNode> NodeToVisit);
 
-
-private:
-    std::unique_ptr<ValueNode> InterpreterResult;
-    QSharedPointer<SimpleStack> InterpreterStack;
-
-    // SimpleNodeVisitor interface
-public:
+    void visit(std::unique_ptr<CaseNode> NodeToVisit);
+    void visit(std::unique_ptr<DefaultNode> NodeToVisit);
     void visit(std::unique_ptr<BlockNode> NodeToVisit);
     void visit(std::unique_ptr<BreakNode> NodeToVisit);
     void visit(std::unique_ptr<ContinueNode> NodeToVisit);
@@ -75,6 +78,11 @@ public:
     void visit(std::unique_ptr<IfNode> NodeToVisit);
     void visit(std::unique_ptr<ReturnNode> NodeToVisit);
     void visit(std::unique_ptr<SwitchNode> NodeToVisit);
+
+private:
+    std::unique_ptr<ValueNode> InterpreterResult;
+    QSharedPointer<SimpleStack> InterpreterStack;
+    EscapeType CurrentEscape;
 };
 
 #endif // SIMPLEASTINTERPRETERVISITOR_H

@@ -19,6 +19,7 @@ public:
 
     QSharedPointer<SimpleSymbolTable> getBlockSymbolTable() const;
 
+    static void ResetBlockCntr();
     // SimpleNodeVisitable interface
 public:
     void accept(SimpleNodeVisitor *visitor) const;

@@ -19,7 +19,7 @@
 #define REGEX_OPERATION             11
 #define REGEX_IDENTIFIER            12
 
-const QString SimpleLexer::LexerRegularExpression("((if|else|switch|case|for|do|while|continue|break|return)|(Integer|Double|Bool|String|Void)|(?:\"((?:\\\\\"|.)*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\{|\\)|\\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|\\+{1,2}|\\-{1,2}|[!~\\*\\/%\\?;,:])|([_a-zA-Z]\\w*))");
+const QString SimpleLexer::LexerRegularExpression("((if|else|switch|case|default|for|do|while|continue|break|return)|(Integer|Double|Bool|String|Void)|(?:\"((?:\\\\\"|.)*?)\")|((\\d+(\\.\\d+)?)|(true|false))|(D(\\d+))|(\\(|\\{|\\)|\\}|[<>!=]?=|<{1,2}|>{1,2}|&{1,2}|\\|{1,2}|\\^{1,2}|\\+{1,2}|\\-{1,2}|[!~\\*\\/%\\?;,:])|([_a-zA-Z]\\w*))");
 
 SimpleLexer::SimpleLexer(QObject *parent) :
     QObject(parent),
@@ -101,6 +101,10 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
             else if(!keyword.compare(QString("case")))
             {
                 Token = SharedSimpleTokenPtr(new ControlToken(SimpleToken::Case, PosInInputString,regExMatch.capturedLength(REGEX_WHOLE)));
+            }
+            else if(!keyword.compare(QString("default")))
+            {
+                Token = SharedSimpleTokenPtr(new ControlToken(SimpleToken::DefaultLabel, PosInInputString,regExMatch.capturedLength(REGEX_WHOLE)));
             }
             else if(!keyword.compare(QString("for")))
             {
