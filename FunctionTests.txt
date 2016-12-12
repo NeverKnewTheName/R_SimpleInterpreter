@@ -138,3 +138,43 @@ String func(Integer val)
 }
 
 return func(a);	
+
+
+
+Integer a = 5;
+
+String func(Integer val)
+{
+	String str = "";
+	do
+	{
+        switch(val)
+        {
+            case 0:
+            {
+                str = str + " Case0";
+                break;
+            }
+        
+            case 1:
+            {
+                str = str + " Case1";
+                break;
+            }
+        
+            case 2:
+            {
+                str = str + " Case2";
+                break;
+            }
+        
+            default:
+            {
+                str = str + " DEFAULT";
+            }
+        }
+	}while(--val);
+	return str;
+}
+
+return func(a);	
