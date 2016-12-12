@@ -123,7 +123,18 @@ void ASTVisualizerVisitor::visit(std::unique_ptr<DivisionNode> NodeToVisit)
 
 void ASTVisualizerVisitor::visit(std::unique_ptr<DoWhileLoopNode> NodeToVisit)
 {
-    //ToDO
+    ASTNode *DoWhileASTNode = new ASTNode(NodeToVisit->printNode(),VisualizedASTRootNode);
+    new ASTNode(NodeToVisit->printValue(), DoWhileASTNode);
+    VisualizedASTRootNode = DoWhileASTNode;
+    NodeToVisit->getIterationStatement()->accept(this);
+    VisualizedASTRootNode = DoWhileASTNode;
+    new ASTNode(QString("while"),DoWhileASTNode);
+    new ASTNode(QString("("), DoWhileASTNode);
+    NodeToVisit->getWhileCondition()->accept(this);
+    VisualizedASTRootNode = DoWhileASTNode;
+    new ASTNode(QString(")"), DoWhileASTNode);
+
+    VisualizedASTRootNode = DoWhileASTNode;
 }
 
 void ASTVisualizerVisitor::visit(std::unique_ptr<EOFNode> NodeToVisit)
@@ -498,7 +509,7 @@ void ASTVisualizerVisitor::visit(std::unique_ptr<BlockNode> NodeToVisit)
     VisualizedASTRootNode = BlockASTNode;
     new ASTNode(QString("{"), BlockASTNode);
     const std::vector<std::unique_ptr<SimpleNode>> &BlockStatements = NodeToVisit->getBlockStatements();
-    for(const std::unique_ptr<SimpleNode> & stmt : BlockStatements)
+    for(const std::unique_ptr<SimpleNode> &stmt : BlockStatements)
     {
         stmt->accept(this);
         VisualizedASTRootNode = BlockASTNode;
@@ -560,7 +571,12 @@ void ASTVisualizerVisitor::visit(std::unique_ptr<SwitchNode> NodeToVisit)
     NodeToVisit->getSwitchCondition()->accept(this);
     VisualizedASTRootNode = SwitchASTNode;
     new ASTNode(QString(")"), SwitchASTNode);
-//    NodeToVisit->getIfStatementBlock()->accept(this);  //ToDO
+    const std::vector<std::unique_ptr<SwitchLabel>> &SwitchLabels = NodeToVisit->getSwitchLabels();
+    for(const std::unique_ptr<SwitchLabel> &label : SwitchLabels)
+    {
+        label->accept(this);
+        VisualizedASTRootNode = SwitchASTNode;
+    }
     VisualizedASTRootNode = SwitchASTNode;
 }
 
