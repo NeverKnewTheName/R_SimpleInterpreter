@@ -12,14 +12,18 @@ DataNode::DataNode(const unsigned int dataIndex, const QSharedPointer<SimpleSymb
 {
     if( GlobalSymbolTable->getParentSymbolTable() != NULL )
     {
+#ifdef __DEBUG_OUTPUT__
         qDebug() << "TRIED TO SET A DATANODE WITH A SYMBOL TABLE THAT WAS NOT THE GLOBAL SYMBOL TABLE!";
+#endif
     }
 }
 
 DataNode::~DataNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
     qDebug() << printNode();
+#endif
 }
 
 Node::NodeType DataNode::getNodeType() const

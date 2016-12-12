@@ -40,7 +40,9 @@ FunctionCallNode::FunctionCallNode(const FunctionCallNode &ToCopy) :
 
 FunctionCallNode::~FunctionCallNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 Node::NodeType FunctionCallNode::getNodeType() const

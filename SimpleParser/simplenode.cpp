@@ -166,7 +166,9 @@ Node::ValueTypes SimpleNode::evaluateResultingType(const Node::ValueTypes type1,
 
 SimpleNode::~SimpleNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 Node::NodeType SimpleNode::getNodeType() const
@@ -195,8 +197,10 @@ EOFNode::EOFNode()
 
 EOFNode::~EOFNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
     qDebug() << printNode();
+#endif
 }
 
 Node::NodeType EOFNode::getNodeType() const
@@ -237,7 +241,9 @@ TerminalNode::TerminalNode()
 
 TerminalNode::~TerminalNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 bool TerminalNode::IsTerminal() const
@@ -257,7 +263,9 @@ NonTerminalNode::NonTerminalNode()
 
 NonTerminalNode::~NonTerminalNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 ScopeNode::ScopeNode(const QString &ScopeName)
@@ -277,7 +285,9 @@ ScopeNode::ScopeNode(const ScopeNode &ToCopy)
 
 ScopeNode::~ScopeNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 const QSharedPointer<SimpleSymbolTable> &ScopeNode::GetScopeSymbolTable() const

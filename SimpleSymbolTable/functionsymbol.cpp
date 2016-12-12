@@ -21,14 +21,16 @@ FunctionSymbol::FunctionSymbol(
     const int NrOfFunctionParameters = FunctionParameters.size();
     for(int i = 0; i < NrOfFunctionParameters; i++)
     {
-//        QString paramIdentifier = FunctionParameters.at(i)->getIdentifier();
+        //ToTHINK is this needed??? Actually the parser does this beforehand!...
         FunctionSymbolTable->addEntry(qSharedPointerDynamicCast<SimpleSymbolTableEntry>(FunctionParameters.at(i)));
     }
 }
 
 FunctionSymbol::~FunctionSymbol()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 QSharedPointer<SimpleSymbolTable> FunctionSymbol::getFunctionSymbolTable() const

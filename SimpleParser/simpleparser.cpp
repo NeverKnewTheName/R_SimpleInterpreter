@@ -43,7 +43,9 @@ SimpleParser::SimpleParser(SimpleLexer *lexer, QSharedPointer<SimpleSymbolTable>
 
 SimpleParser::~SimpleParser()
 {
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 std::unique_ptr<SimpleNode> SimpleParser::ParseToAST()
@@ -56,7 +58,9 @@ std::unique_ptr<SimpleNode> SimpleParser::ParseToAST()
 
         if(CurrentToken->getTokenType() != SimpleToken::EOFToken)
         {
+#ifdef __DEBUG_OUTPUT__
             qDebug() << __PRETTY_FUNCTION__ << ": NOT EOF";
+#endif
             if(node != nullptr)
             {
                 EOFExpectedError(CurrentToken, QString("EOF was expected but not there was still input..."));
@@ -64,7 +68,9 @@ std::unique_ptr<SimpleNode> SimpleParser::ParseToAST()
             }
         }
     }
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": EOF";
+#endif
     return std::move(node);
 }
 
@@ -73,18 +79,29 @@ QSharedPointer<SimpleSymbolTable> SimpleParser::getProgramSymblTbl()
     return ProgramSymbolTable;
 }
 
-void SimpleParser::eat(SimpleToken::TokenType tokenType)
+bool SimpleParser::eat(SimpleToken::TokenType tokenType)
 {
     if(CurrentToken->getTokenType() != tokenType)
     {
+#ifdef __DEBUG_OUTPUT__
         qDebug() << __PRETTY_FUNCTION__ << ": ERROR --> Expected: " << SimpleToken::convertTokenTypeToString(tokenType)
                  << " but got: " << SimpleToken::convertTokenTypeToString(CurrentToken->getTokenType());
-        TypeError(CurrentToken,QString("Expected: %1").arg(SimpleToken::convertTokenTypeToString(tokenType)));
+#endif
+        TypeError(
+                    CurrentToken,
+                    QString("Expected: %1, but got: %2")
+                    .arg(SimpleToken::convertTokenTypeToString(tokenType))
+                    .arg(SimpleToken::convertTokenTypeToString(CurrentToken->getTokenType()))
+                  );
+        return false;
     }
     else
     {
+#ifdef __DEBUG_OUTPUT__
         qDebug() << "Eating: " << SimpleToken::convertTokenTypeToString(tokenType);
+#endif
         CurrentToken = lexer->getNextToken();
+        return true;
     }
 }
 
@@ -155,7 +172,9 @@ std::unique_ptr<ProgramNode> SimpleParser::Program()
     }
     programNode->addReturnStatement(std::move(ProgramReturnStatement));
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << programNode->printNode();
+#endif
     CurSymblTbl = SavedSymbolTable;
     return programNode;
 }
@@ -177,6 +196,7 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
 
     if((node == nullptr) || (node->getNodeType() != Node::Block))
     {
+        CurSymblTbl = SavedSymbolTable;
         SyntacticError(token, QString("Expected Block Statement after Function Declaration!"));
         return QSharedPointer<FunctionSymbol>();
     }
@@ -189,6 +209,7 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
         }
         else
         {
+            CurSymblTbl = SavedSymbolTable;
             SyntacticError(token, QString("Returntype of Block does not match FunctionDeclaration - expected %1, but got: %2")
                            .arg(SimpleNode::getHumanReadableTypeNameToValueType(returnType))
                            .arg(SimpleNode::getHumanReadableTypeNameToValueType(node->getReturnType()))
@@ -201,7 +222,10 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
 
     //    if(CurrentToken->getTokenType() == SimpleToken::LCurlyParan)
     //    {
-    //        eat(SimpleToken::LCurlyParan);
+    //        if(!eat(SimpleToken::LCurlyParan))
+//            {
+//                return nullptr;
+//            }
     //        std::vector<std::unique_ptr<SimpleNode>> FuncExpressions;
 
     //        while(CurrentToken->getTokenType() == SimpleToken::TypeName)
@@ -223,7 +247,10 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
     //            ExpressionNode = Expression();
     //            if(ExpressionNode != nullptr)
     //            {
-    //                eat(SimpleToken::SemiColonDelim);
+    //                if(!eat(SimpleToken::SemiColonDelim))
+//                    {
+//                        return nullptr;
+//                    }
     //                //ToDO !!!
     //                FuncExpressions.emplace_back(std::move(ExpressionNode));
     //            }
@@ -242,7 +269,10 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
     //                      );
     //            return QSharedPointer<FunctionSymbol>();
     //        }
-    //        eat(SimpleToken::RCurlyParan);
+    //        if(!eat(SimpleToken::RCurlyParan))
+//            {
+//                return nullptr;
+//            }
 
     //        DeclaredFuncSymbol->addFunctionExpressions(FuncExpressions);
     //        DeclaredFuncSymbol->addFunctionReturnStatement(std::move(ReturnStatementNode));
@@ -263,7 +293,9 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDefinition()
 
     CurSymblTbl = SavedSymbolTable;
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << DeclaredFuncSymbol->PrintToSymbolToString();
+#endif
     return DeclaredFuncSymbol;
 }
 
@@ -277,24 +309,40 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDeclaration()
     if(CurrentToken->getTokenType() == SimpleToken::TypeName)
     {
         token = CurrentToken;
-        eat(SimpleToken::TypeName);
+        if(!eat(SimpleToken::TypeName))
+        {
+            CurSymblTbl = SavedSymbolTable;
+            return QSharedPointer<FunctionSymbol>();
+        }
         Node::ValueTypes returnType = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
 
         token = CurrentToken;
-        eat(SimpleToken::VariableID);
+        if(!eat(SimpleToken::VariableID))
+        {
+            CurSymblTbl = SavedSymbolTable;
+            return QSharedPointer<FunctionSymbol>();
+        }
         QString FuncName = qSharedPointerDynamicCast<VariableIDToken>(token)->getID();
 
         QSharedPointer<SimpleSymbolTable> functionSymbolTable(new SimpleSymbolTable(QString("%1_SymbolTable").arg(FuncName)));
         CurSymblTbl = functionSymbolTable;
 
-        eat(SimpleToken::LParan);
+        if(!eat(SimpleToken::LParan))
+        {
+            CurSymblTbl = SavedSymbolTable;
+            return QSharedPointer<FunctionSymbol>();
+        }
         std::vector<QSharedPointer<VariableSymbol>> parameters;
         while(CurrentToken->getTokenType() == SimpleToken::TypeName)
         {
             QSharedPointer<VariableSymbol> varSymbolDeclaration = VarDeclaration();
             if(varSymbolDeclaration == nullptr)
             {
+                CurSymblTbl = SavedSymbolTable;
+#ifdef __DEBUG_OUTPUT__
                 qDebug() << "INVALID Variable Declaration";
+#endif
+                SymbolError(CurrentToken, QString("Invalid Variable Declaration!"));
                 return QSharedPointer<FunctionSymbol>();
             }
             parameters.push_back(varSymbolDeclaration);
@@ -304,16 +352,25 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDeclaration()
             }
             else
             {
-                eat(SimpleToken::CommaDelim);
+                if(!eat(SimpleToken::CommaDelim))
+                {
+                    CurSymblTbl = SavedSymbolTable;
+                    return QSharedPointer<FunctionSymbol>();
+                }
                 if(CurrentToken->getTokenType() != SimpleToken::TypeName)
                 {
+                    CurSymblTbl = SavedSymbolTable;
                     SyntacticError(CurrentToken, QString("Expected another VariableDeclaration after CommaDelimiter!"));
                     return QSharedPointer<FunctionSymbol>();
                 }
             }
         }
 
-        eat(SimpleToken::RParan);
+        if(!eat(SimpleToken::RParan))
+        {
+            CurSymblTbl = SavedSymbolTable;
+            return QSharedPointer<FunctionSymbol>();
+        }
 
         FuncSymbol = QSharedPointer<FunctionSymbol>(
                     new FunctionSymbol(
@@ -328,10 +385,13 @@ QSharedPointer<FunctionSymbol> SimpleParser::FunctionDeclaration()
 
     if(FuncSymbol == nullptr)
     {
+        CurSymblTbl = SavedSymbolTable;
         SyntacticError(CurrentToken,QString("Expected Function Declaration"));
         return QSharedPointer<FunctionSymbol>();
     }
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << FuncSymbol->PrintToSymbolToString();
+#endif
     return FuncSymbol;
 }
 
@@ -349,7 +409,10 @@ std::unique_ptr<SimpleNode> SimpleParser::VarDefinition()
     SharedSimpleTokenPtr token = CurrentToken;
     if(CurrentToken->getTokenType() == SimpleToken::Assign)
     {
-        eat(SimpleToken::Assign);
+        if(!eat(SimpleToken::Assign))
+        {
+            return nullptr;
+        }
         nodeTwo = Expression();
         if(nodeTwo == nullptr)
         {
@@ -379,14 +442,19 @@ std::unique_ptr<SimpleNode> SimpleParser::VarDefinition()
                     );
     }
 
-    eat(SimpleToken::SemiColonDelim);
+    if(!eat(SimpleToken::SemiColonDelim))
+    {
+        return nullptr;
+    }
 
     if(node == nullptr)
     {
         return nullptr;
     }
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return node;
 }
 
@@ -399,7 +467,10 @@ QSharedPointer<VariableSymbol> SimpleParser::VarDeclaration()
     if(CurrentToken->getTokenType() == SimpleToken::TypeName)
     {
         token = CurrentToken;
-        eat(SimpleToken::TypeName);
+        if(!eat(SimpleToken::TypeName))
+        {
+            return QSharedPointer<VariableSymbol>();
+        }
         if(CurrentToken->getTokenType() == SimpleToken::VariableID)
         {
             if(lexer->peekAtNextToken()->getTokenType() == SimpleToken::LParan)
@@ -408,13 +479,19 @@ QSharedPointer<VariableSymbol> SimpleParser::VarDeclaration()
             }
             Node::ValueTypes type = qSharedPointerDynamicCast<TypeNameToken>(token)->getType();
             token = CurrentToken;
-            eat(SimpleToken::VariableID);
+            if(!eat(SimpleToken::VariableID))
+            {
+                return QSharedPointer<VariableSymbol>();
+            }
             QString VariableID = qSharedPointerDynamicCast<VariableIDToken>(token)->getID();
             //            SymbolTableToRegisterVariableTo->addEntry(VariableID, new VariableSymbol(VariableID, type));
             if(CurSymblTbl->DoesIdentifierExistInCurrentScope(VariableID))
             {
+
+#ifdef __DEBUG_OUTPUT__
                 qDebug() << "VARIABLE DOES ALREADY EXIST!";
-                SyntacticError(token, QString("Variable was already declared in this scope!"));
+#endif
+                SymbolError(token, QString("Variable was already declared in this scope!"));
                 return QSharedPointer<VariableSymbol>();
             }
             varDeclarationSymbol = QSharedPointer<VariableSymbol>(new VariableSymbol(VariableID, type));
@@ -428,7 +505,9 @@ QSharedPointer<VariableSymbol> SimpleParser::VarDeclaration()
 
     CurSymblTbl->addEntry(varDeclarationSymbol);
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << varDeclarationSymbol->PrintToSymbolToString();
+#endif
     return varDeclarationSymbol;
 }
 
@@ -440,7 +519,11 @@ std::unique_ptr<SimpleNode> SimpleParser::Block()
     if(CurrentToken->getTokenType() == SimpleToken::LCurlyParan)
     {
         QSharedPointer<SimpleSymbolTable> SavedSymbolTable = CurSymblTbl;
-        eat(SimpleToken::LCurlyParan);
+        if(!eat(SimpleToken::LCurlyParan))
+        {
+            CurSymblTbl = SavedSymbolTable;
+            return nullptr;
+        }
         node.reset(new BlockNode());
         CurSymblTbl = dynamic_cast<BlockNode*>(node.get())->getBlockSymbolTable();
         SavedSymbolTable->addEntry(CurSymblTbl);
@@ -469,7 +552,11 @@ std::unique_ptr<SimpleNode> SimpleParser::Block()
             }
             dynamic_cast<BlockNode*>(node.get())->addStatement(std::move(nodeTwo));
         }
-        eat(SimpleToken::RCurlyParan);
+        if(!eat(SimpleToken::RCurlyParan))
+        {
+            CurSymblTbl = SavedSymbolTable;
+            return nullptr;
+        }
         CurSymblTbl = SavedSymbolTable;
     }
     else
@@ -481,7 +568,9 @@ std::unique_ptr<SimpleNode> SimpleParser::Block()
         }
     }
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -493,7 +582,10 @@ std::unique_ptr<SimpleNode> SimpleParser::Statement()
     {
         if(CurrentToken->getTokenType() == SimpleToken::SemiColonDelim)
         {
-            eat(SimpleToken::SemiColonDelim);
+            if(!eat(SimpleToken::SemiColonDelim))
+            {
+                return nullptr;
+            }
         }
         else
         {
@@ -513,7 +605,9 @@ std::unique_ptr<SimpleNode> SimpleParser::Statement()
 
     node.reset(new StatementNode(std::move(node)));
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -564,7 +658,9 @@ std::unique_ptr<SimpleNode> SimpleParser::ControlStatement()
         return nullptr;
     }
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -573,15 +669,24 @@ std::unique_ptr<SimpleNode> SimpleParser::IfStatement()
     std::unique_ptr<SimpleNode> node;
     QSharedPointer<SimpleToken> token = CurrentToken;
 
-    eat(SimpleToken::If);
-    eat(SimpleToken::LParan);
+    if(!eat(SimpleToken::If))
+    {
+        return nullptr;
+    }
+    if(!eat(SimpleToken::LParan))
+    {
+        return nullptr;
+    }
     token = CurrentToken;
     std::unique_ptr<SimpleNode> Condition = Expression();
     if(Condition == nullptr)
     {
         SyntacticError(token, QString("Expected expression for IfStatement!"));
     }
-    eat(SimpleToken::RParan);
+    if(!eat(SimpleToken::RParan))
+    {
+        return nullptr;
+    }
     token = CurrentToken;
     std::unique_ptr<SimpleNode> StatementBlock = Block();
     if(StatementBlock == nullptr)
@@ -594,7 +699,10 @@ std::unique_ptr<SimpleNode> SimpleParser::IfStatement()
 
     if(CurrentToken->getTokenType() == SimpleToken::Else)
     {
-        eat(SimpleToken::Else);
+        if(!eat(SimpleToken::Else))
+        {
+            return nullptr;
+        }
         std::unique_ptr<SimpleNode> nodeTwo = Block();
         if(nodeTwo == nullptr)
         {
@@ -604,7 +712,9 @@ std::unique_ptr<SimpleNode> SimpleParser::IfStatement()
         dynamic_cast<IfNode*>(node.get())->addElse(std::unique_ptr<ElseNode>(new ElseNode(std::move(nodeTwo))));
     }
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -613,7 +723,10 @@ std::unique_ptr<SimpleNode> SimpleParser::ElseStatement()
     std::unique_ptr<SimpleNode> node;
     QSharedPointer<SimpleToken> token = CurrentToken;
 
-    eat(SimpleToken::Else);
+    if(!eat(SimpleToken::Else))
+    {
+        return nullptr;
+    }
     if(CurrentToken->getTokenType() == SimpleToken::If)
     {
         node = IfStatement();
@@ -631,7 +744,9 @@ std::unique_ptr<SimpleNode> SimpleParser::ElseStatement()
 
     node.reset(new ElseNode(std::move(node)));
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -641,8 +756,14 @@ std::unique_ptr<SimpleNode> SimpleParser::SwitchStatement()
     std::unique_ptr<SimpleNode> nodeTwo;
     QSharedPointer<SimpleToken> token = CurrentToken;
 
-    eat(SimpleToken::Switch);
-    eat(SimpleToken::LParan);
+    if(!eat(SimpleToken::Switch))
+    {
+        return nullptr;
+    }
+    if(!eat(SimpleToken::LParan))
+    {
+        return nullptr;
+    }
     token = CurrentToken;
     std::unique_ptr<SimpleNode> Condition = Expression();
     if(Condition == nullptr)
@@ -651,9 +772,15 @@ std::unique_ptr<SimpleNode> SimpleParser::SwitchStatement()
         return nullptr;
     }
     node.reset(new SwitchNode(std::move(Condition)));
-    eat(SimpleToken::RParan);
+    if(!eat(SimpleToken::RParan))
+    {
+        return nullptr;
+    }
     token = CurrentToken;
-    eat(SimpleToken::LCurlyParan);
+    if(!eat(SimpleToken::LCurlyParan))
+    {
+        return nullptr;
+    }
     while(CurrentToken->getTokenType() != SimpleToken::RCurlyParan)
     {
         if(CurrentToken->getTokenType() == SimpleToken::Case)
@@ -672,7 +799,10 @@ std::unique_ptr<SimpleNode> SimpleParser::SwitchStatement()
         }
         dynamic_cast<SwitchNode*>(node.get())->addSwitchLabel(std::unique_ptr<SwitchLabel>(dynamic_cast<SwitchLabel*>(nodeTwo.release())));
     }
-    eat(SimpleToken::RCurlyParan);
+    if(!eat(SimpleToken::RCurlyParan))
+    {
+        return nullptr;
+    }
     const std::vector<std::unique_ptr<SwitchLabel>> &SwitchLables = dynamic_cast<SwitchNode*>(node.get())->getSwitchLabels();
     if(SwitchLables.size() == 0)
     {
@@ -685,7 +815,9 @@ std::unique_ptr<SimpleNode> SimpleParser::SwitchStatement()
         return nullptr;
     }
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -694,7 +826,10 @@ std::unique_ptr<SimpleNode> SimpleParser::CaseStatement()
     std::unique_ptr<SimpleNode> node;
     std::unique_ptr<SimpleNode> argument;
     QSharedPointer<SimpleToken> token = CurrentToken;
-    eat(SimpleToken::Case);
+    if(!eat(SimpleToken::Case))
+    {
+        return nullptr;
+    }
     argument = PrimaryExpression();
     if(argument == nullptr)
     {
@@ -714,7 +849,10 @@ std::unique_ptr<SimpleNode> SimpleParser::CaseStatement()
         SyntacticError(token, QString("Expected Integer after Case Label!"));
         return nullptr;
     }
-    eat(SimpleToken::Colon);
+    if(!eat(SimpleToken::Colon))
+    {
+        return nullptr;
+    }
     node = Block();
     if(node == nullptr)
     {
@@ -724,7 +862,9 @@ std::unique_ptr<SimpleNode> SimpleParser::CaseStatement()
 
     node.reset(new CaseNode(std::unique_ptr<ValueNode>(dynamic_cast<ValueNode*>(argument.release())), std::move(node)));
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -732,8 +872,14 @@ std::unique_ptr<SimpleNode> SimpleParser::DefaultStatement()
 {
     std::unique_ptr<SimpleNode> node;
     QSharedPointer<SimpleToken> token = CurrentToken;
-    eat(SimpleToken::DefaultLabel);
-    eat(SimpleToken::Colon);
+    if(!eat(SimpleToken::DefaultLabel))
+    {
+        return nullptr;
+    }
+    if(!eat(SimpleToken::Colon))
+    {
+        return nullptr;
+    }
     node = Block();
     if(node == nullptr)
     {
@@ -742,7 +888,9 @@ std::unique_ptr<SimpleNode> SimpleParser::DefaultStatement()
     }
     node.reset(new DefaultNode(std::move(node)));
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -751,11 +899,20 @@ std::unique_ptr<SimpleNode> SimpleParser::ForStatement()
     std::unique_ptr<SimpleNode> node;
     QSharedPointer<SimpleToken> token = CurrentToken;
 
-    eat(SimpleToken::For);
-    eat(SimpleToken::LParan);
+    if(!eat(SimpleToken::For))
+    {
+        return nullptr;
+    }
+    if(!eat(SimpleToken::LParan))
+    {
+        return nullptr;
+    }
     token = CurrentToken;
     std::unique_ptr<SimpleNode> init = Expression();
-    eat(SimpleToken::SemiColonDelim);
+    if(!eat(SimpleToken::SemiColonDelim))
+    {
+        return nullptr;
+    }
     if(init == nullptr)
     {
         SyntacticError(token, QString("Expected Initialization Statement for ForLoop!"));
@@ -763,7 +920,10 @@ std::unique_ptr<SimpleNode> SimpleParser::ForStatement()
     }
     token = CurrentToken;
     std::unique_ptr<SimpleNode> condition = Expression();
-    eat(SimpleToken::SemiColonDelim);
+    if(!eat(SimpleToken::SemiColonDelim))
+    {
+        return nullptr;
+    }
     if(condition == nullptr)
     {
         SyntacticError(token, QString("Expected Condition Statement for ForLoop!"));
@@ -776,7 +936,10 @@ std::unique_ptr<SimpleNode> SimpleParser::ForStatement()
         SyntacticError(token, QString("Expected Update Statement for ForLoop!"));
         return nullptr;
     }
-    eat(SimpleToken::RParan);
+    if(!eat(SimpleToken::RParan))
+    {
+        return nullptr;
+    }
     token = CurrentToken;
     std::unique_ptr<SimpleNode> StatementBlock = Block();
     if(StatementBlock == nullptr)
@@ -786,7 +949,9 @@ std::unique_ptr<SimpleNode> SimpleParser::ForStatement()
     }
     node.reset(new ForLoopNode(std::move(init), std::move(condition), std::move(update), std::move(StatementBlock)));
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -795,8 +960,14 @@ std::unique_ptr<SimpleNode> SimpleParser::WhileStatement()
     std::unique_ptr<SimpleNode> node;
     QSharedPointer<SimpleToken> token = CurrentToken;
 
-    eat(SimpleToken::While);
-    eat(SimpleToken::LParan);
+    if(!eat(SimpleToken::While))
+    {
+        return nullptr;
+    }
+    if(!eat(SimpleToken::LParan))
+    {
+        return nullptr;
+    }
     token = CurrentToken;
     std::unique_ptr<SimpleNode> Condition = Expression();
     if(Condition == nullptr)
@@ -804,7 +975,10 @@ std::unique_ptr<SimpleNode> SimpleParser::WhileStatement()
         SyntacticError(token, QString("Expected Condition Statement for WhileLoop!"));
         return nullptr;
     }
-    eat(SimpleToken::RParan);
+    if(!eat(SimpleToken::RParan))
+    {
+        return nullptr;
+    }
     token = CurrentToken;
     std::unique_ptr<SimpleNode> StatementBlock = Block();
     if(StatementBlock == nullptr)
@@ -814,7 +988,9 @@ std::unique_ptr<SimpleNode> SimpleParser::WhileStatement()
     }
     node.reset(new WhileLoopNode(std::move(Condition), std::move(StatementBlock)));
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -823,7 +999,10 @@ std::unique_ptr<SimpleNode> SimpleParser::DoWhileStatement()
     std::unique_ptr<SimpleNode> node;
     QSharedPointer<SimpleToken> token = CurrentToken;
 
-    eat(SimpleToken::Do);
+    if(!eat(SimpleToken::Do))
+    {
+        return nullptr;
+    }
     token = CurrentToken;
     std::unique_ptr<SimpleNode> StatementBlock = Block();
     if(StatementBlock == nullptr)
@@ -831,8 +1010,14 @@ std::unique_ptr<SimpleNode> SimpleParser::DoWhileStatement()
         SyntacticError(token, QString("Expected Statement Block after DoWhileLoop!"));
         return nullptr;
     }
-    eat(SimpleToken::While);
-    eat(SimpleToken::LParan);
+    if(!eat(SimpleToken::While))
+    {
+        return nullptr;
+    }
+    if(!eat(SimpleToken::LParan))
+    {
+        return nullptr;
+    }
     token = CurrentToken;
     std::unique_ptr<SimpleNode> Condition = Expression();
     if(Condition == nullptr)
@@ -840,11 +1025,19 @@ std::unique_ptr<SimpleNode> SimpleParser::DoWhileStatement()
         SyntacticError(token, QString("Expected Condition Statement for WhileLoop!"));
         return nullptr;
     }
-    eat(SimpleToken::RParan);
-    eat(SimpleToken::SemiColonDelim);
+    if(!eat(SimpleToken::RParan))
+    {
+        return nullptr;
+    }
+    if(!eat(SimpleToken::SemiColonDelim))
+    {
+        return nullptr;
+    }
     node.reset(new DoWhileLoopNode(std::move(Condition), std::move(StatementBlock)));
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -855,8 +1048,14 @@ std::unique_ptr<SimpleNode> SimpleParser::ContinueStatement()
 
     if(CurrentToken->getTokenType() == SimpleToken::Continue)
     {
-        eat(SimpleToken::Continue);
-        eat(SimpleToken::SemiColonDelim);
+        if(!eat(SimpleToken::Continue))
+        {
+            return nullptr;
+        }
+        if(!eat(SimpleToken::SemiColonDelim))
+        {
+            return nullptr;
+        }
         node.reset(new ContinueNode());
     }
 
@@ -865,7 +1064,9 @@ std::unique_ptr<SimpleNode> SimpleParser::ContinueStatement()
         return nullptr;
     }
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -876,8 +1077,14 @@ std::unique_ptr<SimpleNode> SimpleParser::BreakStatement()
 
     if(CurrentToken->getTokenType() == SimpleToken::Break)
     {
-        eat(SimpleToken::Break);
-        eat(SimpleToken::SemiColonDelim);
+        if(!eat(SimpleToken::Break))
+        {
+            return nullptr;
+        }
+        if(!eat(SimpleToken::SemiColonDelim))
+        {
+            return nullptr;
+        }
         node.reset(new BreakNode());
     }
 
@@ -886,7 +1093,9 @@ std::unique_ptr<SimpleNode> SimpleParser::BreakStatement()
         return nullptr;
     }
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -897,13 +1106,19 @@ std::unique_ptr<SimpleNode> SimpleParser::ReturnStatement()
 
     if(CurrentToken->getTokenType() == SimpleToken::ReturnKeyword)
     {
-        eat(SimpleToken::ReturnKeyword);
+        if(!eat(SimpleToken::ReturnKeyword))
+        {
+            return nullptr;
+        }
         node = Expression();
         if(node == nullptr)
         {
             node = std::unique_ptr<SimpleNode>(new VoidValueNode());
         }
-        eat(SimpleToken::SemiColonDelim);
+        if(!eat(SimpleToken::SemiColonDelim))
+        {
+            return nullptr;
+        }
     }
 
     if(node == nullptr)
@@ -913,7 +1128,9 @@ std::unique_ptr<SimpleNode> SimpleParser::ReturnStatement()
 
     node.reset(new ReturnNode(std::move(node)));
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -926,7 +1143,9 @@ std::unique_ptr<SimpleNode> SimpleParser::Expression()
     }
     SharedSimpleTokenPtr token = CurrentToken;
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -945,7 +1164,10 @@ std::unique_ptr<SimpleNode> SimpleParser::AssignmentExpression()
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::Assign:
-            eat(SimpleToken::Assign);
+            if(!eat(SimpleToken::Assign))
+            {
+                return nullptr;
+            }
             token = CurrentToken;
             nodeTwo = AssignmentExpression();
             if(nodeTwo == nullptr)
@@ -973,7 +1195,10 @@ std::unique_ptr<SimpleNode> SimpleParser::AssignmentExpression()
             return std::move(node);
         }
     }
+
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -992,7 +1217,10 @@ std::unique_ptr<SimpleNode> SimpleParser::ConditionalExpression()
     if( CurrentToken->getTokenType() == SimpleToken::QMark )
     {
         token = CurrentToken;
-        eat(SimpleToken::QMark);
+        if(!eat(SimpleToken::QMark))
+        {
+            return nullptr;
+        }
         nodeTwo = ConditionalExpression();
         if(nodeTwo == nullptr)
         {
@@ -1000,7 +1228,10 @@ std::unique_ptr<SimpleNode> SimpleParser::ConditionalExpression()
             return Q_NULLPTR;
         }
         token = CurrentToken;
-        eat(SimpleToken::Colon);
+        if(!eat(SimpleToken::Colon))
+        {
+            return nullptr;
+        }
         nodeThree = ConditionalExpression();
         if(nodeThree == nullptr)
         {
@@ -1015,7 +1246,9 @@ std::unique_ptr<SimpleNode> SimpleParser::ConditionalExpression()
         }
     }
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -1035,7 +1268,10 @@ std::unique_ptr<SimpleNode> SimpleParser::LogicalORExpression()
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::LogicalOR:
-            eat(SimpleToken::LogicalOR);
+            if(!eat(SimpleToken::LogicalOR))
+            {
+                return nullptr;
+            }
             nodeTwo = LogicalXORExpression();
             if(nodeTwo == nullptr)
             {
@@ -1058,7 +1294,9 @@ std::unique_ptr<SimpleNode> SimpleParser::LogicalORExpression()
         }
     }while(ContinueLoop);
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -1078,7 +1316,10 @@ std::unique_ptr<SimpleNode> SimpleParser::LogicalXORExpression()
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::LogicalXOR:
-            eat(SimpleToken::LogicalXOR);
+            if(!eat(SimpleToken::LogicalXOR))
+            {
+                return nullptr;
+            }
             nodeTwo = LogicalANDExpression();
             if(nodeTwo == nullptr)
             {
@@ -1101,7 +1342,9 @@ std::unique_ptr<SimpleNode> SimpleParser::LogicalXORExpression()
         }
     }while(ContinueLoop);
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -1121,7 +1364,10 @@ std::unique_ptr<SimpleNode> SimpleParser::LogicalANDExpression()
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::LogicalAND:
-            eat(SimpleToken::LogicalAND);
+            if(!eat(SimpleToken::LogicalAND))
+            {
+                return nullptr;
+            }
             nodeTwo = BitwiseORExpression();
             if(nodeTwo == nullptr)
             {
@@ -1144,7 +1390,9 @@ std::unique_ptr<SimpleNode> SimpleParser::LogicalANDExpression()
         }
     }while(ContinueLoop);
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -1164,7 +1412,10 @@ std::unique_ptr<SimpleNode> SimpleParser::BitwiseORExpression()
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::BitwiseOR:
-            eat(SimpleToken::BitwiseOR);
+            if(!eat(SimpleToken::BitwiseOR))
+            {
+                return nullptr;
+            }
             nodeTwo = BitwiseXORExpression();
             if(nodeTwo == nullptr)
             {
@@ -1187,7 +1438,9 @@ std::unique_ptr<SimpleNode> SimpleParser::BitwiseORExpression()
         }
     }while(ContinueLoop);
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -1207,7 +1460,10 @@ std::unique_ptr<SimpleNode> SimpleParser::BitwiseXORExpression()
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::BitwiseXOR:
-            eat(SimpleToken::BitwiseXOR);
+            if(!eat(SimpleToken::BitwiseXOR))
+            {
+                return nullptr;
+            }
             nodeTwo = BitwiseANDExpression();
             if(nodeTwo == nullptr)
             {
@@ -1230,7 +1486,9 @@ std::unique_ptr<SimpleNode> SimpleParser::BitwiseXORExpression()
         }
     }while(ContinueLoop);
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -1250,7 +1508,10 @@ std::unique_ptr<SimpleNode> SimpleParser::BitwiseANDExpression()
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::BitwiseAND:
-            eat(SimpleToken::BitwiseAND);
+            if(!eat(SimpleToken::BitwiseAND))
+            {
+                return nullptr;
+            }
             nodeTwo = EqualityExpression();
             if(nodeTwo == nullptr)
             {
@@ -1273,7 +1534,10 @@ std::unique_ptr<SimpleNode> SimpleParser::BitwiseANDExpression()
         }
     }while(ContinueLoop);
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
+
     return std::move(node);
 }
 
@@ -1293,7 +1557,10 @@ std::unique_ptr<SimpleNode> SimpleParser::EqualityExpression()
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::Equal:
-            eat(SimpleToken::Equal);
+            if(!eat(SimpleToken::Equal))
+            {
+                return nullptr;
+            }
             nodeTwo = RelationalExpression();
             if(nodeTwo == nullptr)
             {
@@ -1312,7 +1579,10 @@ std::unique_ptr<SimpleNode> SimpleParser::EqualityExpression()
             }
             break;
         case SimpleToken::Unequal:
-            eat(SimpleToken::Unequal);
+            if(!eat(SimpleToken::Unequal))
+            {
+                return nullptr;
+            }
             nodeTwo = RelationalExpression();
             if(nodeTwo == nullptr)
             {
@@ -1335,7 +1605,9 @@ std::unique_ptr<SimpleNode> SimpleParser::EqualityExpression()
         }
     }while(ContinueLoop);
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -1355,7 +1627,10 @@ std::unique_ptr<SimpleNode> SimpleParser::RelationalExpression()
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::Greater:
-            eat(SimpleToken::Greater);
+            if(!eat(SimpleToken::Greater))
+            {
+                return nullptr;
+            }
             nodeTwo = ShiftExpression();
             if(nodeTwo == nullptr)
             {
@@ -1374,7 +1649,10 @@ std::unique_ptr<SimpleNode> SimpleParser::RelationalExpression()
             }
             break;
         case SimpleToken::Lower:
-            eat(SimpleToken::Lower);
+            if(!eat(SimpleToken::Lower))
+            {
+                return nullptr;
+            }
             nodeTwo = ShiftExpression();
             if(nodeTwo == nullptr)
             {
@@ -1393,7 +1671,10 @@ std::unique_ptr<SimpleNode> SimpleParser::RelationalExpression()
             }
             break;
         case SimpleToken::EqualOrGreater:
-            eat(SimpleToken::EqualOrGreater);
+            if(!eat(SimpleToken::EqualOrGreater))
+            {
+                return nullptr;
+            }
             nodeTwo = ShiftExpression();
             if(nodeTwo == nullptr)
             {
@@ -1412,7 +1693,10 @@ std::unique_ptr<SimpleNode> SimpleParser::RelationalExpression()
             }
             break;
         case SimpleToken::EqualOrLower:
-            eat(SimpleToken::EqualOrLower);
+            if(!eat(SimpleToken::EqualOrLower))
+            {
+                return nullptr;
+            }
             nodeTwo = ShiftExpression();
             if(nodeTwo == nullptr)
             {
@@ -1435,7 +1719,9 @@ std::unique_ptr<SimpleNode> SimpleParser::RelationalExpression()
         }
     }while(ContinueLoop);
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -1455,7 +1741,10 @@ std::unique_ptr<SimpleNode> SimpleParser::ShiftExpression()
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::LeftShift:
-            eat(SimpleToken::LeftShift);
+            if(!eat(SimpleToken::LeftShift))
+            {
+                return nullptr;
+            }
             nodeTwo = AdditiveExpression();
             if(node == nullptr)
             {
@@ -1474,7 +1763,10 @@ std::unique_ptr<SimpleNode> SimpleParser::ShiftExpression()
             }
             break;
         case SimpleToken::RightShift:
-            eat(SimpleToken::RightShift);
+            if(!eat(SimpleToken::RightShift))
+            {
+                return nullptr;
+            }
             nodeTwo = AdditiveExpression();
             if(nodeTwo == nullptr)
             {
@@ -1497,7 +1789,9 @@ std::unique_ptr<SimpleNode> SimpleParser::ShiftExpression()
         }
     }while(ContinueLoop);
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -1517,7 +1811,10 @@ std::unique_ptr<SimpleNode> SimpleParser::AdditiveExpression()
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::Plus:
-            eat(SimpleToken::Plus);
+            if(!eat(SimpleToken::Plus))
+            {
+                return nullptr;
+            }
             nodeTwo = MultiplicativeExpression();
             if(nodeTwo == nullptr)
             {
@@ -1540,7 +1837,10 @@ std::unique_ptr<SimpleNode> SimpleParser::AdditiveExpression()
             }
             break;
         case SimpleToken::Minus:
-            eat(SimpleToken::Minus);
+            if(!eat(SimpleToken::Minus))
+            {
+                return nullptr;
+            }
             nodeTwo = MultiplicativeExpression();
             if(nodeTwo == nullptr)
             {
@@ -1563,7 +1863,9 @@ std::unique_ptr<SimpleNode> SimpleParser::AdditiveExpression()
         }
     }while(ContinueLoop);
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -1583,7 +1885,10 @@ std::unique_ptr<SimpleNode> SimpleParser::MultiplicativeExpression()
         switch(CurrentToken->getTokenType())
         {
         case SimpleToken::Multiplication:
-            eat(SimpleToken::Multiplication);
+            if(!eat(SimpleToken::Multiplication))
+            {
+                return nullptr;
+            }
             nodeTwo = UnaryExpression();
             if(nodeTwo == nullptr)
             {
@@ -1602,7 +1907,10 @@ std::unique_ptr<SimpleNode> SimpleParser::MultiplicativeExpression()
             }
             break;
         case SimpleToken::Division:
-            eat(SimpleToken::Division);
+            if(!eat(SimpleToken::Division))
+            {
+                return nullptr;
+            }
             nodeTwo = UnaryExpression();
             if(nodeTwo == nullptr)
             {
@@ -1621,7 +1929,10 @@ std::unique_ptr<SimpleNode> SimpleParser::MultiplicativeExpression()
             }
             break;
         case SimpleToken::Modulo:
-            eat(SimpleToken::Modulo);
+            if(!eat(SimpleToken::Modulo))
+            {
+                return nullptr;
+            }
             nodeTwo = UnaryExpression();
             if(nodeTwo == nullptr)
             {
@@ -1644,7 +1955,9 @@ std::unique_ptr<SimpleNode> SimpleParser::MultiplicativeExpression()
         }
     }while(ContinueLoop);
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -1658,7 +1971,10 @@ std::unique_ptr<SimpleNode> SimpleParser::UnaryExpression()
     case SimpleToken::Increment:
         if(lexer->peekAtNextToken()->getTokenType() == SimpleToken::VariableID )
         {
-            eat(SimpleToken::Increment);
+            if(!eat(SimpleToken::Increment))
+            {
+                return nullptr;
+            }
             node = Symbol();
             if(node == nullptr)
             {
@@ -1687,7 +2003,10 @@ std::unique_ptr<SimpleNode> SimpleParser::UnaryExpression()
     case SimpleToken::Decrement:
         if(lexer->peekAtNextToken()->getTokenType() == SimpleToken::VariableID )
         {
-            eat(SimpleToken::Decrement);
+            if(!eat(SimpleToken::Decrement))
+            {
+                return nullptr;
+            }
             node = Symbol();
             if(node == nullptr)
             {
@@ -1714,7 +2033,10 @@ std::unique_ptr<SimpleNode> SimpleParser::UnaryExpression()
         }
         break;
     case SimpleToken::Plus:
-        eat(SimpleToken::Plus);
+        if(!eat(SimpleToken::Plus))
+        {
+            return nullptr;
+        }
         node = UnaryExpression();
         if(node == nullptr)
         {
@@ -1730,7 +2052,10 @@ std::unique_ptr<SimpleNode> SimpleParser::UnaryExpression()
         }
         break;
     case SimpleToken::Minus:
-        eat(SimpleToken::Minus);
+        if(!eat(SimpleToken::Minus))
+        {
+            return nullptr;
+        }
         node = UnaryExpression();
         if(node == nullptr)
         {
@@ -1746,7 +2071,10 @@ std::unique_ptr<SimpleNode> SimpleParser::UnaryExpression()
         }
         break;
     case SimpleToken::LogicalNegation:
-        eat(SimpleToken::LogicalNegation);
+        if(!eat(SimpleToken::LogicalNegation))
+        {
+            return nullptr;
+        }
         node = UnaryExpression();
         if(node == nullptr)
         {
@@ -1762,7 +2090,10 @@ std::unique_ptr<SimpleNode> SimpleParser::UnaryExpression()
         }
         break;
     case SimpleToken::OnesComplement:
-        eat(SimpleToken::OnesComplement);
+        if(!eat(SimpleToken::OnesComplement))
+        {
+            return nullptr;
+        }
         node = UnaryExpression();
         if(node == nullptr)
         {
@@ -1781,10 +2112,19 @@ std::unique_ptr<SimpleNode> SimpleParser::UnaryExpression()
     {
         if(lexer->peekAtNextToken()->getTokenType() == SimpleToken::TypeName)
         {
-            eat(SimpleToken::LParan);
+            if(!eat(SimpleToken::LParan))
+            {
+                return nullptr;
+            }
             token = CurrentToken;
-            eat(SimpleToken::TypeName);
-            eat(SimpleToken::RParan);
+            if(!eat(SimpleToken::TypeName))
+            {
+                return nullptr;
+            }
+            if(!eat(SimpleToken::RParan))
+            {
+                return nullptr;
+            }
             node = UnaryExpression();
             if(node == nullptr)
             {
@@ -1810,7 +2150,9 @@ std::unique_ptr<SimpleNode> SimpleParser::UnaryExpression()
         }
     }
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -1832,7 +2174,10 @@ std::unique_ptr<SimpleNode> SimpleParser::PostFixExpression()
             {
             case SimpleToken::Increment:
                 token = CurrentToken;
-                eat(SimpleToken::Increment);
+                if(!eat(SimpleToken::Increment))
+                {
+                    return nullptr;
+                }
                 node.reset(new IncrementNode(std::move(node), false));
                 if(node->getReturnType() == Node::ErrorType)
                 {
@@ -1842,7 +2187,10 @@ std::unique_ptr<SimpleNode> SimpleParser::PostFixExpression()
                 break;
             case SimpleToken::Decrement:
                 token = CurrentToken;
-                eat(SimpleToken::Decrement);
+                if(!eat(SimpleToken::Decrement))
+                {
+                    return nullptr;
+                }
                 node.reset(new DecrementNode(std::move(node), false));
                 if(node->getReturnType() == Node::ErrorType)
                 {
@@ -1857,7 +2205,9 @@ std::unique_ptr<SimpleNode> SimpleParser::PostFixExpression()
 
     }
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -1869,7 +2219,10 @@ std::unique_ptr<SimpleNode> SimpleParser::PrimaryExpression()
     switch(CurrentToken->getTokenType())
     {
     case SimpleToken::Value:
-        eat(SimpleToken::Value);
+        if(!eat(SimpleToken::Value))
+        {
+            return nullptr;
+        }
         switch(qSharedPointerDynamicCast<ValueToken>(token)->getValueType())
         {
         case Node::Integer:
@@ -1885,21 +2238,28 @@ std::unique_ptr<SimpleNode> SimpleParser::PrimaryExpression()
             node.reset(new ValueNode(qSharedPointerDynamicCast<ValueToken>(token)->getString()));
             break;
         default:
-            qDebug() << "ERROR IN PRIMARY EXPRESSION: ValueType Unknown";
-            //            node = new ValueNode();
+            SyntacticError(token, QString("Error in PrimaryExpression: ValueType Unknown"));
         }
         break;
     case SimpleToken::LParan:
-        eat(SimpleToken::LParan);
+        if(!eat(SimpleToken::LParan))
+        {
+            return nullptr;
+        }
         node = Expression();
         if(node == nullptr)
         {
             return Q_NULLPTR;
         }
-        eat(SimpleToken::RParan);
+        if(!eat(SimpleToken::RParan))
+        {
+            return nullptr;
+        }
         break;
     case SimpleToken::EOFToken:
+#ifdef __DEBUG_OUTPUT__
         qDebug() << __PRETTY_FUNCTION__ << "EOF reached too soon!!!";
+#endif
         CurrentToken = SharedSimpleTokenPtr(new EOFToken(CurrentToken->getTokenPos(),0));
         EOFUnexpectedError(CurrentToken);
         return Q_NULLPTR;
@@ -1912,7 +2272,9 @@ std::unique_ptr<SimpleNode> SimpleParser::PrimaryExpression()
         }
     }
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -1924,11 +2286,17 @@ std::unique_ptr<SimpleNode> SimpleParser::Symbol()
     switch(CurrentToken->getTokenType())
     {
     case SimpleToken::Data:
-        eat(SimpleToken::Data);
+        if(!eat(SimpleToken::Data))
+        {
+            return nullptr;
+        }
         node.reset(new DataNode(qSharedPointerDynamicCast<DataToken>(token)->getDataIndex(), ParentSymblTbl ));
         break;
     case SimpleToken::VariableID:
-        eat(SimpleToken::VariableID);
+        if(!eat(SimpleToken::VariableID))
+        {
+            return nullptr;
+        }
     {
         QString varID = qSharedPointerDynamicCast<VariableIDToken>(token)->getID();
         if(CurSymblTbl->lookup(varID) == nullptr)
@@ -1940,7 +2308,10 @@ std::unique_ptr<SimpleNode> SimpleParser::Symbol()
         {
             std::vector<std::unique_ptr<SimpleNode>> FuncParams;
             std::unique_ptr<SimpleNode> curParam;
-            eat(SimpleToken::LParan);
+            if(!eat(SimpleToken::LParan))
+            {
+                return nullptr;
+            }
             bool CommaDelimSet = false;
             bool expressionFound = true;
             while(expressionFound == true)
@@ -1952,7 +2323,10 @@ std::unique_ptr<SimpleNode> SimpleParser::Symbol()
                     FuncParams.emplace_back(std::move(curParam));
                     if(CurrentToken->getTokenType() == SimpleToken::CommaDelim)
                     {
-                        eat(SimpleToken::CommaDelim);
+                        if(!eat(SimpleToken::CommaDelim))
+                        {
+                            return nullptr;
+                        }
                         CommaDelimSet = true;
                     }
                     else
@@ -1969,7 +2343,10 @@ std::unique_ptr<SimpleNode> SimpleParser::Symbol()
                     }
                 }
             }
-            eat(SimpleToken::RParan);
+            if(!eat(SimpleToken::RParan))
+            {
+                return nullptr;
+            }
             node.reset(new FunctionCallNode(varID, CurSymblTbl, FuncParams));
             if(node->getReturnType() == Node::ErrorType)
             {
@@ -1989,13 +2366,19 @@ std::unique_ptr<SimpleNode> SimpleParser::Symbol()
     }
         break;
         //    case SimpleToken::Function:
-        //        eat(SimpleToken::Data);
+        //        if(!eat(SimpleToken::Data))
+//                {
+//                    return nullptr;
+//                }
         //        node = new DataNode(qSharedPointerDynamicCast<DataToken>(token)->getDataIndex(), &SymblTbl);
         //        break;
     default:
         return Q_NULLPTR;
     }
+
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << ": " << node->printNode();
+#endif
     return std::move(node);
 }
 
@@ -2030,4 +2413,12 @@ void SimpleParser::EOFExpectedError(SharedSimpleTokenPtr Token, QString details)
         return;
     ErrorOccured = true;
     lexer->LexErrorAtToken(Token, 3, details);
+}
+
+void SimpleParser::SymbolError(SharedSimpleTokenPtr Token, QString details)
+{
+    if(ErrorOccured)
+        return;
+    ErrorOccured = true;
+    lexer->LexErrorAtToken(Token, 4, details);
 }

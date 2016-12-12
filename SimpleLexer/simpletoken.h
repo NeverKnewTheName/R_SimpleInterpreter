@@ -110,12 +110,16 @@ public:
         value(value),
         valueType(valueType)
     {
+#ifdef __DEBUG_OUTPUT__
         qDebug() << "ValueToken - Value: " << value << " Type: " << valueType;
+#endif
     }
 
     ~ValueToken()
     {
-        qDebug() << __PRETTY_FUNCTION__;
+        #ifdef __DEBUG_OUTPUT__
+    qDebug() << __PRETTY_FUNCTION__;
+#endif
     }
 
     int getInt() const

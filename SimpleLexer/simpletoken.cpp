@@ -18,7 +18,9 @@ SimpleToken::SimpleToken(const SimpleToken::TokenType type, const int TokenPos, 
 
 SimpleToken::~SimpleToken()
 {
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 SimpleToken::TokenType SimpleToken::getTokenType() const
@@ -209,7 +211,9 @@ QString SimpleToken::convertTokenTypeToString(SimpleToken::TokenType type)
 
 //IntegerToken::~IntegerToken()
 //{
+//    #ifdef __DEBUG_OUTPUT__
 //    qDebug() << __PRETTY_FUNCTION__;
+//#endif
 //}
 
 //int IntegerToken::getValue() const
@@ -235,7 +239,9 @@ QString SimpleToken::convertTokenTypeToString(SimpleToken::TokenType type)
 
 //DoubleToken::~DoubleToken()
 //{
+//    #ifdef __DEBUG_OUTPUT__
 //    qDebug() << __PRETTY_FUNCTION__;
+//#endif
 //}
 
 //double DoubleToken::getValue() const
@@ -261,7 +267,9 @@ QString SimpleToken::convertTokenTypeToString(SimpleToken::TokenType type)
 
 //BoolToken::~BoolToken()
 //{
+//    #ifdef __DEBUG_OUTPUT__
 //    qDebug() << __PRETTY_FUNCTION__;
+//#endif
 //}
 
 //bool BoolToken::getValue() const
@@ -287,7 +295,9 @@ QString SimpleToken::convertTokenTypeToString(SimpleToken::TokenType type)
 
 //StringToken::~StringToken()
 //{
+//    #ifdef __DEBUG_OUTPUT__
 //    qDebug() << __PRETTY_FUNCTION__;
+//#endif
 //}
 
 //const QString &StringToken::getValue() const
@@ -313,7 +323,9 @@ DataToken::DataToken(const unsigned int dataIndex, const int TokenPos, const int
 
 DataToken::~DataToken()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 QString DataToken::printValue() const
@@ -340,7 +352,9 @@ VariableIDToken::VariableIDToken(const QString &ID, const int TokenPos, const in
 
 VariableIDToken::~VariableIDToken()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 QString VariableIDToken::printValue() const
@@ -366,7 +380,9 @@ OperationToken::OperationToken(const SimpleToken::TokenType op, const int TokenP
 
 OperationToken::~OperationToken()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 QString OperationToken::printValue() const
@@ -387,7 +403,9 @@ EOFToken::EOFToken(const int TokenPos, const int TokenLen) :
 
 EOFToken::~EOFToken()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 QString EOFToken::printValue() const
@@ -408,7 +426,9 @@ LParanToken::LParanToken(const int TokenPos, const int TokenLen) :
 
 LParanToken::~LParanToken()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 QString LParanToken::printValue() const
@@ -429,7 +449,9 @@ RParanToken::RParanToken(const int TokenPos, const int TokenLen) :
 
 RParanToken::~RParanToken()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 QString RParanToken::printValue() const
@@ -450,7 +472,9 @@ QString RParanToken::printToken() const
 
 //TypeCastToken::~TypeCastToken()
 //{
+//    #ifdef __DEBUG_OUTPUT__
 //    qDebug() << __PRETTY_FUNCTION__;
+//#endif
 //}
 
 //SimpleToken::TokenType TypeCastToken::getTypeToCastTo() const
@@ -498,7 +522,9 @@ TypeNameToken::TypeNameToken(Node::ValueTypes type, const int TokenPos, const in
 
 TypeNameToken::~TypeNameToken()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 Node::ValueTypes TypeNameToken::getType() const
@@ -524,7 +550,9 @@ SemiColonDelimToken::SemiColonDelimToken(const int TokenPos, const int TokenLen)
 
 SemiColonDelimToken::~SemiColonDelimToken()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 QString SemiColonDelimToken::printValue() const
@@ -545,7 +573,9 @@ ReturnKeywordToken::ReturnKeywordToken(const int TokenPos, const int TokenLen) :
 
 ReturnKeywordToken::~ReturnKeywordToken()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 QString ReturnKeywordToken::printValue() const
@@ -566,7 +596,9 @@ LCurlyParanToken::LCurlyParanToken(const int TokenPos, const int TokenLen) :
 
 LCurlyParanToken::~LCurlyParanToken()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 QString LCurlyParanToken::printValue() const
@@ -587,7 +619,9 @@ RCurlyParanToken::RCurlyParanToken(const int TokenPos, const int TokenLen) :
 
 RCurlyParanToken::~RCurlyParanToken()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 QString RCurlyParanToken::printValue() const
@@ -608,7 +642,9 @@ QMarkToken::QMarkToken(const int TokenPos, const int TokenLen) :
 
 QMarkToken::~QMarkToken()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 QString QMarkToken::printValue() const
@@ -629,7 +665,9 @@ ColonToken::ColonToken(const int TokenPos, const int TokenLen) :
 
 ColonToken::~ColonToken()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 QString ColonToken::printValue() const
@@ -651,7 +689,9 @@ ControlToken::ControlToken(SimpleToken::TokenType type, const int TokenPos, cons
 
 ControlToken::~ControlToken()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 QString ControlToken::printValue() const
@@ -672,7 +712,9 @@ CommaDelimToken::CommaDelimToken(const int TokenPos, const int TokenLen) :
 
 CommaDelimToken::~CommaDelimToken()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 QString CommaDelimToken::printValue() const

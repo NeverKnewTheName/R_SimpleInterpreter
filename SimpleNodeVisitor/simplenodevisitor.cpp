@@ -26,5 +26,7 @@ SimpleNodeVisitor::SimpleNodeVisitor()
 
 SimpleNodeVisitor::~SimpleNodeVisitor()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }

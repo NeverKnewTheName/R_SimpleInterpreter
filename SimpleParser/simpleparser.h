@@ -134,7 +134,7 @@ public:
     QSharedPointer<SimpleSymbolTable> getProgramSymblTbl();
 
 private:
-    void eat(SimpleToken::TokenType tokenType);
+    bool eat(SimpleToken::TokenType tokenType);
     std::unique_ptr<ProgramNode> Program();
     QSharedPointer<FunctionSymbol> FunctionDefinition();
     QSharedPointer<FunctionSymbol> FunctionDeclaration();
@@ -177,6 +177,7 @@ private:
     void TypeError(SharedSimpleTokenPtr Token, QString details = QString());
     void EOFUnexpectedError(SharedSimpleTokenPtr Token, QString details = QString());
     void EOFExpectedError(SharedSimpleTokenPtr Token, QString details = QString());
+    void SymbolError(SharedSimpleTokenPtr Token, QString details = QString());
 
     SimpleLexer *lexer;
     SharedSimpleTokenPtr CurrentToken;

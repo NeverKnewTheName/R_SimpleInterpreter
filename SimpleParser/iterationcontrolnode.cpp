@@ -20,7 +20,9 @@ IterationControlNode::IterationControlNode(const IterationControlNode &ToCopy) :
 
 IterationControlNode::~IterationControlNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 void IterationControlNode::replaceStatement(std::unique_ptr<SimpleNode> Statement)
@@ -56,7 +58,9 @@ ForLoopNode::ForLoopNode(const ForLoopNode &ToCopy) :
 
 ForLoopNode::~ForLoopNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 Node::ValueTypes ForLoopNode::getReturnType() const
@@ -114,7 +118,9 @@ WhileLoopNode::WhileLoopNode(const WhileLoopNode &ToCopy) :
 
 WhileLoopNode::~WhileLoopNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 const std::unique_ptr<SimpleNode> &WhileLoopNode::getWhileCondition()
@@ -160,7 +166,9 @@ DoWhileLoopNode::DoWhileLoopNode(std::unique_ptr<SimpleNode> Condition, std::uni
 
 DoWhileLoopNode::~DoWhileLoopNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 std::unique_ptr<SimpleNode> DoWhileLoopNode::deepCopy() const

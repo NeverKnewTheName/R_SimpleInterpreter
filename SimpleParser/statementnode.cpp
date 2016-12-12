@@ -18,7 +18,9 @@ StatementNode::StatementNode(const StatementNode &ToCopy) :
 
 StatementNode::~StatementNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 const std::unique_ptr<SimpleNode> &StatementNode::getStatement() const

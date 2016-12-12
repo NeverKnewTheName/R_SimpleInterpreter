@@ -33,6 +33,10 @@
 #include <QPrinter>
 #include <QPrintDialog>
 
+
+
+#include <QElapsedTimer>
+
 R_SimpleInterpreter::R_SimpleInterpreter(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::R_SimpleInterpreter),
@@ -90,14 +94,24 @@ void R_SimpleInterpreter::on_pushButton_clicked()
 
     SimpleASTInterpreterVisitor astInterpreter;
 
+    QElapsedTimer myTimer;
+    quint64 elapsedTime = 0;
+    myTimer.start();
     std::unique_ptr<SimpleNode> parseTree = std::move(parse.ParseToAST());
+    elapsedTime = myTimer.elapsed();
+    qDebug() << "Time taken for parsing: " << elapsedTime;
 
     if(parseTree == nullptr)
     {
         qDebug() << "Error in ParseTree";
         return;
     }
+
+    myTimer.restart();
     astInterpreter.visit(parseTree->deepCopy());
+    elapsedTime = myTimer.elapsed();
+    qDebug() << "Time taken for interpreting: " << elapsedTime;
+
     std::unique_ptr<ValueNode> result = astInterpreter.getInterpreterResult();
     if(result != nullptr)
     {

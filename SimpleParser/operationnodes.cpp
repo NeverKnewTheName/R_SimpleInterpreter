@@ -14,7 +14,9 @@ OperationNode::OperationNode()
 
 OperationNode::~OperationNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 Node::NodeType OperationNode::getNodeType() const
@@ -41,7 +43,9 @@ UnaryOperationNode::UnaryOperationNode(const UnaryOperationNode &ToCopy) :
 
 UnaryOperationNode::~UnaryOperationNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 OperationNode::ArityTypes UnaryOperationNode::getArityType() const
@@ -76,7 +80,9 @@ BinaryOperationNode::BinaryOperationNode(const BinaryOperationNode &ToCopy) :
 
 BinaryOperationNode::~BinaryOperationNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 OperationNode::ArityTypes BinaryOperationNode::getArityType() const
@@ -124,7 +130,9 @@ TernaryOperationNode::TernaryOperationNode(const TernaryOperationNode &ToCopy) :
 
 TernaryOperationNode::~TernaryOperationNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 OperationNode::ArityTypes TernaryOperationNode::getArityType() const

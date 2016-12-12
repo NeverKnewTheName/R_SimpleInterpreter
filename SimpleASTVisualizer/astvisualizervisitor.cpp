@@ -36,7 +36,9 @@ ASTVisualizerVisitor::~ASTVisualizerVisitor()
     {
         delete VisualizedASTRootNode;
     }
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 

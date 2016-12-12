@@ -31,7 +31,9 @@ SimpleASTInterpreterVisitor::SimpleASTInterpreterVisitor() :
 
 SimpleASTInterpreterVisitor::~SimpleASTInterpreterVisitor()
 {
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 std::unique_ptr<ValueNode> SimpleASTInterpreterVisitor::getInterpreterResult() const
@@ -190,11 +192,11 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<DecrementNode> NodeToVis
 
     if(isPre)
     {
-        InterpreterResult = std::move(value);
+        NodeToVisit->getUnaryOPRightChild()->accept(this);
     }
     else
     {
-        NodeToVisit->getUnaryOPRightChild()->accept(this);
+        InterpreterResult = std::move(value);
     }
 }
 
@@ -405,7 +407,9 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<FunctionCallNode> NodeTo
 
     if(FunctionParameters.size() != FuncArgs.size())
     {
+#ifdef __DEBUG_OUTPUT__
         qDebug() << "Number of passed arguments does not match function parameters!";
+#endif
         InterpreterResult = std::unique_ptr<VoidValueNode>( new VoidValueNode());
     }
 
@@ -464,11 +468,11 @@ void SimpleASTInterpreterVisitor::visit(std::unique_ptr<IncrementNode> NodeToVis
 
     if(isPre)
     {
-        InterpreterResult = std::move(value);
+        NodeToVisit->getUnaryOPRightChild()->accept(this);
     }
     else
     {
-        NodeToVisit->getUnaryOPRightChild()->accept(this);
+        InterpreterResult = std::move(value);
     }
 }
 

@@ -16,7 +16,9 @@ SelectionControlNode::SelectionControlNode(const SelectionControlNode &ToCopy)
 
 SelectionControlNode::~SelectionControlNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 ControlNode::ControlType SelectionControlNode::getControlType() const
@@ -42,7 +44,9 @@ IfNode::IfNode(const IfNode &ToCopy) :
 
 IfNode::~IfNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 const std::unique_ptr<SimpleNode> &IfNode::getIfCondition() const
@@ -111,7 +115,9 @@ ElseNode::ElseNode(const ElseNode &ToCopy) :
 
 ElseNode::~ElseNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 const std::unique_ptr<SimpleNode> &ElseNode::getElseStatementBlock() const
@@ -170,7 +176,9 @@ SwitchNode::SwitchNode(const SwitchNode &ToCopy) :
 
 SwitchNode::~SwitchNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 const std::unique_ptr<SimpleNode> &SwitchNode::getSwitchCondition() const
@@ -235,7 +243,9 @@ CaseNode::CaseNode(const CaseNode &ToCopy) :
 
 CaseNode::~CaseNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 const std::unique_ptr<ValueNode> &CaseNode::getCaseArgument() const
@@ -278,7 +288,9 @@ DefaultNode::DefaultNode(const DefaultNode &ToCopy) :
 
 DefaultNode::~DefaultNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 QString DefaultNode::printValue() const
@@ -312,7 +324,9 @@ SwitchLabel::SwitchLabel(const SwitchLabel &ToCopy) :
 
 SwitchLabel::~SwitchLabel()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 const std::unique_ptr<SimpleNode> &SwitchLabel::getSwitchLabelStatement() const

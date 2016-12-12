@@ -32,7 +32,9 @@ InterpreterStack(100)
 
 SimpleInterpreter::~SimpleInterpreter()
 {
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 ASTNode *SimpleInterpreter::VisualizeAST()

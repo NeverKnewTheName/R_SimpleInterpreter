@@ -15,7 +15,9 @@ ControlNode::ControlNode()
 
 ControlNode::~ControlNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 Node::NodeType ControlNode::getNodeType() const

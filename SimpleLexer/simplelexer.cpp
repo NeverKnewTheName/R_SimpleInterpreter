@@ -41,7 +41,9 @@ SimpleLexer::SimpleLexer(const QString &InputString, QObject *parent) :
 
 SimpleLexer::~SimpleLexer()
 {
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 void SimpleLexer::setStringForLexer(const QString &InputString)
@@ -60,7 +62,9 @@ void SimpleLexer::ResetLexerToToken(SharedSimpleTokenPtr TokenToResetTo)
 
 SharedSimpleTokenPtr SimpleLexer::peekAtNextToken()
 {
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
     return getNextToken(false);
 }
 
@@ -77,11 +81,12 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
 
     if(regExMatch.hasMatch())
     {
+#ifdef __DEBUG_OUTPUT__
         qDebug() << PosInInputString;
         qDebug() << regExMatch.captured(1);
         qDebug() << regExMatch.capturedStart(1);
         qDebug() << regExMatch.capturedLength(1);
-
+#endif
         if(!regExMatch.captured(REGEX_RETRNKW).isNull())
         {
             //if|else|switch|case|for|do|while|continue|break|return
@@ -382,7 +387,9 @@ SharedSimpleTokenPtr SimpleLexer::getNextToken(bool consume)
         CurrentToken = Token;
     }
 
+#ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__ << " new Token: " << Token->printToken();
+#endif
     return Token;
 }
 
@@ -390,21 +397,25 @@ void SimpleLexer::LexErrorAtToken(SharedSimpleTokenPtr ErrorAtToken, int type, Q
 {
     QString FaultyInput = InputString;
     QString ErrorType = QString("Undefined");
-    if(type == 0)
+    switch(type)
     {
+    case 0:
         ErrorType = QString("SyntacticError");
-    }
-    else if (type == 1)
-    {
+        break;
+    case 1:
         ErrorType = QString("TypeMismatch");
-    }
-    else if (type == 2)
-    {
+        break;
+    case 2:
         ErrorType = QString("Unexpected EOF");
-    }
-    else if (type == 3)
-    {
+        break;
+    case 3:
         ErrorType = QString("Expected EOF, but received a Token");
+        break;
+    case 4:
+        ErrorType = QString("Symbol Error");
+        break;
+    default:
+        ErrorType = QString("Unknown Error");
     }
 
     int TokenPos = ErrorAtToken->getTokenPos();
@@ -428,7 +439,9 @@ void SimpleLexer::LexErrorAtToken(SharedSimpleTokenPtr ErrorAtToken, int type, Q
     }
     FaultyInput.insert(TokenPos,QString("</font>"));
     FaultyInput.append(QString("</font>"));
+#ifdef __DEBUG_OUTPUT__
     qDebug() << FaultyInput;
+#endif
 
     emit LexerErrorHTMLMsg(QString("<b>%1</b> at Token:<br><code><b>%2</b></code><br><br><code>%3</code>\n%4")
                            .arg(ErrorType)

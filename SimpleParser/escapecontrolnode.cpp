@@ -11,7 +11,9 @@ EscapeControlNode::EscapeControlNode()
 
 EscapeControlNode::~EscapeControlNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 ControlNode::ControlType EscapeControlNode::getControlType() const
@@ -36,7 +38,9 @@ BreakNode::BreakNode(const BreakNode &ToCopy)
 
 BreakNode::~BreakNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 void BreakNode::accept(SimpleNodeVisitor *visitor) const
@@ -76,7 +80,9 @@ ContinueNode::ContinueNode(const ContinueNode &ToCopy)
 
 ContinueNode::~ContinueNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 void ContinueNode::accept(SimpleNodeVisitor *visitor) const
@@ -116,7 +122,9 @@ ReturnNode::ReturnNode(const ReturnNode &ToCopy) :
 
 ReturnNode::~ReturnNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 void ReturnNode::accept(SimpleNodeVisitor *visitor) const

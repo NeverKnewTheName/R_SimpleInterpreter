@@ -12,7 +12,9 @@ VariableSymbol::VariableSymbol(const QString &identifier,
 
 VariableSymbol::~VariableSymbol()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 std::unique_ptr<ValueNode> VariableSymbol::getAssignedValue(QSharedPointer<SimpleStack> StackToUse) const
@@ -61,11 +63,7 @@ bool VariableSymbol::assignValue(std::unique_ptr<ValueNode> NodeToAssign, QShare
 
     size_t Address = AddressPerScope.back();
 
-//    qDebug() << "Previous Value: " << StackToUse->StackAt(Address)->getValue();
-
     StackToUse->StackReplaceAt(Address, std::move(newValueNode));
-
-//    qDebug() << "Value Assigned: " << StackToUse->StackAt(Address)->getValue();
 
     return true;
 }
@@ -92,7 +90,9 @@ std::unique_ptr<ValueNode> VariableSymbol::getValue(QSharedPointer<SimpleStack> 
 
 bool VariableSymbol::VarEnterScope(QSharedPointer<SimpleStack> StackToUse)
 {
+#ifdef __DEBUG_OUTPUT__
     qDebug() << "Scope entered";
+#endif
     //Push Symbol on Stack with default Value
     //Enter new scope
     AddressPerScope.push_back(
@@ -104,7 +104,9 @@ bool VariableSymbol::VarEnterScope(QSharedPointer<SimpleStack> StackToUse)
 
 bool VariableSymbol::VarExitScope(QSharedPointer<SimpleStack> StackToUse)
 {
+#ifdef __DEBUG_OUTPUT__
     qDebug() << "Scope exited";
+#endif
     //Delete Symbol from stack
     AddressPerScope.pop_back();
     //Delete Scope
@@ -133,7 +135,9 @@ ValueSymbol::ValueSymbol(const QString &identifier, const Node::ValueTypes Value
 
 ValueSymbol::~ValueSymbol()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 Node::ValueTypes ValueSymbol::getReturnType() const
@@ -149,7 +153,9 @@ ConstantValueSymbol::ConstantValueSymbol(const QString &identifier, ValueNode va
 
 ConstantValueSymbol::~ConstantValueSymbol()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 SimpleSymbolTableEntry::SymbolTableEntryType ConstantValueSymbol::getType() const

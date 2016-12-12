@@ -32,7 +32,9 @@ ProgramNode::ProgramNode(const ProgramNode &ToCopy) :
 
 ProgramNode::~ProgramNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 void ProgramNode::addExpression(std::unique_ptr<SimpleNode> &newExpression)

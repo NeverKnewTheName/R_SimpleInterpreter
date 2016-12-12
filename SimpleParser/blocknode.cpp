@@ -37,7 +37,9 @@ BlockNode::BlockNode(const BlockNode &ToCopy) :
 
 BlockNode::~BlockNode()
 {
+    #ifdef __DEBUG_OUTPUT__
     qDebug() << __PRETTY_FUNCTION__;
+#endif
 }
 
 void BlockNode::addStatement(std::unique_ptr<SimpleNode> Statement)
