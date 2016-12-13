@@ -1,0 +1,9 @@
+Integer a = 3;
+String str = "";
+
+while(a--)
+{
+	str = str  + " - " + a;
+}
+
+return str;

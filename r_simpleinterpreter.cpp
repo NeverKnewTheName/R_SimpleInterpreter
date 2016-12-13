@@ -30,6 +30,9 @@
 
 #include <QGraphicsScene>
 
+#include <QFileDialog>
+#include <QFile>
+
 #include <QPrinter>
 #include <QPrintDialog>
 
@@ -137,7 +140,7 @@ void R_SimpleInterpreter::on_pushButton_clicked()
     myScene->addItem(rootASTNode);
     ui->graphicsView->setScene(myScene);
 
-//#define _PRINT_AST_
+    //#define _PRINT_AST_
 #ifdef _PRINT_AST_
     QPrinter printer;
     if (QPrintDialog(&printer).exec() == QDialog::Accepted) {
@@ -205,4 +208,36 @@ void R_SimpleInterpreter::populateSymbolTableView(QSharedPointer<SimpleSymbolTab
             populateSymbolTableView(qSharedPointerDynamicCast<FunctionSymbol>(entry)->getFunctionSymbolTable(), entryItem);
         }
     }
+}
+
+void R_SimpleInterpreter::on_SaveSourceBtn_clicked()
+{
+    QString TextToInterpret = ui->plainTextEdit->document()->toPlainText();
+
+    QString saveLoc = QFileDialog::getSaveFileName(this, QString("Save as"), QString(), "R_C Source File (*.rcsrc)");
+    QFile SourceSaveFile(saveLoc);
+    if(!SourceSaveFile.open(QIODevice::WriteOnly)) {
+        qDebug() << "error open file to save: " << SourceSaveFile.fileName();
+    }
+    else
+    {
+        SourceSaveFile.write(TextToInterpret.toLocal8Bit()); //ToDO check for error (-1)
+    }
+    SourceSaveFile.flush(); //always flush after write!
+    SourceSaveFile.close();
+}
+
+void R_SimpleInterpreter::on_LoadSourceBtn_clicked()
+{
+    QString openLoc = QFileDialog::getOpenFileName(this, QString("Open"), QString(), "R_C Source File (*.rcsrc)");
+    QFile SourceOpenFile(openLoc);
+    if(!SourceOpenFile.open(QIODevice::ReadOnly)) {
+        qDebug() << "error opening: " << SourceOpenFile.fileName();
+    }
+    else
+    {
+        // read file content
+        ui->plainTextEdit->setPlainText(QString::fromLocal8Bit(SourceOpenFile.readAll())); //ToDO check for error (-1)
+    }
+    SourceOpenFile.close();
 }

@@ -28,6 +28,9 @@ private slots:
     void on_pushButton_clicked();
     void lexerPosChanged(int pos, int len);
     void receiveLexerHTMLFormattedErrMsg(QString HTMLFormattedErrMsg);
+    void on_SaveSourceBtn_clicked();
+
+    void on_LoadSourceBtn_clicked();
 
 private:
     void populateSymbolTableView(QSharedPointer<SimpleSymbolTable> symbolTable, QStandardItem *SymbolTableModel);
