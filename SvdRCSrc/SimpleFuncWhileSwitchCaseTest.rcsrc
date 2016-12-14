@@ -1,0 +1,41 @@
+Integer a = 13;
+
+String func(Integer val)
+{
+	String str = "";
+
+	while(val--)
+	{
+		switch( val % 5)
+		{
+		case 0:
+		{
+			str = str  + " A" + val;
+			break;
+		}
+		case 1:
+		{
+			str = str  + " B" + val;
+			break;
+		}
+		case 2:
+		{
+			str = str  + " C" + val;
+			break;
+		}
+		case 3:
+		{
+			str = str  + " D" + val;
+			break;
+		}
+		default:
+		{
+			str = str  + " default" + val;
+		}
+		}
+	}
+	
+	return str;	
+}
+
+return func(a);

@@ -1,0 +1,21 @@
+Integer a = 13;
+
+String func(Integer val)
+{
+	String str = "";
+	Integer i = 0;
+	for( i = 0; i < val; i++ )
+	{
+		if( i & 1  )
+		{
+			str = str + " odd: " + i;
+		}
+		else
+		{
+			str = str + " even: " + i;
+		}
+	}
+	return str;
+}
+
+return func(a);

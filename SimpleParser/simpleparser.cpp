@@ -681,7 +681,8 @@ std::unique_ptr<SimpleNode> SimpleParser::IfStatement()
     std::unique_ptr<SimpleNode> Condition = Expression();
     if(Condition == nullptr)
     {
-        SyntacticError(token, QString("Expected expression for IfStatement!"));
+        SyntacticError(token, QString("Expected Condition Expression for IfStatement!"));
+        return nullptr;
     }
     if(!eat(SimpleToken::RParan))
     {
